@@ -166,6 +166,41 @@ function initCountryPicker() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Membership Card Integration State ---
+    let membershipConfig = null;
+    let membershipTemplateImg = null;
+    let isMembershipVerified = false;
+
+    // Load Firebase configuration for Membership Card
+    let attempts = 0;
+    const checkFirebase = async () => {
+        attempts++;
+        if (window.getGlobalSettings) {
+            const result = await window.getGlobalSettings();
+            if (result.success) {
+                membershipConfig = result.data.config;
+                const imgSrc = result.data.templateUrl;
+                
+                // Preload template image
+                membershipTemplateImg = new Image();
+                membershipTemplateImg.crossOrigin = "Anonymous";
+                membershipTemplateImg.src = imgSrc;
+                membershipTemplateImg.onload = () => {
+                    console.log("Membership template loaded successfully.");
+                };
+                membershipTemplateImg.onerror = () => {
+                    console.error("Failed to load membership template.");
+                };
+            } else {
+                console.error("Firebase config error:", result.error);
+            }
+        } else {
+            if (attempts < 20) setTimeout(checkFirebase, 500);
+            else console.error("Firebase connection timeout.");
+        }
+    };
+    checkFirebase();
+
     initCountryPicker();
 
     const landingPage = document.getElementById('landingPage');
@@ -350,6 +385,64 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // --- Membership Radio Change Listeners ---
+    const membershipRadios = document.querySelectorAll('input[name="membership"]');
+    const membershipPanel = document.getElementById('membershipDetailsPanel');
+    const screenshotInput = document.getElementById('membershipScreenshot');
+    const statusText = document.getElementById('membershipStatusText');
+
+    membershipRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.value === 'Pay now') {
+                membershipPanel.classList.remove('hidden');
+            } else {
+                membershipPanel.classList.add('hidden');
+            }
+        });
+    });
+
+    // --- Tesseract OCR Scanning ---
+    if (screenshotInput) {
+        screenshotInput.addEventListener('change', () => {
+            const file = screenshotInput.files[0];
+            if (!file) return;
+
+            statusText.innerHTML = '<span class="text-amber-600 flex items-center gap-1.5"><svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Scanning screenshot...</span>';
+            isMembershipVerified = false;
+
+            if (typeof Tesseract === 'undefined') {
+                statusText.innerHTML = '<span class="text-red-500 font-medium">Scanner library missing. Please check internet connection.</span>';
+                return;
+            }
+
+            Tesseract.recognize(file, 'eng')
+                .then(({ data: { text } }) => {
+                    console.log("Membership Scan Result:", text);
+                    const matches = text.replace(/[\n\r]+/g, ' ').match(/[\d,]+\.?\d*/g);
+                    let hasValidAmount = false;
+                    
+                    if (matches) {
+                        hasValidAmount = matches.some(m => {
+                            const clean = m.replace(/,/g, '');
+                            const num = parseFloat(clean);
+                            return !isNaN(num) && num >= 600;
+                        });
+                    }
+
+                    if (hasValidAmount || text.includes('600')) {
+                        isMembershipVerified = true;
+                        statusText.innerHTML = '<span class="text-emerald-600 font-bold flex items-center gap-1">✓ Verified (₹600+ found)</span>';
+                    } else {
+                        statusText.innerHTML = '<span class="text-red-500 font-semibold">Could not read "600". Please upload a clearer screenshot.</span>';
+                    }
+                })
+                .catch(err => {
+                    console.error("Scanner Error:", err);
+                    statusText.innerHTML = '<span class="text-red-500 font-semibold">Scanner error. Please try again.</span>';
+                });
+        });
+    }
+
     // Validate current step before proceeding
     function validateStep() {
         if (currentStep === 1) {
@@ -358,6 +451,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!fullName || !mobile) {
                 alert('Please fill out all required fields (Full Name and Mobile Number).');
                 return false;
+            }
+        }
+        if (currentStep === 6) {
+            const selectedMembership = document.querySelector('input[name="membership"]:checked')?.value;
+            if (selectedMembership === 'Pay now') {
+                const batch = document.getElementById('membershipBatch').value;
+                if (!batch) {
+                    alert('Please select your Batch for the membership card.');
+                    return false;
+                }
+                const screenshotFile = screenshotInput ? screenshotInput.files[0] : null;
+                if (!screenshotFile) {
+                    alert('Please upload your payment screenshot.');
+                    return false;
+                }
+                if (!isMembershipVerified) {
+                    alert('Payment screenshot has not been successfully verified yet. Please ensure ₹600 or more is visible.');
+                    return false;
+                }
             }
         }
         return true;
@@ -401,6 +513,117 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
         };
 
+        const generateAndSaveMembershipCard = async () => {
+            if (!membershipConfig || !membershipTemplateImg) {
+                throw new Error("Membership configuration or template image is not loaded yet. Please wait or refresh.");
+            }
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const mobile = document.getElementById('mobile').value.trim();
+            const batch = document.getElementById('membershipBatch').value;
+
+            // 1. Upload Payment Screenshot to Cloudinary
+            setLoading('Uploading proof…');
+            const proofFile = screenshotInput.files[0];
+            const formData = new FormData();
+            formData.append('file', proofFile);
+            formData.append('upload_preset', 'ifada-sanad');
+
+            const proofRes = await fetch(
+                `https://api.cloudinary.com/v1_1/da6fjyirm/image/upload`,
+                { method: 'POST', body: formData }
+            );
+            if (!proofRes.ok) {
+                throw new Error("Failed to upload payment screenshot.");
+            }
+            const proofData = await proofRes.json();
+            const paymentProofUrl = proofData.secure_url;
+
+            // 2. Draw the membership card
+            setLoading('Drawing card…');
+            const canvas = document.getElementById('card-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = membershipTemplateImg.width;
+            canvas.height = membershipTemplateImg.height;
+            ctx.drawImage(membershipTemplateImg, 0, 0);
+
+            const scaleFactor = canvas.width / 1000;
+            const nameWeight = membershipConfig.name.weight || '700';
+            const batchWeight = membershipConfig.batch.weight || '400';
+            const fontName = `${nameWeight} ${membershipConfig.name.size * scaleFactor * 1.5}px 'Clash Grotesk'`;
+            const fontBatch = `${batchWeight} ${membershipConfig.batch.size * scaleFactor * 1.5}px 'Clash Grotesk'`;
+
+            try {
+                const fontLoadPromise = Promise.all([
+                    document.fonts.load(fontName),
+                    document.fonts.load(fontBatch)
+                ]);
+                await Promise.race([fontLoadPromise, new Promise(r => setTimeout(r, 1000))]);
+            } catch (e) {
+                console.error("Font loading error:", e);
+            }
+
+            const drawTxt = (txt, conf, font) => {
+                const x = (conf.x / 100) * canvas.width;
+                const y = (conf.y / 100) * canvas.height;
+                ctx.font = font;
+                ctx.fillStyle = conf.color || '#FFF';
+                ctx.textAlign = 'center';
+                ctx.fillText(txt, x, y);
+            };
+
+            drawTxt(fullName.toUpperCase(), membershipConfig.name, fontName);
+            drawTxt(batch, membershipConfig.batch, fontBatch);
+
+            // QR Code
+            if (mobile) {
+                try {
+                    const qrConf = membershipConfig.qrcode || { x: 50, y: 85, size: 15 };
+                    const size = (qrConf.size / 100) * canvas.width;
+                    const x = (qrConf.x / 100) * canvas.width - (size / 2);
+                    const y = (qrConf.y / 100) * canvas.height - (size / 2);
+
+                    const tmp = document.createElement('canvas');
+                    await QRCode.toCanvas(tmp, mobile, { width: 500, margin: 1 });
+                    ctx.drawImage(tmp, x, y, size, size);
+                } catch (e) {
+                    console.error("QR Code generation error:", e);
+                }
+            }
+
+            // 3. Upload Generated Card to Cloudinary
+            setLoading('Saving card…');
+            const cardBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            const cardFormData = new FormData();
+            cardFormData.append('file', cardBlob);
+            cardFormData.append('upload_preset', 'ifada-sanad');
+
+            const cardRes = await fetch(
+                `https://api.cloudinary.com/v1_1/da6fjyirm/image/upload`,
+                { method: 'POST', body: cardFormData }
+            );
+            if (!cardRes.ok) {
+                throw new Error("Failed to upload generated membership card.");
+            }
+            const cardData = await cardRes.json();
+            const cardImageUrl = cardData.secure_url;
+
+            // 4. Save to Firebase
+            const saveRes = await window.saveCardToDB({
+                name: fullName,
+                batch: batch,
+                mobile: mobile,
+                paymentProofUrl: paymentProofUrl,
+                imageUrl: cardImageUrl
+            });
+
+            if (!saveRes.success) {
+                throw new Error("Failed to save membership card to database: " + saveRes.error);
+            }
+
+            return cardImageUrl;
+        };
+
         try {
             // ── STEP 0: Check duplicate mobile number ─────────────────────
             setLoading('Checking…');
@@ -417,6 +640,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     showFormError('⚠️ This mobile number has already been submitted. Each number can only submit once.');
                     return;
                 }
+            }
+
+            // ── STEP 0.5: Generate and upload Membership Card if Pay Now is selected ──
+            const selectedMembership = document.querySelector('input[name="membership"]:checked')?.value;
+            if (selectedMembership === 'Pay now') {
+                await generateAndSaveMembershipCard();
             }
 
             // ── STEP 1: Upload photo to Cloudinary ───────────────────────
@@ -506,6 +735,15 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(async () => {
                 surveyContainer.classList.add('hidden');
                 
+                // Show/hide download button depending on membership choice
+                const selectedMembership = document.querySelector('input[name="membership"]:checked')?.value;
+                const downloadCardContainer = document.getElementById('downloadCardBtnContainer');
+                if (selectedMembership === 'Pay now' && downloadCardContainer) {
+                    downloadCardContainer.classList.remove('hidden');
+                } else if (downloadCardContainer) {
+                    downloadCardContainer.classList.add('hidden');
+                }
+
                 // Fetch WhatsApp link if the user chose 'Yes' to join
                 const whatsappJoinVal = document.querySelector('input[name="whatsappJoin"]:checked')?.value;
                 if (whatsappJoinVal === 'Yes' || whatsappJoinVal === 'No') {
@@ -517,13 +755,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const waBtn = document.getElementById('waSuccessBtn');
                                 const waContainer = document.getElementById('waSuccessBtnContainer');
                                 const waText = waContainer.querySelector('p');
-                                
+                                                
                                 if (whatsappJoinVal === 'No' && waText) {
                                     waText.textContent = 'Even though you opted not to join the official WhatsApp group, you can still join using the button below if you change your mind:';
                                 } else if (waText) {
                                     waText.textContent = 'Since you selected willingness to join the official WhatsApp group, click the button below to join:';
                                 }
-                                
+                                                
                                 waBtn.href = waData[0].value;
                                 waContainer.classList.remove('hidden');
                             }
@@ -544,6 +782,18 @@ document.addEventListener('DOMContentLoaded', () => {
             resetBtn();
         }
     });
+
+    // --- Membership Card Download Listener ---
+    const downloadCardBtn = document.getElementById('downloadCardBtn');
+    if (downloadCardBtn) {
+        downloadCardBtn.addEventListener('click', () => {
+            const canvas = document.getElementById('card-canvas');
+            const link = document.createElement('a');
+            link.download = `MembershipCard.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    }
 
     // Initialize first step
     updateFormSteps();
