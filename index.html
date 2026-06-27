@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-slate-50 text-slate-800 antialiased">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IFADA Alumni Survey</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            900: '#134e4a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen flex flex-col justify-center pt-10 pb-10 px-4 sm:px-6 lg:px-8 relative overflow-x-hidden">
+    <!-- Background Design -->
+    <div class="fixed inset-0 z-[-1] bg-gradient-to-br from-slate-100 to-slate-200">
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-brand-100 opacity-50 blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-blue-100 opacity-50 blur-3xl"></div>
+    </div>
+
+    <!-- 1. Landing Page -->
+    <div id="landingPage" class="w-full max-w-2xl mx-auto z-10 flex flex-col items-center justify-center text-center animate-fade-in-up">
+        <div class="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden border border-white p-10 md:p-16 w-full">
+            <div class="w-20 h-20 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                </svg>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4 tracking-tight">IFADA Alumni Survey</h1>
+            <p class="text-slate-600 text-lg md:text-xl max-w-lg mx-auto mb-10 leading-relaxed">
+                Welcome back! Please take a few minutes to update your information in the IFADA Alumni Database. Your contributions help us stay connected.
+            </p>
+            <button id="startBtn" class="px-10 py-4 bg-brand-600 hover:bg-brand-700 text-white text-lg font-semibold rounded-full shadow-xl shadow-brand-500/30 transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-brand-500 focus:ring-offset-2 flex items-center justify-center mx-auto group">
+                <span>Start Survey</span>
+                <svg class="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Survey Container -->
+    <main id="surveyContainer" class="hidden w-full max-w-3xl mx-auto z-10 transition-opacity duration-500 opacity-0">
+        <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden border border-white">
+            
+            <!-- Header Section -->
+            <div class="bg-brand-600 px-8 py-8 text-center relative overflow-hidden transition-all duration-300">
+                <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="text-left hidden md:block">
+                        <h2 class="text-2xl font-bold text-white tracking-tight">IFADA Survey</h2>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="w-full md:w-1/2">
+                        <div class="flex justify-between text-brand-100 text-xs font-medium mb-2">
+                            <span>Progress</span>
+                            <span id="progressText">1 / 6</span>
+                        </div>
+                        <div class="w-full bg-brand-800/50 rounded-full h-2">
+                            <div id="progressBar" class="bg-brand-200 h-2 rounded-full transition-all duration-500" style="width: 16.66%"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Decorative pattern -->
+                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 20px 20px;"></div>
+            </div>
+
+            <!-- Form Container -->
+            <form id="alumniForm" class="px-6 py-8 md:px-10 md:py-10">
+                
+                <!-- Section 1: Personal Information -->
+                <section class="form-section step-section" data-step="1">
+                    <div class="mb-8 text-center md:text-left">
+                        <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-sm font-semibold mb-2">Step 1 of 6</span>
+                        <h2 class="text-2xl font-bold text-slate-800">Personal Information</h2>
+                        <p class="text-slate-500 mt-1">Tell us a bit about yourself.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Full Name -->
+                        <div class="col-span-1 md:col-span-2">
+                            <label for="fullName" class="block text-sm font-medium text-slate-700 mb-1">1. Full Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="fullName" name="fullName" required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                        </div>
+
+                        <!-- Mobile Number -->
+                        <div>
+                            <label for="mobile" class="block text-sm font-medium text-slate-700 mb-1">2. Mobile Number (WhatsApp) <span class="text-red-500">*</span></label>
+                            <input type="tel" id="mobile" name="mobile" required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                        </div>
+
+                        <!-- Email -->
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-slate-700 mb-1">3. Email Address</label>
+                            <input type="email" id="email" name="email" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                        </div>
+
+                        <!-- Place of Residence -->
+                        <div>
+                            <label for="residencePlace" class="block text-sm font-medium text-slate-700 mb-1">4. Place of Residence</label>
+                            <input type="text" id="residencePlace" name="residencePlace" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                        </div>
+
+                        <!-- Country of Residence -->
+                        <div>
+                            <label for="country" class="block text-sm font-medium text-slate-700 mb-1">5. Country of Residence</label>
+                            <input type="text" id="country" name="country" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                        </div>
+
+                        <!-- Date of Birth -->
+                        <div>
+                            <label for="dob" class="block text-sm font-medium text-slate-700 mb-1">6. Date of Birth <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+                            <input type="date" id="dob" name="dob" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm text-slate-600">
+                        </div>
+
+                        <!-- Photo Upload -->
+                        <div class="col-span-1 md:col-span-2">
+                            <label for="photo" class="block text-sm font-medium text-slate-700 mb-1">7. Latest photo of yours</label>
+                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl bg-white/50 hover:bg-slate-50 transition-colors cursor-pointer" id="fileUploadContainer">
+                                <div class="space-y-1 text-center">
+                                    <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                    <div class="flex text-sm text-slate-600 justify-center">
+                                        <label for="photo" class="relative cursor-pointer bg-white rounded-md font-medium text-brand-600 hover:text-brand-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-500 px-1">
+                                            <span>Upload a file</span>
+                                            <input id="photo" name="photo" type="file" class="sr-only" accept="image/*">
+                                        </label>
+                                        <p class="pl-1">or drag and drop</p>
+                                    </div>
+                                    <p class="text-xs text-slate-500" id="fileNameDisplay">PNG, JPG, GIF up to 10MB</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 2: Academic Information -->
+                <section class="form-section step-section hidden" data-step="2">
+                    <div class="mb-8 text-center md:text-left">
+                        <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-sm font-semibold mb-2">Step 2 of 6</span>
+                        <h2 class="text-2xl font-bold text-slate-800">Academic Information</h2>
+                        <p class="text-slate-500 mt-1">Share your educational background with IFADA.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Admission Year -->
+                        <div>
+                            <label for="admissionYear" class="block text-sm font-medium text-slate-700 mb-1">7. Year of Admission to IFADA</label>
+                            <input type="number" min="1950" max="2030" id="admissionYear" name="admissionYear" placeholder="e.g. 2015" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                        </div>
+
+                        <!-- Leaving Year -->
+                        <div>
+                            <label for="leavingYear" class="block text-sm font-medium text-slate-700 mb-1">8. Year of Leaving IFADA</label>
+                            <input type="number" min="1950" max="2030" id="leavingYear" name="leavingYear" placeholder="e.g. 2020" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                        </div>
+
+                        <!-- Alumni Status -->
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700 mb-3">9. Alumni Status</label>
+                            <div class="flex flex-col sm:flex-row gap-4">
+                                <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors w-full sm:w-1/2 bg-white/50">
+                                    <input type="radio" name="alumniStatus" value="Graduate" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-3 text-slate-700 font-medium">Graduate</span>
+                                </label>
+                                <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors w-full sm:w-1/2 bg-white/50">
+                                    <input type="radio" name="alumniStatus" value="Discontinued / Dropout" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-3 text-slate-700 font-medium">Discontinued / Dropout</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Highest Qualification -->
+                        <div class="col-span-1 md:col-span-2">
+                            <label for="qualification" class="block text-sm font-medium text-slate-700 mb-1">10. Highest Qualification Attained</label>
+                            <input type="text" id="qualification" name="qualification" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                        </div>
+
+                        <!-- Additional Degrees -->
+                        <div class="col-span-1 md:col-span-2">
+                            <label for="additionalDegrees" class="block text-sm font-medium text-slate-700 mb-1">11. Additional Degrees, Diplomas, or Certifications <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+                            <textarea id="additionalDegrees" name="additionalDegrees" rows="2" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm resize-y"></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 3: Professional Information -->
+                <section class="form-section step-section hidden" data-step="3">
+                    <div class="mb-8 text-center md:text-left">
+                        <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-sm font-semibold mb-2">Step 3 of 6</span>
+                        <h2 class="text-2xl font-bold text-slate-800">Professional Information</h2>
+                        <p class="text-slate-500 mt-1">Tell us about your current career.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Profession -->
+                        <div>
+                            <label for="profession" class="block text-sm font-medium text-slate-700 mb-1">12. Current Profession / Designation</label>
+                            <input type="text" id="profession" name="profession" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                        </div>
+
+                        <!-- Organization -->
+                        <div>
+                            <label for="organization" class="block text-sm font-medium text-slate-700 mb-1">13. Organization / Institution Name</label>
+                            <input type="text" id="organization" name="organization" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                        </div>
+
+                        <!-- Field of Work -->
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="block text-sm font-medium text-slate-700 mb-3">14. Field of Work</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                <!-- Radio inputs mapped to a styled label -->
+                                <script>
+                                    const fields = ['Education', 'Business', 'IT', 'Healthcare', 'Government', 'Religious Service / Da\'wah', 'Media'];
+                                    fields.forEach(field => {
+                                        document.write(`
+                                            <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
+                                                <input type="radio" name="fieldOfWork" value="${field}" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                                <span class="ml-2 text-sm text-slate-700">${field}</span>
+                                            </label>
+                                        `);
+                                    });
+                                </script>
+                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50 md:col-span-2">
+                                    <input type="radio" name="fieldOfWork" value="Others" id="fieldOthersRadio" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-2 text-sm text-slate-700 mr-2 whitespace-nowrap">Others</span>
+                                    <input type="text" id="fieldOthersText" placeholder="Please specify..." class="w-full bg-transparent border-b border-slate-300 focus:border-brand-500 focus:outline-none text-sm px-1 py-1" onfocus="document.getElementById('fieldOthersRadio').checked = true">
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Work Location -->
+                        <div class="col-span-1 md:col-span-2">
+                            <label for="workLocation" class="block text-sm font-medium text-slate-700 mb-1">15. Work Location</label>
+                            <input type="text" id="workLocation" name="workLocation" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 4: Skills and Areas of Expertise -->
+                <section class="form-section step-section hidden" data-step="4">
+                    <div class="mb-8 text-center md:text-left">
+                        <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-sm font-semibold mb-2">Step 4 of 6</span>
+                        <h2 class="text-2xl font-bold text-slate-800">Skills & Expertise</h2>
+                        <p class="text-slate-500 mt-1">Let us know how you can contribute to our community.</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-4">In which areas can you contribute to IFADA? <span class="text-slate-400 font-normal">(Multiple selections allowed)</span></label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                            <script>
+                                const skills = [
+                                    'Career Guidance', 'Teaching & Training', 'Public Speaking', 
+                                    'Writing & Editing', 'Business & Entrepreneurship', 'IT / Web Development', 
+                                    'Graphic Design & Media', 'Social Media Management', 'Event Management', 
+                                    'Research', 'Fundraising', 'Mentorship & Counseling'
+                                ];
+                                skills.forEach(skill => {
+                                    document.write(`
+                                        <label class="flex items-start p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50 shadow-sm">
+                                            <div class="flex items-center h-5">
+                                                <input type="checkbox" name="skills" value="${skill}" class="w-4 h-4 text-brand-600 rounded focus:ring-brand-500 border-slate-300">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <span class="text-slate-700 font-medium">${skill}</span>
+                                            </div>
+                                        </label>
+                                    `);
+                                });
+                            </script>
+                            <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50 shadow-sm sm:col-span-2 md:col-span-3">
+                                <input type="checkbox" name="skills" value="Other" id="skillOtherCheck" class="w-4 h-4 text-brand-600 rounded focus:ring-brand-500 border-slate-300">
+                                <span class="ml-3 text-sm text-slate-700 font-medium mr-2 whitespace-nowrap">Other</span>
+                                <input type="text" id="skillOtherText" placeholder="Please specify..." class="w-full bg-transparent border-b border-slate-300 focus:border-brand-500 focus:outline-none text-sm px-1 py-1" onfocus="document.getElementById('skillOtherCheck').checked = true">
+                            </label>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 5: Alumni Engagement -->
+                <section class="form-section step-section hidden" data-step="5">
+                    <div class="mb-8 text-center md:text-left">
+                        <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-sm font-semibold mb-2">Step 5 of 6</span>
+                        <h2 class="text-2xl font-bold text-slate-800">Alumni Engagement</h2>
+                        <p class="text-slate-500 mt-1">How would you like to stay involved?</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-4">How would you like to participate in IFADA activities?</label>
+                        <div class="space-y-3">
+                            <script>
+                                const engagements = [
+                                    'Attend Alumni Meetings', 'Volunteer for Programs', 'Serve in Committees', 
+                                    'Mentor Students and Alumni', 'Deliver Career Guidance Sessions', 
+                                    'Support Welfare Initiatives', 'Financial Contributions to Projects', 
+                                    'Not Available at Present'
+                                ];
+                                engagements.forEach(eng => {
+                                    document.write(`
+                                        <label class="flex items-start p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50 shadow-sm max-w-2xl">
+                                            <div class="flex items-center h-5">
+                                                <input type="checkbox" name="engagement" value="${eng}" class="w-4 h-4 text-brand-600 rounded focus:ring-brand-500 border-slate-300">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <span class="text-slate-700">${eng}</span>
+                                            </div>
+                                        </label>
+                                    `);
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Section 6: Communication and Consent -->
+                <section class="form-section step-section hidden" data-step="6">
+                    <div class="mb-8 text-center md:text-left">
+                        <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-sm font-semibold mb-2">Step 6 of 6</span>
+                        <h2 class="text-2xl font-bold text-slate-800">Communication & Consent</h2>
+                        <p class="text-slate-500 mt-1">Almost done! Set your preferences.</p>
+                    </div>
+
+                    <div class="space-y-8">
+                        <!-- 16. Directory -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-3">16. Would you like to be included in the IFADA Alumni Directory?</label>
+                            <div class="flex gap-4">
+                                <label class="flex items-center p-3 px-6 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
+                                    <input type="radio" name="directoryInclude" value="Yes" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-2 text-slate-700 font-medium">Yes</span>
+                                </label>
+                                <label class="flex items-center p-3 px-6 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
+                                    <input type="radio" name="directoryInclude" value="No" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-2 text-slate-700 font-medium">No</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 17. WhatsApp -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-3">17. Are you willing to join official IFADA WhatsApp groups and receive updates?</label>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
+                                    <input type="radio" name="whatsappJoin" value="Yes" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-2 text-slate-700 font-medium">Yes</span>
+                                </label>
+                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
+                                    <input type="radio" name="whatsappJoin" value="Already a Member" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-2 text-slate-700 font-medium">Already a Member</span>
+                                </label>
+                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
+                                    <input type="radio" name="whatsappJoin" value="No" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-2 text-slate-700 font-medium">No</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 19. Region -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-3">19. Which region are you currently residing in?</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
+                                    <input type="radio" name="region" value="Kerala" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-2 text-sm text-slate-700 font-medium">Kerala</span>
+                                </label>
+                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
+                                    <input type="radio" name="region" value="Other Indian States" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-2 text-sm text-slate-700 font-medium">Other Indian States</span>
+                                </label>
+                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
+                                    <input type="radio" name="region" value="GCC Countries" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-2 text-sm text-slate-700 font-medium">GCC Countries</span>
+                                </label>
+                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
+                                    <input type="radio" name="region" value="Other Countries" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-2 text-sm text-slate-700 font-medium">Other Countries</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 20. Batch Representative -->
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-3">20. Would you be interested in serving as a batch representative or local coordinator?</label>
+                            <div class="flex gap-4">
+                                <label class="flex items-center p-3 px-6 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
+                                    <input type="radio" name="coordinator" value="Yes" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-2 text-slate-700 font-medium">Yes</span>
+                                </label>
+                                <label class="flex items-center p-3 px-6 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
+                                    <input type="radio" name="coordinator" value="Maybe" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-2 text-slate-700 font-medium">Maybe</span>
+                                </label>
+                                <label class="flex items-center p-3 px-6 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
+                                    <input type="radio" name="coordinator" value="No" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
+                                    <span class="ml-2 text-slate-700 font-medium">No</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 18. Remarks -->
+                        <div>
+                            <label for="remarks" class="block text-sm font-medium text-slate-700 mb-1">18. Any suggestions or remarks for IFADA? <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+                            <textarea id="remarks" name="remarks" rows="4" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm resize-y" placeholder="We value your feedback..."></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Navigation Buttons -->
+                <div class="mt-10 pt-6 border-t border-slate-200 flex flex-col-reverse md:flex-row justify-between items-center gap-4">
+                    <button type="button" id="prevBtn" class="hidden w-full md:w-auto px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 font-medium rounded-xl border border-slate-300 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Previous
+                    </button>
+                    
+                    <div class="flex-grow"></div>
+                    
+                    <button type="button" id="nextBtn" class="w-full md:w-auto px-8 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl shadow-lg shadow-brand-500/30 transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 flex items-center justify-center group">
+                        <span>Next Step</span>
+                        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </button>
+
+                    <button type="submit" id="submitBtn" class="hidden w-full md:w-auto px-8 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl shadow-lg shadow-brand-500/30 transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 flex items-center justify-center group">
+                        <span>Submit Survey</span>
+                        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <p id="consentText" class="hidden text-xs text-slate-500 text-center md:text-left mt-4">By submitting this form, you agree that your information will be securely stored in the IFADA Alumni Database.</p>
+
+            </form>
+        </div>
+    </main>
+
+    <!-- 3. Success Page -->
+    <div id="successPage" class="hidden w-full max-w-2xl mx-auto z-10 flex flex-col items-center justify-center text-center transition-opacity duration-500 opacity-0">
+        <div class="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl border border-white p-12 w-full text-center">
+            
+            <!-- SVG Tick Animation -->
+            <div class="success-animation mb-6">
+                <svg class="checkmark mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+            
+            <h2 class="text-3xl font-bold text-slate-800 mb-3">Survey Submitted!</h2>
+            <p class="text-slate-600 text-lg">Thank you for taking the time to update your profile. Your information has been successfully recorded.</p>
+            
+            <button onclick="location.reload()" class="mt-8 px-8 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl border border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400">
+                Return to Home
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="absolute bottom-4 left-0 w-full text-center text-sm text-slate-500 z-10">
+        <p>&copy; 2026 IFADA Alumni Association. All rights reserved.</p>
+    </footer>
+
+    <!-- Custom Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
