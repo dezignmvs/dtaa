@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SFADC Alumni — Analytics Dashboard</title>
+    <!-- Dummy Favicon to prevent 404 errors -->
+    <link rel="icon" href="data:,">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --brand: #0d9488;
+            --brand-light: #14b8a6;
+            --brand-dark: #0f766e;
+            --brand-hover: #115e59;
+            --bg: #f8fafc;
+            --surface: rgba(255, 255, 255, 0.85);
+            --surface-solid: #ffffff;
+            --surface2: #f1f5f9;
+            --border: rgba(15, 23, 42, 0.08);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.08);
+            --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.12);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* Gate */
+        #gate {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gate-card {
+            background: var(--surface-solid);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 3.5rem 2.5rem;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .gate-logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.75rem;
+        }
+
+        .gate-card h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            color: var(--text);
+        }
+
+        .gate-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .gate-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.85rem 1.1rem;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-family: inherit;
+            margin-bottom: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .gate-input:focus {
+            border-color: var(--brand);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
+        }
+
+        .gate-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+            color: #fff;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0.85rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .gate-btn:hover {
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+        }
+
+        .gate-error {
+            color: #ef4444;
+            font-size: 0.82rem;
+            margin-top: 0.6rem;
+            display: none;
+        }
+
+        /* Layout */
+        #dashboard {
+            display: none;
+            position: relative;
+            z-index: 10;
+        }
+
+        .topbar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+        }
+
+        .topbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .topbar-logo span {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .refresh-btn {
+            background: var(--surface-solid);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 0.6rem;
+            padding: 0.45rem 1rem;
+            font-size: 0.82rem;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .refresh-btn:hover {
+            background: var(--surface2);
+            border-color: rgba(15, 23, 42, 0.15);
+        }
+
+        .last-updated {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        .main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Stat Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            border-radius: 1.25rem 1.25rem 0 0;
+        }
+
+        .stat-card.teal::before {
+            background: linear-gradient(90deg, var(--brand), var(--brand-light));
+        }
+
+        .stat-card.green::before {
+            background: linear-gradient(90deg, #16a34a, #22c55e);
+        }
+
+        .stat-card.purple::before {
+            background: linear-gradient(90deg, #7c3aed, #a855f7);
+        }
+
+        .stat-card.blue::before {
+            background: linear-gradient(90deg, #1d4ed8, #3b82f6);
+        }
+
+        .stat-card.yellow::before {
+            background: linear-gradient(90deg, #b45309, #f59e0b);
+        }
+
+        .stat-label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1;
+            color: var(--text);
+        }
+
+        .stat-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .stat-icon {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2.2rem;
+            opacity: 0.18;
+        }
+
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--surface);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 1.25rem;
+            padding: 1.75rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.25s ease;
+        }
+
+        .chart-card:hover {
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .chart-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .chart-title span {
+            color: var(--brand);
+        }
+
+        .chart-wrap {
+            position: relative;
+            height: 240px;
+        }
+
+        /* Table */
+        .table-card {
+            background: var(--surface);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.25s ease;
+        }
+
+        .table-card:hover {
+            border-color: rgba(255, 255, 255, 0.8);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .table-header {
+            padding: 1.5rem 1.75rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .table-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .table-search {
+            background: var(--surface-solid);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.6rem 1rem;
+            color: var(--text);
+            font-size: 0.85rem;
+            font-family: inherit;
+            outline: none;
+            width: 240px;
+            transition: all 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .table-search:focus {
+            border-color: var(--brand);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: rgba(15, 23, 42, 0.02);
+            padding: 1rem 1.25rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: all 0.15s ease;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: rgba(15, 23, 42, 0.015);
+        }
+
+        tbody td {
+            padding: 1rem 1.25rem;
+            font-size: 0.875rem;
+            color: var(--text);
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-teal {
+            background: #ccfbf1;
+            color: #0f766e;
+        }
+
+        .badge-purple {
+            background: #f3e8ff;
+            color: #6b21a8;
+        }
+
+        .badge-yellow {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .photo-thumb {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #ffffff;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .no-photo {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--surface2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border: 2px solid #ffffff;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Loader */
+        .loading-overlay {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem;
+            flex-direction: column;
+            gap: 1rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--border);
+            border-top-color: var(--brand);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-up {
+            animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(15, 23, 42, 0.15);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(15, 23, 42, 0.25);
+        }
+
+        @media (max-width: 640px) {
+            .main {
+                padding: 1rem;
+            }
+
+            .topbar {
+                padding: 0.75rem 1rem;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Detail Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+        .modal-content {
+            background: var(--surface-solid);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            max-width: 680px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 2.5rem;
+            position: relative;
+            box-shadow: var(--shadow-xl);
+            animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-close {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+        .modal-close:hover {
+            color: var(--text);
+            background: var(--surface2);
+        }
+        tbody tr {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background blobs -->
+    <div style="position: fixed; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom right, #f8fafc, #f1f5f9); overflow: hidden;">
+        <div style="position: absolute; top: -10%; right: -10%; width: 40vw; height: 40vw; max-width: 600px; border-radius: 50%; background: #ccfbf1; opacity: 0.5; filter: blur(120px);"></div>
+        <div style="position: absolute; bottom: -10%; left: -10%; width: 35vw; height: 35vw; max-width: 500px; border-radius: 50%; background: #dbeafe; opacity: 0.5; filter: blur(120px);"></div>
+    </div>
+
+    <!-- Password Gate -->
+    <div id="gate">
+        <div class="gate-card">
+            <div class="gate-logo">📊</div>
+            <h1>Analytics Dashboard</h1>
+            <p>SFADC Alumni Survey — Admin Access</p>
+            <input type="password" id="pwdInput" class="gate-input" placeholder="Enter admin password"
+                onkeydown="if(event.key==='Enter')checkPwd()">
+            <button class="gate-btn" onclick="checkPwd()">Access Dashboard</button>
+            <div class="gate-error" id="pwdError">Incorrect password. Try again.</div>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard">
+        <div class="topbar">
+            <div class="topbar-logo">
+                <div class="logo-icon">📊</div>
+                <span>SFADC Analytics</span>
+            </div>
+            <div class="topbar-right">
+                <span class="last-updated" id="lastUpdated">—</span>
+                <button class="refresh-btn" onclick="loadData()">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Refresh
+                </button>
+            </div>
+        </div>
+
+        <div class="main">
+            <div id="statusContainer" style="margin-bottom: 2rem;">
+                <div class="loading-overlay" id="loadingState">
+                    <div class="spinner"></div><span>Loading data…</span>
+                </div>
+                <div id="errorState" style="display:none; color:#ef4444; background:var(--surface); border:1px solid var(--border); padding:2rem; border-radius:1.25rem; box-shadow:var(--shadow-md);"></div>
+            </div>
+
+            <!-- WhatsApp Settings Card -->
+            <div class="table-card fade-up" id="waSettingsCard" style="display:none; margin-bottom: 1.5rem; padding: 1.5rem 1.75rem;">
+                <h3 style="font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>💬</span> WhatsApp Group Link Setup
+                </h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    Set up the official invite link that will be shown to alumni on the success screen after submission.
+                </p>
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <input type="text" id="waLinkInput" class="table-search" style="flex: 1; min-width: 280px; background: var(--surface-solid);" placeholder="Paste WhatsApp Group Invite Link (e.g. https://chat.whatsapp.com/...)">
+                    <button onclick="saveWaLink()" class="refresh-btn" style="background: var(--brand); color: #fff; border: none; font-weight: 600; padding: 0.6rem 1.5rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--brand-hover)'" onmouseout="this.style.background='var(--brand)'">Save Link</button>
+                </div>
+                <div id="waSaveStatus" style="font-size: 0.8rem; margin-top: 0.5rem; display: none;"></div>
+            </div>
+
+            <div class="table-card fade-up" id="tableCard" style="display:none">
+                <div class="table-header">
+                    <h3>All Responses <span id="responseCount"
+                            style="color:var(--text-muted);font-weight:400;font-size:0.85rem;"></span></h3>
+                    <input type="text" id="tableSearch" class="table-search" placeholder="🔍  Search name, mobile…"
+                        oninput="filterTable()">
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Photo</th>
+                                <th>Name</th>
+                                <th>Mobile</th>
+                                <th>Email</th>
+                                <th>Country</th>
+                                <th>Status</th>
+                                <th>Field</th>
+                                <th>Region</th>
+                                <th>Submitted</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ── Credentials ── */
+        const SUPABASE_URL = 'https://qqruwdwssaezwzugdsfr.supabase.co/rest/v1/';
+
+        // 🚨 FIX REQUIRED: Replace this key with your exact 'Publishable' or legacy 'anon' public key. 
+        // You can copy it from: Supabase Dashboard -> Project Settings -> API
+        const SUPABASE_ANON_KEY = 'sb_publishable_CzQ_xwzXKrN0w0lMbsKDvA_iDjr5QNo';
+        const ADMIN_PASSWORD = 'ifada2026';
+
+        /* ── Setup endpoints & robust HTTP headers ── */
+        const SB_BASE = SUPABASE_URL.replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '');
+        const SB_ENDPOINT = `${SB_BASE}/rest/v1`;
+
+        // Dynamically handle both legacy JWT keys (eyJ...) and new 2026 keys (sb_publishable_...)
+        const SB_HEADERS = { 'apikey': SUPABASE_ANON_KEY };
+        if (!SUPABASE_ANON_KEY.startsWith('sb_')) {
+            SB_HEADERS['Authorization'] = `Bearer ${SUPABASE_ANON_KEY}`;
+        }
+
+        let allData = [];
+
+        /* ── Gate ── */
+        function checkPwd() {
+            const val = document.getElementById('pwdInput').value;
+            if (val === ADMIN_PASSWORD) {
+                document.getElementById('gate').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadData();
+            } else {
+                document.getElementById('pwdError').style.display = 'block';
+                document.getElementById('pwdInput').style.borderColor = '#ef4444';
+                setTimeout(() => {
+                    document.getElementById('pwdError').style.display = 'none';
+                    document.getElementById('pwdInput').style.borderColor = '';
+                }, 2500);
+            }
+        }
+
+        /* ── Load Data ── */
+        async function loadData() {
+            document.getElementById('loadingState').style.display = 'flex';
+            document.getElementById('errorState').style.display = 'none';
+            document.getElementById('tableCard').style.display = 'none';
+
+            try {
+                const res = await fetch(
+                    `${SB_ENDPOINT}/alumni_responses?select=*&order=created_at.desc`,
+                    { headers: SB_HEADERS }
+                );
+                if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+                allData = await res.json();
+
+                renderTable(allData);
+
+                // Fetch WhatsApp link from settings
+                await fetchWaLink();
+
+                document.getElementById('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('waSettingsCard').style.display = 'block';
+                document.getElementById('tableCard').style.display = 'block';
+
+            } catch (err) {
+                let errorHtml = `❌ ${err.message}`;
+
+                // Custom UI Error fallback to help resolve Invalid API Keys quicker
+                if (err.message.includes('Invalid API key') || err.message.includes('401')) {
+                    errorHtml = `
+                        <div style="text-align: center;">
+                            <b style="font-size:1.1rem;">❌ Authentication Error (HTTP 401)</b><br>
+                            The provided Supabase API key is invalid or was rejected by the server.<br>
+                            <div style="color:#64748b; margin-top:1rem; text-align:left; background:var(--surface2); padding:1rem; border-radius:0.5rem; line-height:1.6;">
+                                1. Go to your <b>Supabase Dashboard</b> > <b>Project Settings</b> > <b>API</b>.<br>
+                                2. Copy the active <code>Publishable key</code> (or <code>anon</code> public key).<br>
+                                3. Replace the <code>SUPABASE_ANON_KEY</code> value in your code.
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    errorHtml += `<br>
+                        <small style="color:#64748b;margin-top:0.5rem;display:block;">
+                            If this is a permissions issue, run this SQL in Supabase:<br>
+                            <code>CREATE POLICY "Allow anon select" ON alumni_responses FOR SELECT TO anon USING (true);</code>
+                        </small>`;
+                }
+
+                document.getElementById('loadingState').style.display = 'none';
+                const errDiv = document.getElementById('errorState');
+                errDiv.innerHTML = errorHtml;
+                errDiv.style.display = 'block';
+                console.error(err);
+            }
+        }
+
+        async function fetchWaLink() {
+            try {
+                const res = await fetch(`${SB_ENDPOINT}/settings?key=eq.whatsapp_link&select=value`, { headers: SB_HEADERS });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        document.getElementById('waLinkInput').value = data[0].value;
+                    }
+                }
+            } catch (e) {
+                console.error("Error fetching WA link:", e);
+            }
+        }
+
+        async function saveWaLink() {
+            const link = document.getElementById('waLinkInput').value.trim();
+            const statusDiv = document.getElementById('waSaveStatus');
+            statusDiv.style.display = 'block';
+            statusDiv.style.color = 'var(--text-muted)';
+            statusDiv.textContent = 'Saving...';
+
+            try {
+                const res = await fetch(`${SB_ENDPOINT}/settings`, {
+                    method: 'POST',
+                    headers: {
+                        ...SB_HEADERS,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'resolution=merge-duplicates'
+                    },
+                    body: JSON.stringify({ key: 'whatsapp_link', value: link })
+                });
+                
+                if (res.ok || res.status === 201 || res.status === 204) {
+                    statusDiv.style.color = '#16a34a';
+                    statusDiv.textContent = '✅ WhatsApp Link saved successfully!';
+                    setTimeout(() => { statusDiv.style.display = 'none'; }, 3000);
+                } else {
+                    // Try PUT request if POST fails depending on RLS/schema
+                    const putRes = await fetch(`${SB_ENDPOINT}/settings?key=eq.whatsapp_link`, {
+                        method: 'PUT',
+                        headers: {
+                            ...SB_HEADERS,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ value: link })
+                    });
+                    if (putRes.ok) {
+                        statusDiv.style.color = '#16a34a';
+                        statusDiv.textContent = '✅ WhatsApp Link saved successfully!';
+                        setTimeout(() => { statusDiv.style.display = 'none'; }, 3000);
+                    } else {
+                        throw new Error(`Failed to save settings: ${await putRes.text()}`);
+                    }
+                }
+            } catch (e) {
+                statusDiv.style.color = '#ef4444';
+                statusDiv.textContent = `❌ Error: ${e.message}`;
+            }
+        }
+
+        /* ── Table ── */
+        function renderTable(data) {
+            document.getElementById('responseCount').textContent = `— ${data.length} entries`;
+            const tbody = document.getElementById('tableBody');
+            if (!data.length) {
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:3rem;color:var(--text-muted)">No responses yet.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map((r, i) => `
+        <tr onclick="showDetails(${i})">
+            <td style="color:var(--text-muted)">${i + 1}</td>
+            <td>${r.photo_url
+                    ? `<img src="${r.photo_url}" class="photo-thumb" alt="photo">`
+                    : '<div class="no-photo">👤</div>'}</td>
+            <td><strong>${esc(r.full_name || '—')}</strong></td>
+            <td style="color:var(--text-muted)">${esc(r.country_code || '')} ${esc(r.mobile || '')}</td>
+            <td style="color:var(--text-muted)">${esc(r.email || '—')}</td>
+            <td>${esc(r.country || r.residence_place || '—')}</td>
+            <td>${r.alumni_status ? `<span class="badge ${r.alumni_status === 'Graduate' ? 'badge-teal' : 'badge-yellow'}">${esc(r.alumni_status)}</span>` : '—'}</td>
+            <td>${esc(r.field_of_work || '—')}</td>
+            <td>${r.region ? `<span class="badge badge-purple">${esc(r.region)}</span>` : '—'}</td>
+            <td style="color:var(--text-muted)">${r.created_at ? new Date(r.created_at).toLocaleDateString('en-IN') : '—'}</td>
+            <td>
+                <button onclick="event.stopPropagation(); confirmDelete('${r.id}', '${esc(r.full_name || 'this entry')}')" style="background:#ef4444; border:none; color:#fff; border-radius:0.5rem; padding:0.35rem 0.75rem; font-size:0.75rem; font-weight:600; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">
+                    Delete
+                </button>
+            </td>
+        </tr>
+    `).join('');
+        }
+
+        async function confirmDelete(id, name) {
+            if (!confirm(`Are you sure you want to delete the entry for "${name}"? This action cannot be undone.`)) {
+                return;
+            }
+            try {
+                const res = await fetch(`${SB_ENDPOINT}/alumni_responses?id=eq.${encodeURIComponent(id)}`, {
+                    method: 'DELETE',
+                    headers: {
+                        ...SB_HEADERS,
+                        'Prefer': 'return=representation'
+                    }
+                });
+                if (!res.ok) {
+                    throw new Error(`Failed to delete: ${await res.text()}`);
+                }
+                const deleted = await res.json();
+                if (deleted && deleted.length > 0) {
+                    alert('Entry deleted successfully.');
+                    await loadData();
+                } else {
+                    alert(
+                        `⚠️ Data was NOT deleted from Supabase.\n\n` +
+                        `This is due to Supabase Row Level Security (RLS) policies. By default, anonymous clients cannot delete rows.\n\n` +
+                        `To allow deletion, copy and run this SQL query in your Supabase SQL Editor:\n\n` +
+                        `CREATE POLICY "Allow anon delete" ON alumni_responses FOR DELETE TO anon USING (true);`
+                    );
+                }
+            } catch (e) {
+                alert(`Error deleting entry: ${e.message}`);
+            }
+        }
+
+        function showDetails(index) {
+            const r = allData[index];
+            if (!r) return;
+            const modal = document.getElementById('detailModal');
+            const body = document.getElementById('modalBody');
+            
+            const formatArray = arr => Array.isArray(arr) && arr.length ? arr.map(x => `<span class="badge badge-teal" style="margin:0.2rem 0.2rem 0.2rem 0; display:inline-block;">${esc(x)}</span>`).join('') : '—';
+            
+            body.innerHTML = `
+                <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border); flex-wrap: wrap;">
+                    ${r.photo_url 
+                        ? `<img src="${r.photo_url}" style="width:90px; height:90px; border-radius:50%; object-fit:cover; border:3px solid var(--brand);">` 
+                        : `<div style="width:90px; height:90px; border-radius:50%; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:2.5rem; border:3px solid var(--border);">👤</div>`
+                    }
+                    <div style="flex: 1; min-width: 200px;">
+                        <h2 style="font-size:1.5rem; font-weight:700; margin-bottom:0.25rem; color:#fff;">${esc(r.full_name || '—')}</h2>
+                        <div style="font-size:0.875rem; color:var(--text-muted); display:flex; align-items:center; gap:0.5rem; margin-bottom:0.4rem; flex-wrap: wrap;">
+                            <span class="badge ${r.alumni_status==='Graduate'?'badge-teal':'badge-yellow'}">${esc(r.alumni_status || '—')}</span>
+                            <span>•</span>
+                            <span>Batch: ${esc(r.admission_year || '—')} – ${esc(r.leaving_year || '—')}</span>
+                        </div>
+                        <div style="font-size:0.85rem; color:var(--text-muted);">
+                            Region: <span style="color:var(--text);">${esc(r.region || '—')}</span> | Coordinator: <span style="color:var(--text);">${esc(r.coordinator || '—')}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1.5rem; margin-bottom:1.5rem;">
+                    <!-- Personal Info -->
+                    <div>
+                        <h4 style="font-size:0.85rem; text-transform:uppercase; color:var(--brand-light); letter-spacing:0.05em; margin-bottom:0.75rem;">Contact & Personal</h4>
+                        <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.875rem;">
+                            <div><span style="color:var(--text-muted);">Mobile:</span> <a href="tel:${esc(r.country_code || '')}${esc(r.mobile || '')}" style="color:var(--text); text-decoration:none;">${esc(r.country_code || '')} ${esc(r.mobile || '')}</a></div>
+                            <div><span style="color:var(--text-muted);">Email:</span> ${r.email ? `<a href="mailto:${esc(r.email)}" style="color:var(--text); text-decoration:none;">${esc(r.email)}</a>` : '—'}</div>
+                            <div><span style="color:var(--text-muted);">Date of Birth:</span> ${r.dob ? new Date(r.dob).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) : '—'}</div>
+                            <div><span style="color:var(--text-muted);">Location:</span> ${esc(r.residence_place || '—')}${r.country ? `, ${esc(r.country)}` : ''}</div>
+                        </div>
+                    </div>
+
+                    <!-- Professional Info -->
+                    <div>
+                        <h4 style="font-size:0.85rem; text-transform:uppercase; color:var(--brand-light); letter-spacing:0.05em; margin-bottom:0.75rem;">Education & Career</h4>
+                        <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.875rem;">
+                            <div><span style="color:var(--text-muted);">Qualification:</span> ${esc(r.qualification || '—')}</div>
+                            <div><span style="color:var(--text-muted);">Addl. Degrees:</span> ${esc(r.additional_degrees || '—')}</div>
+                            <div><span style="color:var(--text-muted);">Profession:</span> ${esc(r.profession || '—')}</div>
+                            <div><span style="color:var(--text-muted);">Organization:</span> ${esc(r.organization || '—')}</div>
+                            <div><span style="color:var(--text-muted);">Field of Work:</span> ${esc(r.field_of_work || '—')}</div>
+                            <div><span style="color:var(--text-muted);">Work Location:</span> ${esc(r.work_location || '—')}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:1.5rem; border-top:1px solid var(--border); padding-top:1.5rem;">
+                    <h4 style="font-size:0.85rem; text-transform:uppercase; color:var(--brand-light); letter-spacing:0.05em; margin-bottom:0.5rem;">Skills Offered</h4>
+                    <div style="margin-bottom:1.5rem;">${formatArray(r.skills)}</div>
+
+                    <h4 style="font-size:0.85rem; text-transform:uppercase; color:var(--brand-light); letter-spacing:0.05em; margin-bottom:0.5rem;">Engagement Interests</h4>
+                    <div style="margin-bottom:1.5rem;">${formatArray(r.engagement)}</div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1.5rem; border-top:1px solid var(--border); padding-top:1.5rem; font-size:0.85rem;">
+                    <div><span style="color:var(--text-muted);">Include in Directory:</span> <span style="font-weight:600; color:var(--text);">${esc(r.directory_include || '—')}</span></div>
+                    <div><span style="color:var(--text-muted);">Join WhatsApp:</span> <span style="font-weight:600; color:var(--text);">${esc(r.whatsapp_join || '—')}</span></div>
+                </div>
+
+                ${r.remarks ? `
+                <div style="margin-top:1.5rem; background:var(--surface2); padding:1rem; border-radius:0.75rem; border:1px solid var(--border);">
+                    <h4 style="font-size:0.8rem; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.05em; margin-bottom:0.4rem;">Remarks</h4>
+                    <p style="font-size:0.875rem; line-height:1.5; color:var(--text); font-style:italic;">"${esc(r.remarks)}"</p>
+                </div>
+                ` : ''}
+            `;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').style.display = 'none';
+        }
+
+        window.addEventListener('click', e => {
+            const modal = document.getElementById('detailModal');
+            if (e.target === modal) closeModal();
+        });
+
+        function filterTable() {
+            const q = document.getElementById('tableSearch').value.toLowerCase();
+            const filtered = allData.filter(r =>
+                (r.full_name || '').toLowerCase().includes(q) ||
+                (r.mobile || '').includes(q) ||
+                (r.email || '').toLowerCase().includes(q) ||
+                (r.country || '').toLowerCase().includes(q)
+            );
+            renderTable(filtered);
+            document.getElementById('responseCount').textContent = `— ${filtered.length} of ${allData.length} entries`;
+        }
+
+        function esc(s) {
+            return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+    </script>
+
+    <!-- Detail Modal Container -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+</body>
+
+</html>

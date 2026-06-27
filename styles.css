@@ -125,3 +125,250 @@ input[type="checkbox"] {
         box-shadow: inset 0px 0px 0px 50px #14b8a6;
     }
 }
+
+/* ── Phone Input with Country Code Picker ── */
+.phone-input-wrapper {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.75rem;
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: blur(4px);
+    overflow: visible;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+.phone-input-wrapper:focus-within {
+    border-color: #14b8a6;
+    box-shadow: 0 0 0 2px rgba(20,184,166,0.25);
+}
+
+/* Country picker trigger button */
+.country-picker {
+    position: relative;
+    flex-shrink: 0;
+    overflow: visible;
+}
+.country-picker-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.7rem 0.65rem 0.7rem 0.85rem;
+    border: none;
+    border-right: 1px solid #e2e8f0;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 0.75rem 0 0 0.75rem;
+    transition: background 0.15s;
+    white-space: nowrap;
+}
+.country-picker-btn:hover {
+    background: rgba(241,245,249,0.8);
+}
+.picker-flag {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+.picker-code {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #334155;
+    min-width: 2.4rem;
+}
+.picker-chevron {
+    width: 14px;
+    height: 14px;
+    color: #94a3b8;
+    flex-shrink: 0;
+    transition: transform 0.2s;
+}
+.country-picker-btn[aria-expanded="true"] .picker-chevron {
+    transform: rotate(180deg);
+}
+
+/* Dropdown panel */
+.country-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 9999;
+    width: 280px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.85rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    overflow: hidden;
+    animation: dropdownOpen 0.18s ease-out;
+}
+@keyframes dropdownOpen {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.country-dropdown.hidden {
+    display: none;
+}
+
+/* Search box inside dropdown */
+.dropdown-search-wrap {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    border-bottom: 1px solid #f1f5f9;
+    background: #f8fafc;
+    gap: 6px;
+}
+.search-icon {
+    width: 15px;
+    height: 15px;
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+.dropdown-search {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.8125rem;
+    color: #334155;
+    outline: none;
+    padding: 2px 0;
+}
+.dropdown-search::placeholder {
+    color: #94a3b8;
+}
+
+/* Country list */
+.country-list {
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+    max-height: 210px;
+    overflow-y: auto;
+}
+.country-list::-webkit-scrollbar { width: 5px; }
+.country-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+.country-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 12px;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    color: #334155;
+    transition: background 0.12s;
+}
+.country-item:hover,
+.country-item.active {
+    background: #f0fdfa;
+    color: #0d9488;
+}
+.country-item .ci-flag {
+    font-size: 1.1rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
+.country-item .ci-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.country-item .ci-code {
+    font-weight: 600;
+    color: #64748b;
+    flex-shrink: 0;
+}
+.country-item.active .ci-code {
+    color: #0d9488;
+}
+
+/* Phone number input (right side) */
+.phone-number-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    color: #1e293b;
+    outline: none;
+    border-radius: 0 0.75rem 0.75rem 0;
+    min-width: 0;
+}
+.phone-number-input::placeholder {
+    color: #94a3b8;
+}
+
+/* Animated Floating Blobs */
+.bg-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.35;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.blob-1 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(14,167,101,0.3) 0%, rgba(204,251,241,0) 70%);
+    animation: float1 25s infinite ease-in-out alternate;
+}
+
+.blob-2 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(223,183,108,0.2) 0%, rgba(254,243,199,0) 70%);
+    animation: float2 30s infinite ease-in-out alternate;
+}
+
+.blob-3 {
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, rgba(13,148,136,0.2) 0%, rgba(204,251,241,0) 70%);
+    animation: float3 28s infinite ease-in-out alternate;
+}
+
+@keyframes float1 {
+    0% { transform: translate(0px, 0px) scale(1); }
+    33% { transform: translate(100px, -80px) scale(1.1); }
+    66% { transform: translate(-50px, 80px) scale(0.95); }
+    100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes float2 {
+    0% { transform: translate(0px, 0px) scale(1); }
+    50% { transform: translate(-120px, 100px) scale(1.15); }
+    100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes float3 {
+    0% { transform: translate(0px, 0px) scale(1); }
+    40% { transform: translate(80px, 120px) scale(0.9); }
+    80% { transform: translate(-100px, -60px) scale(1.1); }
+    100% { transform: translate(0px, 0px) scale(1); }
+}
+
+/* Premium input states */
+.premium-input {
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px solid rgba(203, 213, 225, 0.7);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-input:focus {
+    background: #ffffff;
+    border-color: #0ea765;
+    box-shadow: 0 0 0 4px rgba(14, 167, 101, 0.08), 0 4px 12px rgba(0, 0, 0, 0.02);
+    transform: translateY(-1px);
+}
+
+/* Glassmorphism card container overrides */
+.glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.04), 
+                inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}

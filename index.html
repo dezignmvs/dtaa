@@ -1,30 +1,50 @@
 <!DOCTYPE html>
 <html lang="en" class="bg-slate-50 text-slate-800 antialiased">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IFADA Alumni Survey</title>
+    <title>SFADC Alumni Survey</title>
+    <!-- Dummy Favicon to prevent 404 errors -->
+    <link rel="icon" href="data:,">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Stable QRCode CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <!-- Stable Tesseract CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.3/dist/tesseract.min.js"></script>
+    <!-- Clash Grotesk Font for Membership Card -->
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@200,300,400,500,600,700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
+                        display: ['"Plus Jakarta Sans"', 'sans-serif'],
                     },
                     colors: {
                         brand: {
-                            50: '#f0fdfa',
-                            100: '#ccfbf1',
-                            500: '#14b8a6',
-                            600: '#0d9488',
-                            700: '#0f766e',
-                            900: '#134e4a',
+                            50: '#f4fbf7',
+                            100: '#e6f7ef',
+                            200: '#c2edd9',
+                            300: '#9ee3c3',
+                            400: '#56ce97',
+                            500: '#0ea765',
+                            600: '#0c9258',
+                            700: '#0a7a4a',
+                            800: '#08623b',
+                            900: '#064a2d',
+                        },
+                        accent: {
+                            gold: '#dfb76c',
+                            goldHover: '#cfa557',
                         }
                     }
                 }
@@ -32,29 +52,47 @@
         }
     </script>
 </head>
+
 <body class="min-h-screen flex flex-col justify-center pt-10 pb-10 px-4 sm:px-6 lg:px-8 relative overflow-x-hidden">
     <!-- Background Design -->
-    <div class="fixed inset-0 z-[-1] bg-gradient-to-br from-slate-100 to-slate-200">
-        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-brand-100 opacity-50 blur-3xl"></div>
-        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-blue-100 opacity-50 blur-3xl"></div>
+    <div class="fixed inset-0 z-[-1] bg-gradient-to-br from-slate-50 via-slate-100 to-zinc-200 overflow-hidden">
+        <div class="bg-blob blob-1 absolute top-0 right-0 -mr-20 -mt-20"></div>
+        <div class="bg-blob blob-2 absolute bottom-0 left-0 -ml-20 -mb-20"></div>
+        <div class="bg-blob blob-3 absolute top-1/2 left-1/3 -translate-y-1/2"></div>
     </div>
 
     <!-- 1. Landing Page -->
-    <div id="landingPage" class="w-full max-w-2xl mx-auto z-10 flex flex-col items-center justify-center text-center animate-fade-in-up">
-        <div class="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl overflow-hidden border border-white p-10 md:p-16 w-full">
-            <div class="w-20 h-20 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+    <div id="landingPage"
+        class="w-full max-w-2xl mx-auto z-10 flex flex-col items-center justify-center text-center animate-fade-in-up">
+        <div class="glass-card rounded-3xl overflow-hidden p-10 md:p-16 w-full">
+            <div
+                class="w-24 h-24 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-[0_8px_30px_rgb(14,167,101,0.1)] border border-brand-100/50">
+                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                    </path>
                 </svg>
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold text-slate-800 mb-4 tracking-tight">IFADA Alumni Survey</h1>
-            <p class="text-slate-600 text-lg md:text-xl max-w-lg mx-auto mb-10 leading-relaxed">
-                Welcome back! Please take a few minutes to update your information in the IFADA Alumni Database. Your contributions help us stay connected.
+            <span
+                class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-xs font-semibold tracking-wider uppercase mb-4">SFADC Alumni Association</span>
+            <h1
+                class="text-4xl md:text-5xl font-extrabold text-slate-800 mb-6 tracking-tight font-display leading-tight">
+                Alumni Database <br><span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-brand-500">Survey
+                    Portal</span>
+            </h1>
+            <p class="text-slate-600 text-base md:text-lg max-w-md mx-auto mb-10 leading-relaxed">
+                Welcome back! Help us strengthen our community network. Please take a few moments to update your
+                information.
             </p>
-            <button id="startBtn" class="px-10 py-4 bg-brand-600 hover:bg-brand-700 text-white text-lg font-semibold rounded-full shadow-xl shadow-brand-500/30 transition-all hover:scale-105 focus:outline-none focus:ring-4 focus:ring-brand-500 focus:ring-offset-2 flex items-center justify-center mx-auto group">
+            <button id="startBtn"
+                class="px-10 py-4 bg-brand-600 hover:bg-brand-700 text-white text-lg font-bold rounded-full shadow-lg shadow-brand-500/20 transition-all hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-brand-500/30 focus:outline-none focus:ring-4 focus:ring-brand-500 focus:ring-offset-2 flex items-center justify-center mx-auto group font-display">
                 <span>Start Survey</span>
-                <svg class="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3">
+                    </path>
                 </svg>
             </button>
         </div>
@@ -62,94 +100,159 @@
 
     <!-- 2. Survey Container -->
     <main id="surveyContainer" class="hidden w-full max-w-3xl mx-auto z-10 transition-opacity duration-500 opacity-0">
-        <div class="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden border border-white">
-            
+        <div class="glass-card rounded-3xl overflow-hidden">
+
             <!-- Header Section -->
-            <div class="bg-brand-600 px-8 py-8 text-center relative overflow-hidden transition-all duration-300">
+            <div
+                class="bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 px-8 py-8 text-center relative overflow-hidden">
                 <div class="relative z-10 flex flex-col md:flex-row justify-between items-center gap-4">
                     <div class="text-left hidden md:block">
-                        <h2 class="text-2xl font-bold text-white tracking-tight">IFADA Survey</h2>
+                        <span class="text-brand-300 text-xs font-semibold uppercase tracking-wider">SFADC Portal</span>
+                        <h2 class="text-2xl font-bold text-white tracking-tight font-display">Alumni Survey</h2>
                     </div>
-                    
+
                     <!-- Progress Bar -->
                     <div class="w-full md:w-1/2">
                         <div class="flex justify-between text-brand-100 text-xs font-medium mb-2">
-                            <span>Progress</span>
-                            <span id="progressText">1 / 6</span>
+                            <span>Form Progress</span>
+                            <span id="progressText" class="bg-brand-500/40 px-2 py-0.5 rounded-full font-semibold">1 /
+                                6</span>
                         </div>
-                        <div class="w-full bg-brand-800/50 rounded-full h-2">
-                            <div id="progressBar" class="bg-brand-200 h-2 rounded-full transition-all duration-500" style="width: 16.66%"></div>
+                        <div class="w-full bg-brand-950/40 rounded-full h-2">
+                            <div id="progressBar"
+                                class="bg-gradient-to-r from-brand-300 to-brand-200 h-2 rounded-full transition-all duration-500"
+                                style="width: 16.66%"></div>
                         </div>
                     </div>
                 </div>
                 <!-- Decorative pattern -->
-                <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 20px 20px;"></div>
+                <div class="absolute inset-0 opacity-5"
+                    style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 20px 20px;">
+                </div>
             </div>
 
             <!-- Form Container -->
             <form id="alumniForm" class="px-6 py-8 md:px-10 md:py-10">
-                
+
                 <!-- Section 1: Personal Information -->
                 <section class="form-section step-section" data-step="1">
                     <div class="mb-8 text-center md:text-left">
-                        <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-sm font-semibold mb-2">Step 1 of 6</span>
-                        <h2 class="text-2xl font-bold text-slate-800">Personal Information</h2>
-                        <p class="text-slate-500 mt-1">Tell us a bit about yourself.</p>
+                        <span
+                            class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">Step
+                            1 of 6</span>
+                        <h2 class="text-3xl font-extrabold text-slate-800 font-display">Personal Information</h2>
+                        <p class="text-slate-500 mt-1.5">Tell us a bit about yourself.</p>
                     </div>
-                    
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Full Name -->
                         <div class="col-span-1 md:col-span-2">
-                            <label for="fullName" class="block text-sm font-medium text-slate-700 mb-1">1. Full Name <span class="text-red-500">*</span></label>
-                            <input type="text" id="fullName" name="fullName" required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                            <label for="fullName"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">1. Full Name
+                                <span class="text-red-500">*</span></label>
+                            <input type="text" id="fullName" name="fullName" required
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
                         <!-- Mobile Number -->
-                        <div>
-                            <label for="mobile" class="block text-sm font-medium text-slate-700 mb-1">2. Mobile Number (WhatsApp) <span class="text-red-500">*</span></label>
-                            <input type="tel" id="mobile" name="mobile" required class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                        <div class="relative" style="z-index: 100;">
+                            <label class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">2. Mobile
+                                Number (WhatsApp) <span class="text-red-500">*</span></label>
+                            <div class="phone-input-wrapper">
+                                <!-- Country Code Picker -->
+                                <div class="country-picker" id="countryPicker">
+                                    <button type="button" id="countryPickerBtn" class="country-picker-btn"
+                                        aria-haspopup="listbox" aria-expanded="false">
+                                        <span id="selectedFlag" class="picker-flag">🇮🇳</span>
+                                        <span id="selectedCode" class="picker-code">+91</span>
+                                        <svg class="picker-chevron" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd"
+                                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <!-- Dropdown -->
+                                    <div class="country-dropdown hidden" id="countryDropdown" role="listbox">
+                                        <div class="dropdown-search-wrap">
+                                            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            <input type="text" id="countrySearch" class="dropdown-search"
+                                                placeholder="Search country…" autocomplete="off">
+                                        </div>
+                                        <ul class="country-list" id="countryList"></ul>
+                                    </div>
+                                </div>
+                                <!-- Phone Number Input -->
+                                <input type="tel" id="mobile" name="mobile" required placeholder="e.g. 9876543210"
+                                    class="phone-number-input">
+                                <!-- Hidden field stores full country code -->
+                                <input type="hidden" id="mobileCountryCode" name="mobileCountryCode" value="+91">
+                            </div>
                         </div>
 
                         <!-- Email -->
                         <div>
-                            <label for="email" class="block text-sm font-medium text-slate-700 mb-1">3. Email Address</label>
-                            <input type="email" id="email" name="email" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                            <label for="email" class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">3.
+                                Email Address</label>
+                            <input type="email" id="email" name="email"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
                         <!-- Place of Residence -->
                         <div>
-                            <label for="residencePlace" class="block text-sm font-medium text-slate-700 mb-1">4. Place of Residence</label>
-                            <input type="text" id="residencePlace" name="residencePlace" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                            <label for="residencePlace"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">4. Place of
+                                Residence</label>
+                            <input type="text" id="residencePlace" name="residencePlace"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
                         <!-- Country of Residence -->
                         <div>
-                            <label for="country" class="block text-sm font-medium text-slate-700 mb-1">5. Country of Residence</label>
-                            <input type="text" id="country" name="country" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                            <label for="country"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">5. Country of
+                                Residence</label>
+                            <input type="text" id="country" name="country"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
                         <!-- Date of Birth -->
                         <div>
-                            <label for="dob" class="block text-sm font-medium text-slate-700 mb-1">6. Date of Birth <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
-                            <input type="date" id="dob" name="dob" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm text-slate-600">
+                            <label for="dob" class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">6.
+                                Date of Birth <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+                            <input type="date" id="dob" name="dob"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-600 placeholder-slate-400 focus:outline-none">
                         </div>
 
                         <!-- Photo Upload -->
                         <div class="col-span-1 md:col-span-2">
-                            <label for="photo" class="block text-sm font-medium text-slate-700 mb-1">7. Latest photo of yours</label>
-                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl bg-white/50 hover:bg-slate-50 transition-colors cursor-pointer" id="fileUploadContainer">
+                            <label for="photo" class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">7.
+                                Latest photo of yours</label>
+                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-2xl bg-white/50 hover:bg-slate-50 transition-colors cursor-pointer"
+                                id="fileUploadContainer">
                                 <div class="space-y-1 text-center">
-                                    <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                    <img id="imagePreview"
+                                        class="hidden mx-auto h-20 w-20 object-cover rounded-xl border border-slate-200 shadow-sm mb-2"
+                                        src="" alt="Preview">
+                                    <svg id="uploadIcon" class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor"
+                                        fill="none" viewBox="0 0 48 48">
+                                        <path
+                                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
                                     <div class="flex text-sm text-slate-600 justify-center">
-                                        <label for="photo" class="relative cursor-pointer bg-white rounded-md font-medium text-brand-600 hover:text-brand-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-500 px-1">
+                                        <label for="photo"
+                                            class="relative cursor-pointer bg-white rounded-md font-semibold text-brand-600 hover:text-brand-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-brand-500 px-1">
                                             <span>Upload a file</span>
                                             <input id="photo" name="photo" type="file" class="sr-only" accept="image/*">
                                         </label>
-                                        <p class="pl-1">or drag and drop</p>
+                                        <p class="pl-1 text-slate-500">or drag and drop</p>
                                     </div>
-                                    <p class="text-xs text-slate-500" id="fileNameDisplay">PNG, JPG, GIF up to 10MB</p>
+                                    <p class="text-xs text-slate-400 font-medium" id="fileNameDisplay">PNG, JPG, GIF up
+                                        to 10MB</p>
                                 </div>
                             </div>
                         </div>
@@ -159,49 +262,97 @@
                 <!-- Section 2: Academic Information -->
                 <section class="form-section step-section hidden" data-step="2">
                     <div class="mb-8 text-center md:text-left">
-                        <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-sm font-semibold mb-2">Step 2 of 6</span>
-                        <h2 class="text-2xl font-bold text-slate-800">Academic Information</h2>
-                        <p class="text-slate-500 mt-1">Share your educational background with IFADA.</p>
+                        <span
+                            class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">Step
+                            2 of 6</span>
+                        <h2 class="text-3xl font-extrabold text-slate-800 font-display">Academic Information</h2>
+                        <p class="text-slate-500 mt-1.5">Share your educational background with SFADC.</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Admission Year -->
                         <div>
-                            <label for="admissionYear" class="block text-sm font-medium text-slate-700 mb-1">7. Year of Admission to IFADA</label>
-                            <input type="number" min="1950" max="2030" id="admissionYear" name="admissionYear" placeholder="e.g. 2015" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                            <label for="admissionYear"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">7. Year of
+                                Admission to SFADC</label>
+                            <input type="number" min="1950" max="2030" id="admissionYear" name="admissionYear"
+                                placeholder="e.g. 2015"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
                         <!-- Leaving Year -->
                         <div>
-                            <label for="leavingYear" class="block text-sm font-medium text-slate-700 mb-1">8. Year of Leaving IFADA</label>
-                            <input type="number" min="1950" max="2030" id="leavingYear" name="leavingYear" placeholder="e.g. 2020" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                            <label for="leavingYear"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">8. Year of
+                                Leaving SFADC</label>
+                            <input type="number" min="1950" max="2030" id="leavingYear" name="leavingYear"
+                                placeholder="e.g. 2020"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
                         <!-- Alumni Status -->
                         <div class="col-span-1 md:col-span-2">
-                            <label class="block text-sm font-medium text-slate-700 mb-3">9. Alumni Status</label>
+                            <label class="block text-sm font-semibold text-slate-600 mb-2 font-display">9. Alumni
+                                Status</label>
                             <div class="flex flex-col sm:flex-row gap-4">
-                                <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors w-full sm:w-1/2 bg-white/50">
-                                    <input type="radio" name="alumniStatus" value="Graduate" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-3 text-slate-700 font-medium">Graduate</span>
+                                <label
+                                    class="flex items-center p-4 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all w-full sm:w-1/2 bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="alumniStatus" value="Graduate" class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-3 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Graduate</span>
                                 </label>
-                                <label class="flex items-center p-4 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors w-full sm:w-1/2 bg-white/50">
-                                    <input type="radio" name="alumniStatus" value="Discontinued / Dropout" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-3 text-slate-700 font-medium">Discontinued / Dropout</span>
+                                <label
+                                    class="flex items-center p-4 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all w-full sm:w-1/2 bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="alumniStatus" value="Discontinued / Dropout"
+                                        class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-3 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Discontinued
+                                        / Dropout</span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- Highest Qualification -->
                         <div class="col-span-1 md:col-span-2">
-                            <label for="qualification" class="block text-sm font-medium text-slate-700 mb-1">10. Highest Qualification Attained</label>
-                            <input type="text" id="qualification" name="qualification" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                            <label for="qualification"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">10. Highest
+                                Qualification Attained</label>
+                            <input type="text" id="qualification" name="qualification"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
                         <!-- Additional Degrees -->
                         <div class="col-span-1 md:col-span-2">
-                            <label for="additionalDegrees" class="block text-sm font-medium text-slate-700 mb-1">11. Additional Degrees, Diplomas, or Certifications <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
-                            <textarea id="additionalDegrees" name="additionalDegrees" rows="2" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm resize-y"></textarea>
+                            <label for="additionalDegrees"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">11. Additional
+                                Degrees, Diplomas, or Certifications <span
+                                    class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+                            <textarea id="additionalDegrees" name="additionalDegrees" rows="2"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none resize-y"></textarea>
                         </div>
                     </div>
                 </section>
@@ -209,52 +360,86 @@
                 <!-- Section 3: Professional Information -->
                 <section class="form-section step-section hidden" data-step="3">
                     <div class="mb-8 text-center md:text-left">
-                        <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-sm font-semibold mb-2">Step 3 of 6</span>
-                        <h2 class="text-2xl font-bold text-slate-800">Professional Information</h2>
-                        <p class="text-slate-500 mt-1">Tell us about your current career.</p>
+                        <span
+                            class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">Step
+                            3 of 6</span>
+                        <h2 class="text-3xl font-extrabold text-slate-800 font-display">Professional Information</h2>
+                        <p class="text-slate-500 mt-1.5">Tell us about your current career.</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Profession -->
                         <div>
-                            <label for="profession" class="block text-sm font-medium text-slate-700 mb-1">12. Current Profession / Designation</label>
-                            <input type="text" id="profession" name="profession" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                            <label for="profession"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">12. Current
+                                Profession / Designation</label>
+                            <input type="text" id="profession" name="profession"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
                         <!-- Organization -->
                         <div>
-                            <label for="organization" class="block text-sm font-medium text-slate-700 mb-1">13. Organization / Institution Name</label>
-                            <input type="text" id="organization" name="organization" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                            <label for="organization"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">13. Organization
+                                / Institution Name</label>
+                            <input type="text" id="organization" name="organization"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
                         <!-- Field of Work -->
                         <div class="col-span-1 md:col-span-2">
-                            <label class="block text-sm font-medium text-slate-700 mb-3">14. Field of Work</label>
+                            <label class="block text-sm font-semibold text-slate-600 mb-2.5 font-display">14. Field of
+                                Work</label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                 <!-- Radio inputs mapped to a styled label -->
                                 <script>
                                     const fields = ['Education', 'Business', 'IT', 'Healthcare', 'Government', 'Religious Service / Da\'wah', 'Media'];
                                     fields.forEach(field => {
                                         document.write(`
-                                            <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
-                                                <input type="radio" name="fieldOfWork" value="${field}" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                                <span class="ml-2 text-sm text-slate-700">${field}</span>
+                                            <label class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                                <input type="radio" name="fieldOfWork" value="${field}" class="sr-only peer">
+                                                <div class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none"></div>
+                                                <div class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
+                                                <div class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2 flex-shrink-0">
+                                                    <div class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                                </div>
+                                                <span class="text-sm text-slate-700 font-semibold relative z-10 font-display">${field}</span>
                                             </label>
                                         `);
                                     });
                                 </script>
-                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50 md:col-span-2">
-                                    <input type="radio" name="fieldOfWork" value="Others" id="fieldOthersRadio" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-2 text-sm text-slate-700 mr-2 whitespace-nowrap">Others</span>
-                                    <input type="text" id="fieldOthersText" placeholder="Please specify..." class="w-full bg-transparent border-b border-slate-300 focus:border-brand-500 focus:outline-none text-sm px-1 py-1" onfocus="document.getElementById('fieldOthersRadio').checked = true">
+                                <label
+                                    class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20 md:col-span-2">
+                                    <input type="radio" name="fieldOfWork" value="Others" id="fieldOthersRadio"
+                                        class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-sm text-slate-700 font-semibold mr-2 whitespace-nowrap relative z-10 font-display">Others</span>
+                                    <input type="text" id="fieldOthersText" placeholder="Please specify..."
+                                        class="w-full bg-transparent border-b border-slate-300 focus:border-brand-500 focus:outline-none text-sm px-1 py-0.5 relative z-10 font-medium text-slate-700 placeholder-slate-400"
+                                        onfocus="document.getElementById('fieldOthersRadio').checked = true">
                                 </label>
                             </div>
                         </div>
 
                         <!-- Work Location -->
                         <div class="col-span-1 md:col-span-2">
-                            <label for="workLocation" class="block text-sm font-medium text-slate-700 mb-1">15. Work Location</label>
-                            <input type="text" id="workLocation" name="workLocation" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm">
+                            <label for="workLocation"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">15. Work
+                                Location</label>
+                            <input type="text" id="workLocation" name="workLocation"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
                     </div>
                 </section>
@@ -262,38 +447,67 @@
                 <!-- Section 4: Skills and Areas of Expertise -->
                 <section class="form-section step-section hidden" data-step="4">
                     <div class="mb-8 text-center md:text-left">
-                        <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-sm font-semibold mb-2">Step 4 of 6</span>
-                        <h2 class="text-2xl font-bold text-slate-800">Skills & Expertise</h2>
-                        <p class="text-slate-500 mt-1">Let us know how you can contribute to our community.</p>
+                        <span
+                            class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">Step
+                            4 of 6</span>
+                        <h2 class="text-3xl font-extrabold text-slate-800 font-display">Skills & Expertise</h2>
+                        <p class="text-slate-500 mt-1.5 font-sans">Let us know how you can contribute to our community.
+                        </p>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-4">In which areas can you contribute to IFADA? <span class="text-slate-400 font-normal">(Multiple selections allowed)</span></label>
+                        <label class="block text-sm font-semibold text-slate-600 mb-4 font-display">In which areas can
+                            you contribute to SFADC? <span class="text-slate-400 font-normal text-xs">(Multiple
+                                selections allowed)</span></label>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                             <script>
                                 const skills = [
-                                    'Career Guidance', 'Teaching & Training', 'Public Speaking', 
-                                    'Writing & Editing', 'Business & Entrepreneurship', 'IT / Web Development', 
-                                    'Graphic Design & Media', 'Social Media Management', 'Event Management', 
+                                    'Career Guidance', 'Teaching & Training', 'Public Speaking',
+                                    'Writing & Editing', 'Business & Entrepreneurship', 'IT / Web Development',
+                                    'Graphic Design & Media', 'Social Media Management', 'Event Management',
                                     'Research', 'Fundraising', 'Mentorship & Counseling'
                                 ];
                                 skills.forEach(skill => {
                                     document.write(`
-                                        <label class="flex items-start p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50 shadow-sm">
-                                            <div class="flex items-center h-5">
-                                                <input type="checkbox" name="skills" value="${skill}" class="w-4 h-4 text-brand-600 rounded focus:ring-brand-500 border-slate-300">
+                                        <label class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20 shadow-sm">
+                                            <input type="checkbox" name="skills" value="${skill}" class="sr-only peer">
+                                            <div class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none"></div>
+                                            <div class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
+                                            <!-- custom checkbox -->
+                                            <div class="w-4 h-4 rounded border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                                <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                                </svg>
                                             </div>
-                                            <div class="ml-3 text-sm">
-                                                <span class="text-slate-700 font-medium">${skill}</span>
-                                            </div>
+                                            <span class="text-sm text-slate-700 font-semibold relative z-10 font-display">${skill}</span>
                                         </label>
                                     `);
                                 });
                             </script>
-                            <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50 shadow-sm sm:col-span-2 md:col-span-3">
-                                <input type="checkbox" name="skills" value="Other" id="skillOtherCheck" class="w-4 h-4 text-brand-600 rounded focus:ring-brand-500 border-slate-300">
-                                <span class="ml-3 text-sm text-slate-700 font-medium mr-2 whitespace-nowrap">Other</span>
-                                <input type="text" id="skillOtherText" placeholder="Please specify..." class="w-full bg-transparent border-b border-slate-300 focus:border-brand-500 focus:outline-none text-sm px-1 py-1" onfocus="document.getElementById('skillOtherCheck').checked = true">
+                            <label
+                                class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20 shadow-sm sm:col-span-2 md:col-span-3">
+                                <input type="checkbox" name="skills" value="Other" id="skillOtherCheck"
+                                    class="sr-only peer">
+                                <div
+                                    class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                </div>
+                                <div
+                                    class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                </div>
+                                <!-- custom checkbox -->
+                                <div
+                                    class="w-4 h-4 rounded border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                    <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                            d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                </div>
+                                <span
+                                    class="text-sm text-slate-700 font-semibold mr-2 whitespace-nowrap relative z-10 font-display">Other</span>
+                                <input type="text" id="skillOtherText" placeholder="Please specify..."
+                                    class="w-full bg-transparent border-b border-slate-300 focus:border-brand-500 focus:outline-none text-sm px-1 py-0.5 relative z-10 font-medium text-slate-700 placeholder-slate-400"
+                                    onfocus="document.getElementById('skillOtherCheck').checked = true">
                             </label>
                         </div>
                     </div>
@@ -302,30 +516,37 @@
                 <!-- Section 5: Alumni Engagement -->
                 <section class="form-section step-section hidden" data-step="5">
                     <div class="mb-8 text-center md:text-left">
-                        <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-sm font-semibold mb-2">Step 5 of 6</span>
-                        <h2 class="text-2xl font-bold text-slate-800">Alumni Engagement</h2>
-                        <p class="text-slate-500 mt-1">How would you like to stay involved?</p>
+                        <span
+                            class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">Step
+                            5 of 6</span>
+                        <h2 class="text-3xl font-extrabold text-slate-800 font-display">Alumni Engagement</h2>
+                        <p class="text-slate-500 mt-1.5 font-sans">How would you like to stay involved?</p>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-4">How would you like to participate in IFADA activities?</label>
-                        <div class="space-y-3">
+                        <label class="block text-sm font-semibold text-slate-600 mb-4 font-display">How would you like
+                            to participate in SFADC activities?</label>
+                        <div class="space-y-3 max-w-2xl">
                             <script>
                                 const engagements = [
-                                    'Attend Alumni Meetings', 'Volunteer for Programs', 'Serve in Committees', 
-                                    'Mentor Students and Alumni', 'Deliver Career Guidance Sessions', 
-                                    'Support Welfare Initiatives', 'Financial Contributions to Projects', 
+                                    'Attend Alumni Meetings', 'Volunteer for Programs', 'Serve in Committees',
+                                    'Mentor Students and Alumni', 'Deliver Career Guidance Sessions',
+                                    'Support Welfare Initiatives', 'Financial Contributions to Projects',
                                     'Not Available at Present'
                                 ];
                                 engagements.forEach(eng => {
                                     document.write(`
-                                        <label class="flex items-start p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50 shadow-sm max-w-2xl">
-                                            <div class="flex items-center h-5">
-                                                <input type="checkbox" name="engagement" value="${eng}" class="w-4 h-4 text-brand-600 rounded focus:ring-brand-500 border-slate-300">
+                                        <label class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20 shadow-sm">
+                                            <input type="checkbox" name="engagement" value="${eng}" class="sr-only peer">
+                                            <div class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none"></div>
+                                            <div class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
+                                            <!-- custom checkbox -->
+                                            <div class="w-4 h-4 rounded border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                                <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                                </svg>
                                             </div>
-                                            <div class="ml-3 text-sm">
-                                                <span class="text-slate-700">${eng}</span>
-                                            </div>
+                                            <span class="text-sm text-slate-700 font-semibold relative z-10 font-display">${eng}</span>
                                         </label>
                                     `);
                                 });
@@ -337,155 +558,493 @@
                 <!-- Section 6: Communication and Consent -->
                 <section class="form-section step-section hidden" data-step="6">
                     <div class="mb-8 text-center md:text-left">
-                        <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-sm font-semibold mb-2">Step 6 of 6</span>
-                        <h2 class="text-2xl font-bold text-slate-800">Communication & Consent</h2>
-                        <p class="text-slate-500 mt-1">Almost done! Set your preferences.</p>
+                        <span
+                            class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">Step
+                            6 of 6</span>
+                        <h2 class="text-3xl font-extrabold text-slate-800 font-display">Communication & Consent</h2>
+                        <p class="text-slate-500 mt-1.5 font-sans">Almost done! Set your preferences.</p>
                     </div>
 
                     <div class="space-y-8">
                         <!-- 16. Directory -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-3">16. Would you like to be included in the IFADA Alumni Directory?</label>
+                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">16. Would you
+                                like to be included in the SFADC Alumni Directory?</label>
                             <div class="flex gap-4">
-                                <label class="flex items-center p-3 px-6 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
-                                    <input type="radio" name="directoryInclude" value="Yes" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-2 text-slate-700 font-medium">Yes</span>
+                                <label
+                                    class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="directoryInclude" value="Yes" class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Yes</span>
                                 </label>
-                                <label class="flex items-center p-3 px-6 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
-                                    <input type="radio" name="directoryInclude" value="No" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-2 text-slate-700 font-medium">No</span>
+                                <label
+                                    class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="directoryInclude" value="No" class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">No</span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- 17. WhatsApp -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-3">17. Are you willing to join official IFADA WhatsApp groups and receive updates?</label>
+                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">17. Are you
+                                willing to join official IFADA WhatsApp groups and receive updates?</label>
                             <div class="flex flex-col sm:flex-row gap-3">
-                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
-                                    <input type="radio" name="whatsappJoin" value="Yes" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-2 text-slate-700 font-medium">Yes</span>
+                                <label
+                                    class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="whatsappJoin" value="Yes" class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Yes</span>
                                 </label>
-                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
-                                    <input type="radio" name="whatsappJoin" value="Already a Member" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-2 text-slate-700 font-medium">Already a Member</span>
+                                <label
+                                    class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="whatsappJoin" value="Already a Member"
+                                        class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Already
+                                        a Member</span>
                                 </label>
-                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
-                                    <input type="radio" name="whatsappJoin" value="No" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-2 text-slate-700 font-medium">No</span>
+                                <label
+                                    class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="whatsappJoin" value="No" class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">No</span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- 19. Region -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-3">19. Which region are you currently residing in?</label>
+                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">19. Which region
+                                are you currently residing in?</label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
-                                    <input type="radio" name="region" value="Kerala" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-2 text-sm text-slate-700 font-medium">Kerala</span>
+                                <label
+                                    class="flex items-center p-3 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="region" value="Kerala" class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-xs text-slate-700 font-semibold relative z-10 font-display">Kerala</span>
                                 </label>
-                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
-                                    <input type="radio" name="region" value="Other Indian States" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-2 text-sm text-slate-700 font-medium">Other Indian States</span>
+                                <label
+                                    class="flex items-center p-3 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="region" value="Other Indian States" class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span class="text-xs text-slate-700 font-semibold relative z-10 font-display">Other
+                                        Indian States</span>
                                 </label>
-                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
-                                    <input type="radio" name="region" value="GCC Countries" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-2 text-sm text-slate-700 font-medium">GCC Countries</span>
+                                <label
+                                    class="flex items-center p-3 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="region" value="GCC Countries" class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span class="text-xs text-slate-700 font-semibold relative z-10 font-display">GCC
+                                        Countries</span>
                                 </label>
-                                <label class="flex items-center p-3 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
-                                    <input type="radio" name="region" value="Other Countries" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-2 text-sm text-slate-700 font-medium">Other Countries</span>
+                                <label
+                                    class="flex items-center p-3 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="region" value="Other Countries" class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span class="text-xs text-slate-700 font-semibold relative z-10 font-display">Other
+                                        Countries</span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- 20. Batch Representative -->
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-3">20. Would you be interested in serving as a batch representative or local coordinator?</label>
+                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">20. Would you be
+                                interested in serving as a batch representative or local coordinator?</label>
                             <div class="flex gap-4">
-                                <label class="flex items-center p-3 px-6 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
-                                    <input type="radio" name="coordinator" value="Yes" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-2 text-slate-700 font-medium">Yes</span>
+                                <label
+                                    class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="coordinator" value="Yes" class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Yes</span>
                                 </label>
-                                <label class="flex items-center p-3 px-6 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
-                                    <input type="radio" name="coordinator" value="Maybe" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-2 text-slate-700 font-medium">Maybe</span>
+                                <label
+                                    class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="coordinator" value="Maybe" class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Maybe</span>
                                 </label>
-                                <label class="flex items-center p-3 px-6 border border-slate-200 rounded-xl cursor-pointer hover:bg-slate-50 transition-colors bg-white/50">
-                                    <input type="radio" name="coordinator" value="No" class="w-4 h-4 text-brand-600 focus:ring-brand-500 border-slate-300">
-                                    <span class="ml-2 text-slate-700 font-medium">No</span>
+                                <label
+                                    class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="coordinator" value="No" class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">No</span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- 18. Remarks -->
                         <div>
-                            <label for="remarks" class="block text-sm font-medium text-slate-700 mb-1">18. Any suggestions or remarks for IFADA? <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
-                            <textarea id="remarks" name="remarks" rows="4" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-shadow bg-white/50 backdrop-blur-sm resize-y" placeholder="We value your feedback..."></textarea>
+                            <label for="remarks"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">18. Any
+                                suggestions or remarks for SFADC? <span
+                                    class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+                            <textarea id="remarks" name="remarks" rows="4"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none resize-y"
+                                placeholder="We value your feedback..."></textarea>
+                        </div>
+
+                        <!-- 21. Annual Membership -->
+                        <div class="mt-6">
+                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">21. Annual Membership</label>
+                            <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                                <label
+                                    class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="membership" value="Pay now" class="sr-only peer" id="membershipPayNow">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Pay Now</span>
+                                </label>
+                                <label
+                                    class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                    <input type="radio" name="membership" value="Pay later" class="sr-only peer" id="membershipPayLater" checked>
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Pay Later</span>
+                                </label>
+                            </div>
+
+                            <!-- Membership Payment Details Sub-panel -->
+                            <div id="membershipDetailsPanel" class="hidden border border-brand-500/20 p-6 rounded-2xl bg-brand-500/5 space-y-4">
+                                <h4 class="text-base font-bold text-brand-700 font-display">Generate Membership Card</h4>
+                                <p class="text-xs text-slate-500">Your card will be generated using your Full Name and Mobile Number from Step 1.</p>
+                                
+                                <!-- Batch Selection -->
+                                <div>
+                                    <label for="membershipBatch" class="block text-xs font-semibold text-slate-600 mb-1.5 font-display">Select Batch <span class="text-red-500">*</span></label>
+                                    <select id="membershipBatch" class="premium-input w-full px-4 py-3 rounded-xl text-slate-700 focus:outline-none bg-white/80">
+                                        <option value="" disabled selected>Select Batch</option>
+                                        <option value="First Batch">First Batch</option>
+                                        <option value="Second Batch">Second Batch</option>
+                                        <option value="Third Batch">Third Batch</option>
+                                        <option value="Fourth Batch">Fourth Batch</option>
+                                        <option value="Fifth Batch">Fifth Batch</option>
+                                        <option value="Sixth Batch">Sixth Batch</option>
+                                        <option value="Seventh Batch">Seventh Batch</option>
+                                    </select>
+                                </div>
+
+                                <!-- Screenshot Upload -->
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5 font-display">Payment Verification (Required) <span class="text-red-500">*</span></label>
+                                    <p class="text-xs text-slate-500 mb-2">Upload screenshot showing payment of <span class="font-bold text-slate-700">₹600</span> or more.</p>
+                                    <input type="file" id="membershipScreenshot" accept="image/*" class="premium-input w-full px-4 py-3 rounded-xl text-slate-700 focus:outline-none bg-white/80 text-xs">
+                                    
+                                    <div id="membershipStatusText" class="mt-2 text-xs text-slate-500 italic">Waiting for upload...</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
 
                 <!-- Navigation Buttons -->
-                <div class="mt-10 pt-6 border-t border-slate-200 flex flex-col-reverse md:flex-row justify-between items-center gap-4">
-                    <button type="button" id="prevBtn" class="hidden w-full md:w-auto px-6 py-3 bg-white hover:bg-slate-50 text-slate-700 font-medium rounded-xl border border-slate-300 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 flex items-center justify-center">
+                <div
+                    class="mt-10 pt-6 border-t border-slate-200 flex flex-col-reverse md:flex-row justify-between items-center gap-4">
+                    <button type="button" id="prevBtn"
+                        class="hidden w-full md:w-auto px-8 py-3.5 bg-white hover:bg-slate-50 text-slate-700 font-bold rounded-full border border-slate-300 shadow-sm transition-all hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 flex items-center justify-center font-display">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
                         Previous
                     </button>
-                    
+
                     <div class="flex-grow"></div>
-                    
-                    <button type="button" id="nextBtn" class="w-full md:w-auto px-8 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl shadow-lg shadow-brand-500/30 transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 flex items-center justify-center group">
+
+                    <button type="button" id="nextBtn"
+                        class="w-full md:w-auto px-10 py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-full shadow-lg shadow-brand-600/20 transition-all hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-brand-600/30 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 flex items-center justify-center group font-display">
                         <span>Next Step</span>
-                        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                         </svg>
                     </button>
 
-                    <button type="submit" id="submitBtn" class="hidden w-full md:w-auto px-8 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-medium rounded-xl shadow-lg shadow-brand-500/30 transition-all focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 flex items-center justify-center group">
+                    <button type="submit" id="submitBtn"
+                        class="hidden w-full md:w-auto px-10 py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-full shadow-lg shadow-brand-600/20 transition-all hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-brand-600/30 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 flex items-center justify-center group font-display">
                         <span>Submit Survey</span>
-                        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7">
+                            </path>
                         </svg>
                     </button>
                 </div>
-                
-                <p id="consentText" class="hidden text-xs text-slate-500 text-center md:text-left mt-4">By submitting this form, you agree that your information will be securely stored in the IFADA Alumni Database.</p>
+
+                <p id="consentText" class="hidden text-xs text-slate-500 text-center md:text-left mt-4 font-medium">By
+                    submitting this form, you agree that your information will be securely stored in the SFADC Alumni
+                    Database.</p>
 
             </form>
         </div>
     </main>
 
     <!-- 3. Success Page -->
-    <div id="successPage" class="hidden w-full max-w-2xl mx-auto z-10 flex flex-col items-center justify-center text-center transition-opacity duration-500 opacity-0">
-        <div class="bg-white/80 backdrop-blur-lg rounded-3xl shadow-xl border border-white p-12 w-full text-center">
-            
+    <div id="successPage"
+        class="hidden w-full max-w-2xl mx-auto z-10 flex flex-col items-center justify-center text-center transition-opacity duration-500 opacity-0">
+        <div class="glass-card rounded-3xl p-12 w-full text-center">
+
             <!-- SVG Tick Animation -->
             <div class="success-animation mb-6">
                 <svg class="checkmark mx-auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
-                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
-                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                    <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                    <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
                 </svg>
             </div>
-            
-            <h2 class="text-3xl font-bold text-slate-800 mb-3">Survey Submitted!</h2>
-            <p class="text-slate-600 text-lg">Thank you for taking the time to update your profile. Your information has been successfully recorded.</p>
-            
-            <button onclick="location.reload()" class="mt-8 px-8 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl border border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-400">
+
+            <h2 class="text-3xl font-extrabold text-slate-800 mb-3 font-display">Survey Submitted!</h2>
+            <p class="text-slate-600 text-base md:text-lg">Thank you for taking the time to update your profile. Your
+                information has been successfully recorded.</p>
+
+            <!-- WhatsApp Join Button Container -->
+            <div id="waSuccessBtnContainer"
+                class="hidden mt-8 p-6 bg-brand-50/50 rounded-2xl border border-brand-100/50 animate-fade-in">
+                <p class="text-slate-500 text-sm mb-4">Since you selected willingness to join the official WhatsApp
+                    group, click the button below to join:</p>
+                <a id="waSuccessBtn" href="#" target="_blank"
+                    class="inline-flex items-center justify-center w-full sm:w-auto px-10 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-full shadow-lg shadow-emerald-500/20 transition-all hover:-translate-y-0.5 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 font-display">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.717-1.45L0 24zm6.59-4.846c1.66.986 3.288 1.479 4.884 1.48 5.332 0 9.703-4.307 9.707-9.605.002-2.566-.996-4.979-2.811-6.797-1.814-1.819-4.225-2.82-6.786-2.82-5.328 0-9.697 4.307-9.702 9.607-.002 1.83.514 3.6 1.494 5.178l-.995 3.633 3.714-.976zm12.067-6.505c-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.496.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.568-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                    </svg>
+                    Join Official SFADC WhatsApp Group
+                </a>
+            </div>
+
+            <!-- Download Card Button Container -->
+            <div id="downloadCardBtnContainer" class="hidden mt-4">
+                <button id="downloadCardBtn" class="w-full sm:w-auto px-10 py-4 bg-amber-500 hover:bg-amber-600 text-slate-950 text-lg font-bold rounded-full shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-amber-500/30 focus:outline-none focus:ring-4 focus:ring-amber-500 focus:ring-offset-2 flex items-center justify-center mx-auto group font-display gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    <span>Download Membership Card</span>
+                </button>
+            </div>
+
+            <button onclick="location.reload()"
+                class="mt-8 px-8 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-full border border-slate-300 transition-all hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-slate-400 font-display">
                 Return to Home
             </button>
         </div>
     </div>
 
+    <!-- Hidden canvas for generating membership card -->
+    <canvas id="card-canvas" class="hidden"></canvas>
+
     <!-- Footer -->
     <footer class="absolute bottom-4 left-0 w-full text-center text-sm text-slate-500 z-10">
-        <p>&copy; 2026 IFADA Alumni Association. All rights reserved.</p>
+        <p>&copy; 2026 SFADC Alumni Association. All rights reserved.</p>
     </footer>
 
     <!-- Custom Scripts -->
     <script src="script.js"></script>
+
+    <!-- Firebase SDKs for Membership Card Settings & Database -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+
+        // MVS Project Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDEJUuNeIej1KKJ2gJKHop4ezWxv3B4CC4",
+            authDomain: "mvs-db-99118.firebaseapp.com",
+            projectId: "mvs-db-99118",
+            storageBucket: "mvs-db-99118.firebasestorage.app",
+            messagingSenderId: "525394480070",
+            appId: "1:525394480070:web:80e0509bbd25f76d2940c7",
+            measurementId: "G-XEVP88Z27L"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.getGlobalSettings = async () => {
+            try {
+                const docSnap = await getDoc(doc(db, "app_settings", "config"));
+                if (docSnap.exists()) return { success: true, data: docSnap.data() };
+                return { success: false, error: "No configuration found." };
+            } catch (e) { return { success: false, error: e.message }; }
+        };
+
+        window.saveCardToDB = async (data) => {
+            try {
+                await addDoc(collection(db, "membership"), {
+                    ...data,
+                    timestamp: serverTimestamp()
+                });
+                return { success: true };
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                return { success: false, error: e.message };
+            }
+        };
+    </script>
 </body>
+
 </html>
