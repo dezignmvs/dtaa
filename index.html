@@ -878,21 +878,14 @@
                                 <div>
                                     <label for="membershipBatch" class="block text-xs font-semibold text-slate-600 mb-1.5 font-display">Select Batch <span class="text-red-500">*</span></label>
                                     <select id="membershipBatch" class="premium-input w-full px-4 py-3 rounded-xl text-slate-700 focus:outline-none bg-white/80">
-                                        <option value="" disabled selected>Select Batch</option>
-                                        <option value="First Batch">First Batch</option>
-                                        <option value="Second Batch">Second Batch</option>
-                                        <option value="Third Batch">Third Batch</option>
-                                        <option value="Fourth Batch">Fourth Batch</option>
-                                        <option value="Fifth Batch">Fifth Batch</option>
-                                        <option value="Sixth Batch">Sixth Batch</option>
-                                        <option value="Seventh Batch">Seventh Batch</option>
+                                        <option value="" disabled selected>Loading batches...</option>
                                     </select>
                                 </div>
 
                                 <!-- Screenshot Upload -->
                                 <div>
                                     <label class="block text-xs font-semibold text-slate-600 mb-1.5 font-display">Payment Verification (Required) <span class="text-red-500">*</span></label>
-                                    <p class="text-xs text-slate-500 mb-2">Upload screenshot showing payment of <span class="font-bold text-slate-700">₹600</span> or more.</p>
+                                    <p class="text-xs text-slate-500 mb-2">Upload screenshot showing payment of <span class="font-bold text-slate-700">₹500+</span>.</p>
                                     <input type="file" id="membershipScreenshot" accept="image/*" class="premium-input w-full px-4 py-3 rounded-xl text-slate-700 focus:outline-none bg-white/80 text-xs">
                                     
                                     <div id="membershipStatusText" class="mt-2 text-xs text-slate-500 italic">Waiting for upload...</div>
@@ -1046,6 +1039,46 @@
                 return { success: false, error: e.message };
             }
         };
+
+        window.loadBatchesList = async () => {
+            const select = document.getElementById('membershipBatch');
+            if(!select) return;
+            try {
+                const { data, error } = await supabaseClient
+                    .from('batches')
+                    .select('batch_name')
+                    .order('created_at', { ascending: false });
+                    
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    select.innerHTML = '<option value="" disabled selected>Select Batch</option>';
+                    data.forEach(batch => {
+                        const opt = document.createElement('option');
+                        opt.value = batch.batch_name;
+                        opt.textContent = batch.batch_name;
+                        select.appendChild(opt);
+                    });
+                } else {
+                    select.innerHTML = '<option value="" disabled selected>No batches found</option>';
+                }
+            } catch (e) {
+                console.error("Error loading batches:", e);
+                // Fallback to defaults if table doesn't exist or error occurs
+                select.innerHTML = `
+                    <option value="" disabled selected>Select Batch</option>
+                    <option value="First Batch">First Batch</option>
+                    <option value="Second Batch">Second Batch</option>
+                    <option value="Third Batch">Third Batch</option>
+                    <option value="Fourth Batch">Fourth Batch</option>
+                    <option value="Fifth Batch">Fifth Batch</option>
+                    <option value="Sixth Batch">Sixth Batch</option>
+                    <option value="Seventh Batch">Seventh Batch</option>
+                `;
+            }
+        };
+
+        window.loadBatchesList();
     </script>
 </body>
 

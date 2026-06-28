@@ -425,15 +425,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         hasValidAmount = matches.some(m => {
                             const clean = m.replace(/,/g, '');
                             const num = parseFloat(clean);
-                            return !isNaN(num) && num >= 600;
+                            return !isNaN(num) && num >= 500;
                         });
                     }
 
-                    if (hasValidAmount || text.includes('600')) {
+                    if (hasValidAmount || text.includes('500')) {
                         isMembershipVerified = true;
-                        statusText.innerHTML = '<span class="text-emerald-600 font-bold flex items-center gap-1">✓ Verified (₹600+ found)</span>';
+                        statusText.innerHTML = '<span class="text-emerald-600 font-bold flex items-center gap-1">✓ Verified (₹500+ found)</span>';
                     } else {
-                        statusText.innerHTML = '<span class="text-red-500 font-semibold">Could not read "600". Please upload a clearer screenshot.</span>';
+                        statusText.innerHTML = '<span class="text-red-500 font-semibold">Could not read "500". Please upload a clearer screenshot.</span>';
                     }
                 })
                 .catch(err => {
@@ -467,7 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return false;
                 }
                 if (!isMembershipVerified) {
-                    alert('Payment screenshot has not been successfully verified yet. Please ensure ₹600 or more is visible.');
+                    alert('Payment screenshot has not been successfully verified yet. Please ensure ₹500 or more is visible.');
                     return false;
                 }
             }

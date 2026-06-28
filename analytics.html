@@ -625,6 +625,40 @@
         tbody tr {
             cursor: pointer;
         }
+
+        /* Tabs */
+        .tabs-container {
+            display: flex;
+            gap: 2rem;
+            padding: 0 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+            background: var(--surface-solid);
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 1rem 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .tab-btn:hover {
+            color: var(--brand);
+        }
+        .tab-btn.active {
+            color: var(--brand);
+            border-bottom-color: var(--brand);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 
@@ -668,6 +702,12 @@
             </div>
         </div>
 
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('responses', this)">Alumni Responses</button>
+            <button class="tab-btn" onclick="switchTab('batches', this)">Setup Batches</button>
+            <button class="tab-btn" onclick="switchTab('cards', this)">Card Details</button>
+        </div>
+
         <div class="main">
             <div id="statusContainer" style="margin-bottom: 2rem;">
                 <div class="loading-overlay" id="loadingState">
@@ -676,47 +716,109 @@
                 <div id="errorState" style="display:none; color:#ef4444; background:var(--surface); border:1px solid var(--border); padding:2rem; border-radius:1.25rem; box-shadow:var(--shadow-md);"></div>
             </div>
 
-            <!-- WhatsApp Settings Card -->
-            <div class="table-card fade-up" id="waSettingsCard" style="display:none; margin-bottom: 1.5rem; padding: 1.5rem 1.75rem;">
-                <h3 style="font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <span>💬</span> WhatsApp Group Link Setup
-                </h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-                    Set up the official invite link that will be shown to alumni on the success screen after submission.
-                </p>
-                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                    <input type="text" id="waLinkInput" class="table-search" style="flex: 1; min-width: 280px; background: var(--surface-solid);" placeholder="Paste WhatsApp Group Invite Link (e.g. https://chat.whatsapp.com/...)">
-                    <button onclick="saveWaLink()" class="refresh-btn" style="background: var(--brand); color: #fff; border: none; font-weight: 600; padding: 0.6rem 1.5rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--brand-hover)'" onmouseout="this.style.background='var(--brand)'">Save Link</button>
+            <!-- Responses Tab -->
+            <div id="tab-responses" class="tab-content active">
+                <!-- WhatsApp Settings Card -->
+                <div class="table-card fade-up" id="waSettingsCard" style="display:none; margin-bottom: 1.5rem; padding: 1.5rem 1.75rem;">
+                    <h3 style="font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>💬</span> WhatsApp Group Link Setup
+                    </h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        Set up the official invite link that will be shown to alumni on the success screen after submission.
+                    </p>
+                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                        <input type="text" id="waLinkInput" class="table-search" style="flex: 1; min-width: 280px; background: var(--surface-solid);" placeholder="Paste WhatsApp Group Invite Link (e.g. https://chat.whatsapp.com/...)">
+                        <button onclick="saveWaLink()" class="refresh-btn" style="background: var(--brand); color: #fff; border: none; font-weight: 600; padding: 0.6rem 1.5rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--brand-hover)'" onmouseout="this.style.background='var(--brand)'">Save Link</button>
+                    </div>
+                    <div id="waSaveStatus" style="font-size: 0.8rem; margin-top: 0.5rem; display: none;"></div>
                 </div>
-                <div id="waSaveStatus" style="font-size: 0.8rem; margin-top: 0.5rem; display: none;"></div>
+
+                <div class="table-card fade-up" id="tableCard" style="display:none">
+                    <div class="table-header">
+                        <h3>All Responses <span id="responseCount"
+                                style="color:var(--text-muted);font-weight:400;font-size:0.85rem;"></span></h3>
+                        <input type="text" id="tableSearch" class="table-search" placeholder="🔍  Search name, mobile…"
+                            oninput="filterTable()">
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Photo</th>
+                                    <th>Name</th>
+                                    <th>Mobile</th>
+                                    <th>Email</th>
+                                    <th>Country</th>
+                                    <th>Status</th>
+                                    <th>Field</th>
+                                    <th>Region</th>
+                                    <th>Submitted</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <div class="table-card fade-up" id="tableCard" style="display:none">
-                <div class="table-header">
-                    <h3>All Responses <span id="responseCount"
-                            style="color:var(--text-muted);font-weight:400;font-size:0.85rem;"></span></h3>
-                    <input type="text" id="tableSearch" class="table-search" placeholder="🔍  Search name, mobile…"
-                        oninput="filterTable()">
+            <!-- Setup Batches Tab -->
+            <div id="tab-batches" class="tab-content">
+                <div class="table-card fade-up" style="margin-bottom: 1.5rem; padding: 1.5rem 1.75rem;">
+                    <h3 style="font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>📅</span> Add New Batch
+                    </h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        Create a new batch that users can select when generating their membership cards.
+                    </p>
+                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                        <input type="text" id="newBatchInput" class="table-search" style="flex: 1; min-width: 280px; background: var(--surface-solid);" placeholder="Enter batch name (e.g. First Batch)">
+                        <button onclick="addBatch()" class="refresh-btn" style="background: var(--brand); color: #fff; border: none; font-weight: 600; padding: 0.6rem 1.5rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='var(--brand-hover)'" onmouseout="this.style.background='var(--brand)'">Add Batch</button>
+                    </div>
                 </div>
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Photo</th>
-                                <th>Name</th>
-                                <th>Mobile</th>
-                                <th>Email</th>
-                                <th>Country</th>
-                                <th>Status</th>
-                                <th>Field</th>
-                                <th>Region</th>
-                                <th>Submitted</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody"></tbody>
-                    </table>
+                
+                <div class="table-card fade-up">
+                    <div class="table-header">
+                        <h3>All Batches <span id="batchCount" style="color:var(--text-muted);font-weight:400;font-size:0.85rem;"></span></h3>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Batch Name</th>
+                                    <th>Created At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="batchesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Details Tab -->
+            <div id="tab-cards" class="tab-content">
+                <div class="table-card fade-up">
+                    <div class="table-header">
+                        <h3>Generated Cards <span id="cardCount" style="color:var(--text-muted);font-weight:400;font-size:0.85rem;"></span></h3>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Batch</th>
+                                    <th>Mobile</th>
+                                    <th>Screenshot / Proof</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cardsTableBody"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1038,6 +1140,161 @@
 
         function esc(s) {
             return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        /* ── Tabs Logic ── */
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById('tab-' + tabId).classList.add('active');
+            if(btnElement) btnElement.classList.add('active');
+            
+            if (tabId === 'batches') loadBatches();
+            if (tabId === 'cards') loadCards();
+        }
+
+        /* ── Batches Logic ── */
+        async function loadBatches() {
+            try {
+                const res = await fetch(`${SB_ENDPOINT}/batches?select=*&order=created_at.desc`, { headers: SB_HEADERS });
+                if (res.ok) {
+                    const data = await res.json();
+                    renderBatches(data);
+                } else {
+                    console.error("Failed to load batches:", await res.text());
+                }
+            } catch (e) { console.error("Error loading batches:", e); }
+        }
+        
+        function renderBatches(data) {
+            document.getElementById('batchCount').textContent = `— ${data.length} batches`;
+            const tbody = document.getElementById('batchesTableBody');
+            if (!data.length) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:3rem;color:var(--text-muted)">No batches found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map((r, i) => `
+                <tr style="cursor:default;">
+                    <td style="color:var(--text-muted)">${i + 1}</td>
+                    <td><strong>${esc(r.batch_name)}</strong></td>
+                    <td style="color:var(--text-muted)">${r.created_at ? new Date(r.created_at).toLocaleDateString('en-IN') : '—'}</td>
+                    <td>
+                        <button onclick="event.stopPropagation(); deleteBatch('${r.id}')" style="background:#ef4444; border:none; color:#fff; border-radius:0.5rem; padding:0.35rem 0.75rem; font-size:0.75rem; font-weight:600; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        async function addBatch() {
+            const name = document.getElementById('newBatchInput').value.trim();
+            if (!name) return;
+            try {
+                const res = await fetch(`${SB_ENDPOINT}/batches`, {
+                    method: 'POST',
+                    headers: { ...SB_HEADERS, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ batch_name: name })
+                });
+                if (res.ok) {
+                    document.getElementById('newBatchInput').value = '';
+                    loadBatches();
+                } else {
+                    alert("Failed to add batch. Make sure you ran the Supabase SQL.");
+                }
+            } catch(e) { alert("Error: " + e.message); }
+        }
+        
+        async function deleteBatch(id) {
+            if (!confirm('Delete this batch?')) return;
+            try {
+                const res = await fetch(`${SB_ENDPOINT}/batches?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        ...SB_HEADERS,
+                        'Prefer': 'return=representation'
+                    }
+                });
+                if (!res.ok) throw new Error("Network response was not ok");
+                
+                const deleted = await res.json();
+                if (deleted && deleted.length > 0) {
+                    loadBatches();
+                } else {
+                    alert(
+                        `⚠️ Batch was NOT deleted.\n\n` +
+                        `This is due to Supabase Row Level Security (RLS) policies blocking deletions.\n\n` +
+                        `Please run this SQL in your Supabase SQL Editor:\n\n` +
+                        `CREATE POLICY "Allow anon delete batches" ON batches FOR DELETE TO anon USING (true);`
+                    );
+                }
+            } catch(e) { alert("Error: " + e.message); }
+        }
+
+        /* ── Cards Logic ── */
+        async function loadCards() {
+            try {
+                const res = await fetch(`${SB_ENDPOINT}/membership?select=*&order=created_at.desc`, { headers: SB_HEADERS });
+                if (res.ok) {
+                    const data = await res.json();
+                    renderCards(data);
+                } else {
+                    console.error("Failed to load cards:", await res.text());
+                }
+            } catch (e) { console.error("Error loading cards:", e); }
+        }
+        
+        function renderCards(data) {
+            document.getElementById('cardCount').textContent = `— ${data.length} cards`;
+            const tbody = document.getElementById('cardsTableBody');
+            if (!data.length) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:3rem;color:var(--text-muted)">No cards found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map((r, i) => {
+                const proofLink = r.payment_proof_url 
+                    ? `<a href="${esc(r.payment_proof_url)}" target="_blank" style="color:var(--brand); text-decoration:underline;" onclick="event.stopPropagation()">View Screenshot ↗</a>` 
+                    : '<span style="color:var(--text-muted)">N/A</span>';
+                return `
+                <tr style="cursor:default;">
+                    <td style="color:var(--text-muted)">${i + 1}</td>
+                    <td><strong>${esc(r.name || '—')}</strong></td>
+                    <td>${esc(r.batch || '—')}</td>
+                    <td style="color:var(--text-muted)">${esc(r.mobile || '—')}</td>
+                    <td>${proofLink}</td>
+                    <td>
+                        <div style="display:flex; gap:0.5rem; align-items:center;">
+                            <a href="${esc(r.image_url)}" target="_blank" style="background:var(--brand); border:none; color:#fff; border-radius:0.5rem; padding:0.35rem 0.75rem; font-size:0.75rem; font-weight:600; text-decoration:none; display:inline-block;" onclick="event.stopPropagation()">View Card</a>
+                            <button onclick="event.stopPropagation(); deleteCard('${r.id}')" style="background:#ef4444; border:none; color:#fff; border-radius:0.5rem; padding:0.35rem 0.75rem; font-size:0.75rem; font-weight:600; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        async function deleteCard(id) {
+            if (!confirm('Delete this card record?')) return;
+            try {
+                const res = await fetch(`${SB_ENDPOINT}/membership?id=eq.${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        ...SB_HEADERS,
+                        'Prefer': 'return=representation'
+                    }
+                });
+                if (!res.ok) throw new Error("Network response was not ok");
+                
+                const deleted = await res.json();
+                if (deleted && deleted.length > 0) {
+                    loadCards();
+                } else {
+                    alert(
+                        `⚠️ Card was NOT deleted.\n\n` +
+                        `This is due to Supabase Row Level Security (RLS) policies blocking deletions for the 'membership' table.\n\n` +
+                        `Please run this SQL in your Supabase SQL Editor:\n\n` +
+                        `CREATE POLICY "Allow anon delete membership" ON membership FOR DELETE TO anon USING (true);`
+                    );
+                }
+            } catch(e) { alert("Error: " + e.message); }
         }
     </script>
 
