@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Membership</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@200,300,400,500,600,700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body { font-family: 'Clash Grotesk', sans-serif; background-color: #0f0f0f; color: #ffffff; zoom: 0.85; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .glass-panel { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .input-dark { background-color: #000; border: 1px solid #444; color: white; }
+        .input-color { padding: 0; border: none; height: 38px; width: 100%; cursor: pointer; }
+        .analytics-table { width: 100%; border-collapse: collapse; }
+        .analytics-table th { text-align: left; padding: 1rem; color: #888; border-bottom: 1px solid #333; font-weight: 500; font-size: 0.875rem; }
+        .analytics-table td { padding: 1rem; border-bottom: 1px solid #222; vertical-align: middle; }
+        .analytics-table tr:hover { background: rgba(255,255,255,0.02); }
+        .loader { border: 2px solid #333; border-top: 2px solid #fff; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+
+    <!--
+      SUPABASE SQL SCRIPT:
+      Run this in your Supabase SQL Editor to create the required tables and policies.
+
+      -- Create table for app_settings
+      CREATE TABLE app_settings (
+        id text PRIMARY KEY,
+        template_url text,
+        config jsonb,
+        last_updated timestamptz DEFAULT now()
+      );
+
+      -- Insert default row for config
+      INSERT INTO app_settings (id, config) VALUES ('config', '{ "name": { "x": 50, "y": 50, "size": 40, "color": "#FFFFFF", "weight": "700" }, "batch": { "x": 50, "y": 65, "size": 20, "color": "#FFD700", "weight": "400" }, "qrcode": { "x": 50, "y": 85, "size": 15 } }'::jsonb);
+
+      -- Create table for membership
+      CREATE TABLE membership (
+        id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+        name text NOT NULL,
+        batch text NOT NULL,
+        mobile text,
+        payment_proof_url text,
+        image_url text NOT NULL,
+        created_at timestamptz DEFAULT now()
+      );
+
+      -- Enable Row Level Security (RLS)
+      ALTER TABLE app_settings ENABLE ROW LEVEL SECURITY;
+      ALTER TABLE membership ENABLE ROW LEVEL SECURITY;
+
+      -- Create policies for app_settings (Allow public access for this app)
+      CREATE POLICY "Allow public read access to app_settings" ON app_settings FOR SELECT USING (true);
+      CREATE POLICY "Allow public insert/update access to app_settings" ON app_settings FOR ALL USING (true) WITH CHECK (true);
+
+      -- Create policies for membership (Allow public access for this app)
+      CREATE POLICY "Allow public read access to membership" ON membership FOR SELECT USING (true);
+      CREATE POLICY "Allow public insert access to membership" ON membership FOR INSERT WITH CHECK (true);
+    -->
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <nav class="border-b border-gray-800 p-4 sticky top-0 bg-[#0f0f0f]/80 backdrop-blur z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="text-xl font-bold tracking-wider text-white">MEMBERSHIP<span class="text-purple-500">ADMIN</span></div>
+            <div class="flex space-x-6 items-center">
+                <button onclick="adminApp.switchView('config')" id="nav-config" class="text-white font-medium hover:text-purple-400 transition">Configuration</button>
+                <button onclick="adminApp.switchView('analytics')" id="nav-analytics" class="text-gray-400 hover:text-purple-400 transition">Analytics</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow p-8 flex justify-center">
+        
+        <!-- View: Configuration -->
+        <div id="view-config" class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="glass-panel p-6 rounded-2xl space-y-6 h-fit">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-purple-400">Card Setup</h2>
+                    <span id="config-status" class="text-xs text-gray-500"></span>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">1. Upload Template</label>
+                    <div class="relative border-2 border-dashed border-gray-700 rounded-lg p-6 text-center hover:border-purple-500 transition cursor-pointer" onclick="document.getElementById('admin-upload').click()">
+                        <input type="file" id="admin-upload" accept="image/*" class="hidden" onchange="adminApp.handleImageUpload(this)">
+                        <p id="upload-label" class="text-sm text-gray-300">Using Default Template. Click to change</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <p class="text-sm text-gray-400 mb-2">2. Adjust Positions & Styles</p>
+                    
+                    <!-- Name Config -->
+                    <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                        <h3 class="font-bold mb-3 text-white border-b border-gray-700 pb-2 flex justify-between">
+                            Name Settings
+                            <div class="flex gap-2">
+                                <input type="color" id="name-color" class="w-6 h-6 rounded overflow-hidden border-none cursor-pointer" oninput="adminApp.debouncedUpdatePreview()">
+                            </div>
+                        </h3>
+                        <div class="grid grid-cols-3 gap-3 mb-3">
+                            <div><label class="text-xs text-gray-500 block mb-1">X Pos (%)</label><input type="number" id="name-x" class="w-full p-2 rounded text-sm input-dark" oninput="adminApp.debouncedUpdatePreview()"></div>
+                            <div><label class="text-xs text-gray-500 block mb-1">Y Pos (%)</label><input type="number" id="name-y" class="w-full p-2 rounded text-sm input-dark" oninput="adminApp.debouncedUpdatePreview()"></div>
+                            <div><label class="text-xs text-gray-500 block mb-1">Size</label><input type="number" id="name-size" class="w-full p-2 rounded text-sm input-dark" oninput="adminApp.debouncedUpdatePreview()"></div>
+                        </div>
+                        <div class="grid grid-cols-1">
+                             <label class="text-xs text-gray-500 block mb-1">Font Weight</label>
+                             <select id="name-weight" class="w-full p-2 rounded text-sm input-dark" onchange="adminApp.debouncedUpdatePreview()">
+                                 <option value="200">Extra Light (200)</option>
+                                 <option value="300">Light (300)</option>
+                                 <option value="400">Regular (400)</option>
+                                 <option value="500">Medium (500)</option>
+                                 <option value="600">Semibold (600)</option>
+                                 <option value="700">Bold (700)</option>
+                             </select>
+                        </div>
+                    </div>
+
+                    <!-- Batch Config -->
+                    <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                        <h3 class="font-bold mb-3 text-yellow-500 border-b border-gray-700 pb-2 flex justify-between">
+                            Batch Settings
+                             <div class="flex gap-2">
+                                <input type="color" id="batch-color" class="w-6 h-6 rounded overflow-hidden border-none cursor-pointer" oninput="adminApp.debouncedUpdatePreview()">
+                            </div>
+                        </h3>
+                        <div class="grid grid-cols-3 gap-3 mb-3">
+                            <div><label class="text-xs text-gray-500 block mb-1">X Pos (%)</label><input type="number" id="batch-x" class="w-full p-2 rounded text-sm input-dark" oninput="adminApp.debouncedUpdatePreview()"></div>
+                            <div><label class="text-xs text-gray-500 block mb-1">Y Pos (%)</label><input type="number" id="batch-y" class="w-full p-2 rounded text-sm input-dark" oninput="adminApp.debouncedUpdatePreview()"></div>
+                            <div><label class="text-xs text-gray-500 block mb-1">Size</label><input type="number" id="batch-size" class="w-full p-2 rounded text-sm input-dark" oninput="adminApp.debouncedUpdatePreview()"></div>
+                        </div>
+                        <div class="grid grid-cols-1">
+                             <label class="text-xs text-gray-500 block mb-1">Font Weight</label>
+                             <select id="batch-weight" class="w-full p-2 rounded text-sm input-dark" onchange="adminApp.debouncedUpdatePreview()">
+                                 <option value="200">Extra Light (200)</option>
+                                 <option value="300">Light (300)</option>
+                                 <option value="400">Regular (400)</option>
+                                 <option value="500">Medium (500)</option>
+                                 <option value="600">Semibold (600)</option>
+                                 <option value="700">Bold (700)</option>
+                             </select>
+                        </div>
+                    </div>
+
+                    <!-- QR Code Config -->
+                     <div class="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+                        <h3 class="font-bold mb-3 text-pink-500 border-b border-gray-700 pb-2">QR Code Settings</h3>
+                        <div class="grid grid-cols-2 gap-3 mb-2">
+                            <div><label class="text-xs text-gray-500 block mb-1">X Pos (%)</label><input type="number" id="qrcode-x" class="w-full p-2 rounded text-sm input-dark" oninput="adminApp.debouncedUpdatePreview()"></div>
+                            <div><label class="text-xs text-gray-500 block mb-1">Y Pos (%)</label><input type="number" id="qrcode-y" class="w-full p-2 rounded text-sm input-dark" oninput="adminApp.debouncedUpdatePreview()"></div>
+                        </div>
+                        <div class="grid grid-cols-1 gap-3">
+                            <div><label class="text-xs text-gray-500 block mb-1">Size (Scale)</label><input type="number" id="qrcode-size" class="w-full p-2 rounded text-sm input-dark" oninput="adminApp.debouncedUpdatePreview()"></div>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="adminApp.saveConfig()" id="save-btn" class="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-bold transition flex justify-center items-center gap-2">
+                    Save to Database
+                </button>
+            </div>
+
+            <!-- Preview -->
+            <div class="glass-panel p-4 rounded-2xl flex flex-col items-center justify-start bg-black/50 min-h-[500px]">
+                <h3 class="text-gray-400 mb-4 text-sm w-full text-center border-b border-gray-800 pb-2">Live Preview</h3>
+                <canvas id="admin-canvas" class="max-w-full h-auto shadow-2xl rounded-lg border border-gray-800"></canvas>
+            </div>
+        </div>
+
+        <!-- View: Analytics -->
+        <div id="view-analytics" class="w-full max-w-6xl hidden">
+            <div class="glass-panel p-8 rounded-2xl w-full">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Generated Cards</h2>
+                        <p class="text-gray-400 text-sm mt-1">Real-time database records (Table: membership)</p>
+                    </div>
+                    <button onclick="adminApp.loadAnalytics()" class="text-sm bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded text-white transition">Refresh Data</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="analytics-table">
+                        <thead>
+                            <tr>
+                                <th>Generated At</th>
+                                <th>Name</th>
+                                <th>Batch</th>
+                                <th>Mobile</th>
+                                <th>Payment Proof</th>
+                                <th>Card</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analytics-body"><tr><td colspan="6" class="text-center text-gray-500 py-8">Loading data...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Supabase SDKs -->
+    <script>
+        const supabaseUrl = 'https://qqruwdwssaezwzugdsfr.supabase.co';
+        const supabaseKey = 'sb_publishable_CzQ_xwzXKrN0w0lMbsKDvA_iDjr5QNo';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        window.loadGlobalSettings = async () => {
+            try {
+                const { data, error } = await supabaseClient.from('app_settings').select('*').eq('id', 'config').single();
+                if (error && error.code !== 'PGRST116') {
+                    console.error("Error loading settings:", error);
+                    return null;
+                }
+                if (data) {
+                    return {
+                        templateUrl: data.template_url,
+                        config: data.config
+                    };
+                }
+                return null;
+            } catch (e) { console.error(e); return null; }
+        };
+
+        window.saveGlobalSettings = async (settingsData) => {
+            try {
+                const payload = {
+                    id: 'config',
+                    template_url: settingsData.templateUrl,
+                    config: settingsData.config,
+                    last_updated: new Date().toISOString()
+                };
+                const { error } = await supabaseClient.from('app_settings').upsert(payload);
+                if (error) throw error;
+                return true;
+            } catch (e) { 
+                console.error("Supabase Save Error:", e);
+                throw e; 
+            }
+        };
+
+        window.fetchCards = async () => {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('membership')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(50);
+                if (error) throw error;
+                
+                const mappedData = data.map(row => ({
+                    id: row.id,
+                    name: row.name,
+                    batch: row.batch,
+                    mobile: row.mobile,
+                    paymentProofUrl: row.payment_proof_url,
+                    imageUrl: row.image_url,
+                    timestamp: { seconds: new Date(row.created_at).getTime() / 1000 }
+                }));
+                
+                return { success: true, data: mappedData };
+            } catch (e) {
+                console.error("Fetch Cards Error:", e);
+                return { success: false, error: e.message };
+            }
+        };
+    </script>
+
+    <script>
+        const adminApp = {
+            state: {
+                currentView: 'config',
+                templateImage: "https://res.cloudinary.com/da6fjyirm/image/upload/v1768470155/file_wnqufd.jpg",
+                templateFile: null, 
+                config: { 
+                    name: { x: 50, y: 50, size: 40, color: '#FFFFFF', weight: '700' }, 
+                    batch: { x: 50, y: 65, size: 20, color: '#FFD700', weight: '400' },
+                    qrcode: { x: 50, y: 85, size: 15 } 
+                },
+                debounceTimer: null
+            },
+            imgObj: null,
+            cloudinary: { cloudName: 'da6fjyirm', uploadPreset: 'ifada-sanad' },
+
+            async init() {
+                document.getElementById('config-status').innerText = "Loading...";
+                
+                const fontPromises = [200, 300, 400, 500, 600, 700].map(w => document.fonts.load(`${w} 20px 'Clash Grotesk'`));
+                try {
+                    await Promise.race([
+                        Promise.all(fontPromises),
+                        new Promise(r => setTimeout(r, 2000))
+                    ]);
+                } catch(e) { console.warn("Font loading timeout", e); }
+
+                if (window.loadGlobalSettings) {
+                    const savedData = await window.loadGlobalSettings();
+                    if (savedData) {
+                        if(savedData.config) {
+                            this.state.config = {
+                                ...this.state.config,
+                                name: { ...this.state.config.name, ...savedData.config.name },
+                                batch: { ...this.state.config.batch, ...savedData.config.batch },
+                                qrcode: { ...this.state.config.qrcode, ...savedData.config.qrcode }
+                            };
+                        }
+                        
+                        if(savedData.templateUrl) this.state.templateImage = savedData.templateUrl;
+
+                        document.getElementById('config-status').innerText = "Loaded ✓";
+                        this.updateInputs();
+                        this.loadAndDrawImage();
+                    } else {
+                        document.getElementById('config-status').innerText = "No settings. Using defaults.";
+                        this.updateInputs();
+                        this.loadAndDrawImage();
+                    }
+                } else { setTimeout(() => this.init(), 500); }
+            },
+
+            debouncedUpdatePreview() {
+                if (this.state.debounceTimer) clearTimeout(this.state.debounceTimer);
+                this.state.debounceTimer = setTimeout(() => {
+                    this.updatePreview();
+                }, 50);
+            },
+
+            async saveConfig() {
+                const btn = document.getElementById('save-btn');
+                const originalText = btn.innerHTML;
+                btn.disabled = true; btn.innerHTML = '<span class="loader"></span> Saving...';
+
+                try {
+                    let finalImageUrl = this.state.templateImage;
+                    
+                    if (this.state.templateFile || this.state.templateImage.startsWith('blob:') || this.state.templateImage.startsWith('data:')) {
+                        
+                        const formData = new FormData();
+                        
+                        if (this.state.templateFile) {
+                            if (this.state.templateFile.size > 20 * 1024 * 1024) throw new Error("Image too large (max 20MB)");
+                            formData.append('file', this.state.templateFile);
+                        } else {
+                            const blob = await (await fetch(this.state.templateImage)).blob();
+                            formData.append('file', blob);
+                        }
+                        
+                        formData.append('upload_preset', this.cloudinary.uploadPreset);
+                        
+                        const res = await fetch(`https://api.cloudinary.com/v1_1/${this.cloudinary.cloudName}/image/upload`, { method: 'POST', body: formData });
+                        
+                        if(!res.ok) {
+                            const errData = await res.json();
+                            throw new Error("Cloudinary upload failed: " + (errData.error?.message || res.statusText));
+                        }
+                        
+                        const data = await res.json();
+                        finalImageUrl = data.secure_url;
+                    }
+
+                    if (!finalImageUrl || finalImageUrl.startsWith('blob:')) {
+                         throw new Error("Invalid final image URL. Upload likely failed.");
+                    }
+
+                    const success = await window.saveGlobalSettings({
+                        templateUrl: finalImageUrl,
+                        config: this.state.config,
+                        lastUpdated: new Date().toISOString()
+                    });
+
+                    if (success) {
+                        alert("Saved to Database Successfully!");
+                        this.state.templateImage = finalImageUrl;
+                        this.state.templateFile = null;
+                    } 
+                } catch (e) { 
+                    console.error(e);
+                    alert("Error Saving: " + e.message); 
+                } finally {
+                    btn.disabled = false; btn.innerHTML = originalText;
+                }
+            },
+
+            switchView(viewName) {
+                document.getElementById('view-config').classList.add('hidden');
+                document.getElementById('view-analytics').classList.add('hidden');
+                document.getElementById(`view-${viewName}`).classList.remove('hidden');
+                
+                document.getElementById('nav-config').classList.remove('text-white');
+                document.getElementById('nav-analytics').classList.remove('text-white');
+                document.getElementById('nav-config').classList.add('text-gray-400');
+                document.getElementById('nav-analytics').classList.add('text-gray-400');
+                
+                document.getElementById(`nav-${viewName}`).classList.remove('text-gray-400');
+                document.getElementById(`nav-${viewName}`).classList.add('text-white');
+
+                if (viewName === 'analytics') this.loadAnalytics();
+            },
+
+            async loadAnalytics() {
+                const tbody = document.getElementById('analytics-body');
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-500 py-8">Fetching records...</td></tr>';
+                if (window.fetchCards) {
+                    const result = await window.fetchCards();
+                    if (!result.success) { 
+                        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-red-500 py-8">Error Fetching Data: ${result.error}</td></tr>`; 
+                        return; 
+                    }
+                    const cards = result.data;
+                    if (cards.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray-500 py-8">No records found.</td></tr>'; return; }
+                    
+                    tbody.innerHTML = cards.map(card => {
+                        const date = card.timestamp ? new Date(card.timestamp.seconds * 1000).toLocaleString() : 'N/A';
+                        
+                        const proofLink = card.paymentProofUrl 
+                            ? `<a href="${card.paymentProofUrl}" target="_blank" class="text-blue-400 hover:underline">View Proof ↗</a>` 
+                            : '<span class="text-gray-600">N/A</span>';
+                            
+                        return `<tr><td class="text-gray-400 text-sm">${date}</td><td class="font-bold text-white">${card.name}</td><td class="text-yellow-500">${card.batch}</td><td class="text-gray-300">${card.mobile || '-'}</td><td>${proofLink}</td><td><a href="${card.imageUrl}" target="_blank" class="text-purple-400 hover:text-purple-300 hover:underline">Card ↗</a></td></tr>`;
+                    }).join('');
+                } else {
+                     tbody.innerHTML = `<tr><td colspan="6" class="text-center text-red-500 py-8">SDK Error: fetchCards not found</td></tr>`; 
+                }
+            },
+
+            updateInputs() {
+                document.getElementById('name-x').value = this.state.config.name.x;
+                document.getElementById('name-y').value = this.state.config.name.y;
+                document.getElementById('name-size').value = this.state.config.name.size;
+                document.getElementById('name-color').value = this.state.config.name.color || '#FFFFFF';
+                document.getElementById('name-weight').value = this.state.config.name.weight || '700';
+                
+                document.getElementById('batch-x').value = this.state.config.batch.x;
+                document.getElementById('batch-y').value = this.state.config.batch.y;
+                document.getElementById('batch-size').value = this.state.config.batch.size;
+                document.getElementById('batch-color').value = this.state.config.batch.color || '#FFD700';
+                document.getElementById('batch-weight').value = this.state.config.batch.weight || '400';
+
+                const qrcode = this.state.config.qrcode || {x:50, y:85, size:15};
+                document.getElementById('qrcode-x').value = qrcode.x;
+                document.getElementById('qrcode-y').value = qrcode.y;
+                document.getElementById('qrcode-size').value = qrcode.size;
+            },
+
+            handleImageUpload(input) {
+                const file = input.files[0];
+                if (!file) return;
+                
+                if (this.state.templateImage && this.state.templateImage.startsWith('blob:')) {
+                    URL.revokeObjectURL(this.state.templateImage);
+                }
+
+                this.state.templateFile = file;
+                this.state.templateImage = URL.createObjectURL(file);
+                
+                document.getElementById('upload-label').innerText = file.name;
+                this.loadAndDrawImage();
+            },
+
+            loadAndDrawImage() {
+                this.imgObj = new Image();
+                this.imgObj.crossOrigin = "Anonymous";
+                this.imgObj.src = this.state.templateImage;
+                this.imgObj.onload = () => this.updatePreview();
+            },
+
+            async updatePreview() {
+                if (!this.imgObj) return;
+                
+                this.state.config.name.x = parseFloat(document.getElementById('name-x').value) || 0;
+                this.state.config.name.y = parseFloat(document.getElementById('name-y').value) || 0;
+                this.state.config.name.size = parseFloat(document.getElementById('name-size').value) || 10;
+                this.state.config.name.color = document.getElementById('name-color').value;
+                this.state.config.name.weight = document.getElementById('name-weight').value;
+                
+                this.state.config.batch.x = parseFloat(document.getElementById('batch-x').value) || 0;
+                this.state.config.batch.y = parseFloat(document.getElementById('batch-y').value) || 0;
+                this.state.config.batch.size = parseFloat(document.getElementById('batch-size').value) || 10;
+                this.state.config.batch.color = document.getElementById('batch-color').value;
+                this.state.config.batch.weight = document.getElementById('batch-weight').value;
+
+                this.state.config.qrcode = {
+                    x: parseFloat(document.getElementById('qrcode-x').value) || 0,
+                    y: parseFloat(document.getElementById('qrcode-y').value) || 0,
+                    size: parseFloat(document.getElementById('qrcode-size').value) || 10
+                };
+
+                const canvas = document.getElementById('admin-canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = this.imgObj.width; canvas.height = this.imgObj.height;
+                
+                const scaleFactor = canvas.width / 1000;
+                
+                const nameWeight = this.state.config.name.weight;
+                const batchWeight = this.state.config.batch.weight;
+                const nameSize = this.state.config.name.size * scaleFactor * 1.5;
+                const batchSize = this.state.config.batch.size * scaleFactor * 1.5;
+                
+                const fontName = `${nameWeight} ${nameSize}px 'Clash Grotesk'`;
+                const fontBatch = `${batchWeight} ${batchSize}px 'Clash Grotesk'`;
+
+                try {
+                    document.fonts.load(fontName);
+                    document.fonts.load(fontBatch);
+                } catch(e) { }
+
+                ctx.drawImage(this.imgObj, 0, 0);
+
+                const drawText = (text, config, fontSpec) => {
+                    const x = (config.x / 100) * canvas.width;
+                    const y = (config.y / 100) * canvas.height;
+                    ctx.font = fontSpec;
+                    ctx.fillStyle = config.color;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(text, x, y);
+                };
+
+                drawText("JOHN DOE", this.state.config.name, fontName);
+                drawText("First Batch", this.state.config.batch, fontBatch);
+                
+                try {
+                    const qrConf = this.state.config.qrcode;
+                    const qrVisualSize = (qrConf.size / 100) * canvas.width;
+                    const qrX = (qrConf.x / 100) * canvas.width - (qrVisualSize/2);
+                    const qrY = (qrConf.y / 100) * canvas.height - (qrVisualSize/2);
+
+                    const tempCanvas = document.createElement('canvas');
+                    const qrResolution = 500;
+                    await QRCode.toCanvas(tempCanvas, "1234567890", { 
+                        width: qrResolution,
+                        margin: 1, 
+                        color: { dark: "#000000", light: "#FFFFFF" }
+                    });
+                    
+                    ctx.drawImage(tempCanvas, qrX, qrY, qrVisualSize, qrVisualSize);
+                } catch(e) { console.error("QR Code preview error", e); }
+            }
+        };
+
+        window.onload = () => adminApp.init();
+    </script>
+</body>
+</html>

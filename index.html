@@ -53,7 +53,7 @@
     </script>
 </head>
 
-<body class="min-h-screen flex flex-col justify-center pt-10 pb-10 px-4 sm:px-6 lg:px-8 relative overflow-x-hidden">
+<body class="min-h-screen flex flex-col justify-center pt-10 pb-10 px-4 sm:px-6 lg:px-8 relative overflow-x-hidden" style="zoom: 0.85;">
     <!-- Background Design -->
     <div class="fixed inset-0 z-[-1] bg-gradient-to-br from-slate-50 via-slate-100 to-zinc-200 overflow-hidden">
         <div class="bg-blob blob-1 absolute top-0 right-0 -mr-20 -mt-20"></div>
@@ -1005,39 +1005,41 @@
     <!-- Custom Scripts -->
     <script src="script.js"></script>
 
-    <!-- Firebase SDKs for Membership Card Settings & Database -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
-
-        // MVS Project Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyDEJUuNeIej1KKJ2gJKHop4ezWxv3B4CC4",
-            authDomain: "mvs-db-99118.firebaseapp.com",
-            projectId: "mvs-db-99118",
-            storageBucket: "mvs-db-99118.firebasestorage.app",
-            messagingSenderId: "525394480070",
-            appId: "1:525394480070:web:80e0509bbd25f76d2940c7",
-            measurementId: "G-XEVP88Z27L"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    <!-- Supabase SDKs for Membership Card Settings & Database -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://qqruwdwssaezwzugdsfr.supabase.co';
+        const supabaseKey = 'sb_publishable_CzQ_xwzXKrN0w0lMbsKDvA_iDjr5QNo';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         window.getGlobalSettings = async () => {
             try {
-                const docSnap = await getDoc(doc(db, "app_settings", "config"));
-                if (docSnap.exists()) return { success: true, data: docSnap.data() };
-                return { success: false, error: "No configuration found." };
+                const { data, error } = await supabaseClient.from('app_settings').select('*').eq('id', 'config').single();
+                if (error) {
+                    if (error.code === 'PGRST116') return { success: false, error: "No configuration found." };
+                    throw error;
+                }
+                return { 
+                    success: true, 
+                    data: {
+                        templateUrl: data.template_url,
+                        config: data.config
+                    }
+                };
             } catch (e) { return { success: false, error: e.message }; }
         };
 
         window.saveCardToDB = async (data) => {
             try {
-                await addDoc(collection(db, "membership"), {
-                    ...data,
-                    timestamp: serverTimestamp()
-                });
+                const payload = {
+                    name: data.name,
+                    batch: data.batch,
+                    mobile: data.mobile || null,
+                    payment_proof_url: data.paymentProofUrl || null,
+                    image_url: data.imageUrl
+                };
+                const { error } = await supabaseClient.from('membership').insert([payload]);
+                if (error) throw error;
                 return { success: true };
             } catch (e) {
                 console.error("Error adding document: ", e);
