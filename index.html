@@ -13,7 +13,8 @@
     <!-- Stable Tesseract CDN -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.3/dist/tesseract.min.js"></script>
     <!-- Clash Grotesk Font for Membership Card -->
-    <link href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@200,300,400,500,600,700&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@200,300,400,500,600,700&display=swap"
+        rel="stylesheet">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
     <!-- Google Fonts -->
@@ -52,7 +53,8 @@
     </script>
 </head>
 
-<body class="min-h-screen flex flex-col justify-center pt-10 pb-10 px-4 sm:px-6 lg:px-8 relative overflow-x-hidden" style="zoom: 0.85;">
+<body class="min-h-screen flex flex-col justify-center pt-10 pb-10 px-4 sm:px-6 lg:px-8 relative overflow-x-hidden"
+    style="zoom: 0.85;">
     <!-- Background Design -->
     <div class="fixed inset-0 z-[-1] bg-gradient-to-br from-slate-50 via-slate-100 to-zinc-200 overflow-hidden">
         <div class="bg-blob blob-1 absolute top-0 right-0 -mr-20 -mt-20"></div>
@@ -74,7 +76,8 @@
                 </svg>
             </div>
             <span
-                class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-xs font-semibold tracking-wider uppercase mb-4">SFADC Alumni Association</span>
+                class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-brand-100 text-brand-700 text-xs font-semibold tracking-wider uppercase mb-4">SFADC
+                Alumni Association</span>
             <h1
                 class="text-4xl md:text-5xl font-extrabold text-slate-800 mb-6 tracking-tight font-display leading-tight">
                 Alumni Database <br><span
@@ -90,7 +93,8 @@
                 <span>Start Survey</span>
                 <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                        d="M14 5l7 7m0 0l-7 7m7-7H3">
                     </path>
                 </svg>
             </button>
@@ -138,7 +142,7 @@
                     <div class="mb-8 text-center md:text-left">
                         <span
                             class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">Step
-                            1 of 6</span>
+                            1 of 5</span>
                         <h2 class="text-3xl font-extrabold text-slate-800 font-display">Personal Information</h2>
                         <p class="text-slate-500 mt-1.5">Tell us a bit about yourself.</p>
                     </div>
@@ -203,26 +207,41 @@
                         <!-- Place of Residence -->
                         <div>
                             <label for="residencePlace"
-                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">4. Place of
-                                Residence</label>
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">4. Place</label>
                             <input type="text" id="residencePlace" name="residencePlace"
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
-                        <!-- Country of Residence -->
+                        <!-- District -->
                         <div>
                             <label for="country"
-                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">5. Country of
-                                Residence</label>
-                            <input type="text" id="country" name="country"
-                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">5.
+                                District</label>
+                            <select id="country" name="country"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 focus:outline-none bg-white/80">
+                                <option value="" disabled selected>Select District</option>
+                                <option value="Alappuzha">Alappuzha</option>
+                                <option value="Ernakulam">Ernakulam</option>
+                                <option value="Idukki">Idukki</option>
+                                <option value="Kannur">Kannur</option>
+                                <option value="Kasaragod">Kasaragod</option>
+                                <option value="Kollam">Kollam</option>
+                                <option value="Kottayam">Kottayam</option>
+                                <option value="Kozhikode">Kozhikode</option>
+                                <option value="Malappuram">Malappuram</option>
+                                <option value="Palakkad">Palakkad</option>
+                                <option value="Pathanamthitta">Pathanamthitta</option>
+                                <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+                                <option value="Thrissur">Thrissur</option>
+                                <option value="Wayanad">Wayanad</option>
+                            </select>
                         </div>
 
                         <!-- Date of Birth -->
                         <div>
                             <label for="dob" class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">6.
-                                Date of Birth <span class="text-slate-400 text-xs font-normal">(Optional)</span></label>
-                            <input type="date" id="dob" name="dob"
+                                Date of Birth <span class="text-red-500">*</span></label>
+                            <input type="date" id="dob" name="dob" required
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-600 placeholder-slate-400 focus:outline-none">
                         </div>
 
@@ -263,16 +282,16 @@
                     <div class="mb-8 text-center md:text-left">
                         <span
                             class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">Step
-                            2 of 6</span>
+                            2 of 5</span>
                         <h2 class="text-3xl font-extrabold text-slate-800 font-display">Academic Information</h2>
-                        <p class="text-slate-500 mt-1.5">Share your educational background with SFADC.</p>
+                        <p class="text-slate-500 mt-1.5">Share your educational background with IFADA</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Admission Year -->
                         <div>
                             <label for="admissionYear"
-                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">7. Year of
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">8. Year of
                                 Admission to SFADC</label>
                             <input type="number" min="1950" max="2030" id="admissionYear" name="admissionYear"
                                 placeholder="e.g. 2015"
@@ -282,16 +301,27 @@
                         <!-- Leaving Year -->
                         <div>
                             <label for="leavingYear"
-                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">8. Year of
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">9. Year of
                                 Leaving SFADC</label>
                             <input type="number" min="1950" max="2030" id="leavingYear" name="leavingYear"
                                 placeholder="e.g. 2020"
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
+                        <!-- Select Batch -->
+                        <div class="col-span-1 md:col-span-2">
+                            <label for="membershipBatch"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">10. Select Batch
+                                <span class="text-red-500">*</span></label>
+                            <select id="membershipBatch"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 focus:outline-none bg-white/80">
+                                <option value="" disabled selected>Loading batches...</option>
+                            </select>
+                        </div>
+
                         <!-- Alumni Status -->
                         <div class="col-span-1 md:col-span-2">
-                            <label class="block text-sm font-semibold text-slate-600 mb-2 font-display">9. Alumni
+                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">11. Alumni
                                 Status</label>
                             <div class="flex flex-col sm:flex-row gap-4">
                                 <label
@@ -337,21 +367,80 @@
 
                         <!-- Highest Qualification -->
                         <div class="col-span-1 md:col-span-2">
-                            <label for="qualification"
-                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">10. Highest
+                            <label class="block text-sm font-semibold text-slate-600 mb-2.5 font-display">12. Highest
                                 Qualification Attained</label>
-                            <input type="text" id="qualification" name="qualification"
-                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                <script>
+                                    const quals = [
+                                        'Certificate Course',
+                                        'Diploma',
+                                        'Advanced Diploma',
+                                        'Bachelor\'s Degree (BA/BSc/BCom/BBA/BCA/BTech etc.)',
+                                        'Bachelor\'s Degree (Religious/Islamic Studies)',
+                                        'Postgraduate Diploma',
+                                        'Master\'s Degree (MA/MSc/MCom/MBA/MTech etc.)',
+                                        'MPhil',
+                                        'PhD/Doctorate',
+                                        'Postdoctoral Qualification'
+                                    ];
+                                    quals.forEach(q => {
+                                        document.write(`
+                                            <label class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                                <input type="radio" name="qualification" value="${q}" class="sr-only peer">
+                                                <div class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none"></div>
+                                                <div class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
+                                                <div class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2 flex-shrink-0">
+                                                    <div class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                                </div>
+                                                <span class="text-xs text-slate-700 font-semibold relative z-10 font-display">${q}</span>
+                                            </label>
+                                        `);
+                                    });
+                                </script>
+                                <label
+                                    class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20 md:col-span-2">
+                                    <input type="radio" name="qualification" value="Others" id="qualOthersRadio"
+                                        class="sr-only peer">
+                                    <div
+                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
+                                    </div>
+                                    <div
+                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2 flex-shrink-0">
+                                        <div
+                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
+                                        </div>
+                                    </div>
+                                    <span
+                                        class="text-sm text-slate-700 font-semibold mr-2 whitespace-nowrap relative z-10 font-display">Other</span>
+                                    <input type="text" id="qualOthersText" placeholder="Please specify..."
+                                        class="w-full bg-transparent border-b border-slate-300 focus:border-brand-500 focus:outline-none text-sm px-1 py-0.5 relative z-10 font-medium text-slate-700 placeholder-slate-400"
+                                        onfocus="document.getElementById('qualOthersRadio').checked = true">
+                                </label>
+                            </div>
                         </div>
 
                         <!-- Additional Degrees -->
                         <div class="col-span-1 md:col-span-2">
                             <label for="additionalDegrees"
-                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">11. Additional
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">13. Additional
                                 Degrees, Diplomas, or Certifications <span
                                     class="text-slate-400 text-xs font-normal">(Optional)</span></label>
                             <textarea id="additionalDegrees" name="additionalDegrees" rows="2"
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none resize-y"></textarea>
+                        </div>
+
+                        <!-- Highest Achievement -->
+                        <div class="col-span-1 md:col-span-2">
+                            <label for="highestAchievement"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">14. Highest
+                                Achievement so Far <span
+                                    class="text-slate-400 text-xs font-normal">(Optional)</span></label>
+                            <textarea id="highestAchievement" name="highestAchievement" rows="2"
+                                class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none resize-y"
+                                placeholder="List any notable achievements, awards, or recognitions..."></textarea>
                         </div>
                     </div>
                 </section>
@@ -361,7 +450,7 @@
                     <div class="mb-8 text-center md:text-left">
                         <span
                             class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">Step
-                            3 of 6</span>
+                            3 of 5</span>
                         <h2 class="text-3xl font-extrabold text-slate-800 font-display">Professional Information</h2>
                         <p class="text-slate-500 mt-1.5">Tell us about your current career.</p>
                     </div>
@@ -370,7 +459,7 @@
                         <!-- Profession -->
                         <div>
                             <label for="profession"
-                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">12. Current
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">15. Current
                                 Profession / Designation</label>
                             <input type="text" id="profession" name="profession"
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
@@ -379,7 +468,7 @@
                         <!-- Organization -->
                         <div>
                             <label for="organization"
-                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">13. Organization
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">16. Organization
                                 / Institution Name</label>
                             <input type="text" id="organization" name="organization"
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
@@ -387,7 +476,7 @@
 
                         <!-- Field of Work -->
                         <div class="col-span-1 md:col-span-2">
-                            <label class="block text-sm font-semibold text-slate-600 mb-2.5 font-display">14. Field of
+                            <label class="block text-sm font-semibold text-slate-600 mb-2.5 font-display">17. Field of
                                 Work</label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                 <!-- Radio inputs mapped to a styled label -->
@@ -435,7 +524,7 @@
                         <!-- Work Location -->
                         <div class="col-span-1 md:col-span-2">
                             <label for="workLocation"
-                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">15. Work
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">18. Work
                                 Location</label>
                             <input type="text" id="workLocation" name="workLocation"
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
@@ -448,14 +537,15 @@
                     <div class="mb-8 text-center md:text-left">
                         <span
                             class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">Step
-                            4 of 6</span>
+                            4 of 5</span>
                         <h2 class="text-3xl font-extrabold text-slate-800 font-display">Skills & Expertise</h2>
                         <p class="text-slate-500 mt-1.5 font-sans">Let us know how you can contribute to our community.
                         </p>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-600 mb-4 font-display">In which areas can
+                        <label class="block text-sm font-semibold text-slate-600 mb-4 font-display">19. In which areas
+                            can
                             you contribute to SFADC? <span class="text-slate-400 font-normal text-xs">(Multiple
                                 selections allowed)</span></label>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -512,106 +602,21 @@
                     </div>
                 </section>
 
-                <!-- Section 5: Alumni Engagement -->
+                <!-- Section 5: Communication and Consent -->
                 <section class="form-section step-section hidden" data-step="5">
                     <div class="mb-8 text-center md:text-left">
                         <span
                             class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">Step
-                            5 of 6</span>
-                        <h2 class="text-3xl font-extrabold text-slate-800 font-display">Alumni Engagement</h2>
-                        <p class="text-slate-500 mt-1.5 font-sans">How would you like to stay involved?</p>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-600 mb-4 font-display">How would you like
-                            to participate in SFADC activities?</label>
-                        <div class="space-y-3 max-w-2xl">
-                            <script>
-                                const engagements = [
-                                    'Attend Alumni Meetings', 'Volunteer for Programs', 'Serve in Committees',
-                                    'Mentor Students and Alumni', 'Deliver Career Guidance Sessions',
-                                    'Support Welfare Initiatives', 'Financial Contributions to Projects',
-                                    'Not Available at Present'
-                                ];
-                                engagements.forEach(eng => {
-                                    document.write(`
-                                        <label class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20 shadow-sm">
-                                            <input type="checkbox" name="engagement" value="${eng}" class="sr-only peer">
-                                            <div class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none"></div>
-                                            <div class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
-                                            <!-- custom checkbox -->
-                                            <div class="w-4 h-4 rounded border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
-                                                <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                                                </svg>
-                                            </div>
-                                            <span class="text-sm text-slate-700 font-semibold relative z-10 font-display">${eng}</span>
-                                        </label>
-                                    `);
-                                });
-                            </script>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Section 6: Communication and Consent -->
-                <section class="form-section step-section hidden" data-step="6">
-                    <div class="mb-8 text-center md:text-left">
-                        <span
-                            class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold uppercase tracking-wider mb-2">Step
-                            6 of 6</span>
+                            5 of 5</span>
                         <h2 class="text-3xl font-extrabold text-slate-800 font-display">Communication & Consent</h2>
                         <p class="text-slate-500 mt-1.5 font-sans">Almost done! Set your preferences.</p>
                     </div>
 
                     <div class="space-y-8">
-                        <!-- 16. Directory -->
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">16. Would you
-                                like to be included in the SFADC Alumni Directory?</label>
-                            <div class="flex gap-4">
-                                <label
-                                    class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
-                                    <input type="radio" name="directoryInclude" value="Yes" class="sr-only peer">
-                                    <div
-                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
-                                    </div>
-                                    <div
-                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
-                                    </div>
-                                    <div
-                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
-                                        <div
-                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Yes</span>
-                                </label>
-                                <label
-                                    class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
-                                    <input type="radio" name="directoryInclude" value="No" class="sr-only peer">
-                                    <div
-                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
-                                    </div>
-                                    <div
-                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
-                                    </div>
-                                    <div
-                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
-                                        <div
-                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">No</span>
-                                </label>
-                            </div>
-                        </div>
 
                         <!-- 17. WhatsApp -->
                         <div>
-                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">17. Are you
+                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">20. Are you
                                 willing to join official IFADA WhatsApp groups and receive updates?</label>
                             <div class="flex flex-col sm:flex-row gap-3">
                                 <label
@@ -652,30 +657,12 @@
                                         class="text-slate-700 font-semibold relative z-10 font-display text-sm">Already
                                         a Member</span>
                                 </label>
-                                <label
-                                    class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
-                                    <input type="radio" name="whatsappJoin" value="No" class="sr-only peer">
-                                    <div
-                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
-                                    </div>
-                                    <div
-                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
-                                    </div>
-                                    <div
-                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
-                                        <div
-                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">No</span>
-                                </label>
                             </div>
                         </div>
 
-                        <!-- 19. Region -->
+                        <!-- 18. Region -->
                         <div>
-                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">19. Which region
+                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">21. Which region
                                 are you currently residing in?</label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                                 <label
@@ -751,11 +738,54 @@
                                         Countries</span>
                                 </label>
                             </div>
+
+                            <!-- Dynamic Region Dropdowns -->
+                            <div id="regionDropdownContainer"
+                                class="hidden mt-4 p-4 border border-brand-500/10 rounded-2xl bg-brand-500/5 space-y-4">
+                                <!-- Other Indian States -->
+                                <div id="indianStatesDiv" class="hidden">
+                                    <label for="stateSelect"
+                                        class="block text-xs font-semibold text-slate-600 mb-1.5 font-display">Select
+                                        State <span class="text-red-500">*</span></label>
+                                    <select id="stateSelect"
+                                        class="premium-input w-full px-4 py-3 rounded-xl text-slate-700 focus:outline-none bg-white/80 text-xs">
+                                        <option value="" disabled selected>Select State</option>
+                                    </select>
+                                </div>
+
+                                <!-- GCC Countries -->
+                                <div id="gccCountriesDiv" class="hidden">
+                                    <label for="gccSelect"
+                                        class="block text-xs font-semibold text-slate-600 mb-1.5 font-display">Select
+                                        GCC Country <span class="text-red-500">*</span></label>
+                                    <select id="gccSelect"
+                                        class="premium-input w-full px-4 py-3 rounded-xl text-slate-700 focus:outline-none bg-white/80 text-xs">
+                                        <option value="" disabled selected>Select GCC Country</option>
+                                        <option value="Bahrain">Bahrain</option>
+                                        <option value="Kuwait">Kuwait</option>
+                                        <option value="Oman">Oman</option>
+                                        <option value="Qatar">Qatar</option>
+                                        <option value="Saudi Arabia">Saudi Arabia</option>
+                                        <option value="United Arab Emirates">United Arab Emirates</option>
+                                    </select>
+                                </div>
+
+                                <!-- Other Countries -->
+                                <div id="otherCountriesDiv" class="hidden">
+                                    <label for="otherCountriesSelect"
+                                        class="block text-xs font-semibold text-slate-600 mb-1.5 font-display">Select
+                                        Country <span class="text-red-500">*</span></label>
+                                    <select id="otherCountriesSelect"
+                                        class="premium-input w-full px-4 py-3 rounded-xl text-slate-700 focus:outline-none bg-white/80 text-xs">
+                                        <option value="" disabled selected>Select Country</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- 20. Batch Representative -->
+                        <!-- 19. Batch Representative -->
                         <div>
-                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">20. Would you be
+                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">22. Would you be
                                 interested in serving as a batch representative or local coordinator?</label>
                             <div class="flex gap-4">
                                 <label
@@ -815,11 +845,11 @@
                             </div>
                         </div>
 
-                        <!-- 18. Remarks -->
+                        <!-- 20. Remarks -->
                         <div>
                             <label for="remarks"
-                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">18. Any
-                                suggestions or remarks for SFADC? <span
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">23. Any
+                                suggestions or remarks for SFADC and IMAD <span
                                     class="text-slate-400 text-xs font-normal">(Optional)</span></label>
                             <textarea id="remarks" name="remarks" rows="4"
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none resize-y"
@@ -828,11 +858,13 @@
 
                         <!-- 21. Annual Membership -->
                         <div class="mt-6">
-                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">21. Annual Membership</label>
+                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">24. Annual
+                                Membership</label>
                             <div class="flex flex-col sm:flex-row gap-4 mb-4">
                                 <label
                                     class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
-                                    <input type="radio" name="membership" value="Pay now" class="sr-only peer" id="membershipPayNow">
+                                    <input type="radio" name="membership" value="Pay now" class="sr-only peer"
+                                        id="membershipPayNow">
                                     <div
                                         class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
                                     </div>
@@ -845,12 +877,13 @@
                                             class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
                                         </div>
                                     </div>
-                                    <span
-                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Pay Now</span>
+                                    <span class="text-slate-700 font-semibold relative z-10 font-display text-sm">Pay
+                                        Now</span>
                                 </label>
                                 <label
                                     class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
-                                    <input type="radio" name="membership" value="Pay later" class="sr-only peer" id="membershipPayLater" checked>
+                                    <input type="radio" name="membership" value="Pay later" class="sr-only peer"
+                                        id="membershipPayLater" checked>
                                     <div
                                         class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
                                     </div>
@@ -863,31 +896,32 @@
                                             class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
                                         </div>
                                     </div>
-                                    <span
-                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Pay Later</span>
+                                    <span class="text-slate-700 font-semibold relative z-10 font-display text-sm">Pay
+                                        Later</span>
                                 </label>
                             </div>
 
                             <!-- Membership Payment Details Sub-panel -->
-                            <div id="membershipDetailsPanel" class="hidden border border-brand-500/20 p-6 rounded-2xl bg-brand-500/5 space-y-4">
-                                <h4 class="text-base font-bold text-brand-700 font-display">Generate Membership Card</h4>
-                                <p class="text-xs text-slate-500">Your card will be generated using your Full Name and Mobile Number from Step 1.</p>
-                                
-                                <!-- Batch Selection -->
-                                <div>
-                                    <label for="membershipBatch" class="block text-xs font-semibold text-slate-600 mb-1.5 font-display">Select Batch <span class="text-red-500">*</span></label>
-                                    <select id="membershipBatch" class="premium-input w-full px-4 py-3 rounded-xl text-slate-700 focus:outline-none bg-white/80">
-                                        <option value="" disabled selected>Loading batches...</option>
-                                    </select>
-                                </div>
+                            <div id="membershipDetailsPanel"
+                                class="hidden border border-brand-500/20 p-6 rounded-2xl bg-brand-500/5 space-y-4">
+                                <h4 class="text-base font-bold text-brand-700 font-display">Generate Membership Card
+                                </h4>
+                                <p class="text-xs text-slate-500">Your card will be generated using your Full Name and
+                                    Mobile Number from Step 1.</p>
 
                                 <!-- Screenshot Upload -->
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5 font-display">Payment Verification (Required) <span class="text-red-500">*</span></label>
-                                    <p class="text-xs text-slate-500 mb-2">Upload screenshot showing payment of <span class="font-bold text-slate-700">₹500+</span>.</p>
-                                    <input type="file" id="membershipScreenshot" accept="image/*" class="premium-input w-full px-4 py-3 rounded-xl text-slate-700 focus:outline-none bg-white/80 text-xs">
-                                    
-                                    <div id="membershipStatusText" class="mt-2 text-xs text-slate-500 italic">Waiting for upload...</div>
+                                    <label
+                                        class="block text-xs font-semibold text-slate-600 mb-1.5 font-display">Payment
+                                        Verification (Required) <span class="text-red-500">*</span></label>
+                                    <p class="text-xs text-slate-500 mb-2">Upload screenshot showing payment of <span
+                                            class="font-bold text-slate-700">₹500+</span> to GPAY number <span
+                                            class="font-bold text-slate-700">86065 07672</span>.</p>
+                                    <input type="file" id="membershipScreenshot" accept="image/*"
+                                        class="premium-input w-full px-4 py-3 rounded-xl text-slate-700 focus:outline-none bg-white/80 text-xs">
+
+                                    <div id="membershipStatusText" class="mt-2 text-xs text-slate-500 italic">Waiting
+                                        for upload...</div>
                                 </div>
                             </div>
                         </div>
@@ -954,6 +988,14 @@
             <p class="text-slate-600 text-base md:text-lg">Thank you for taking the time to update your profile. Your
                 information has been successfully recorded.</p>
 
+            <!-- Registration ID Display -->
+            <div id="registrationIdSuccessContainer"
+                class="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100 max-w-sm mx-auto animate-fade-in">
+                <p class="text-slate-500 text-xs uppercase tracking-wider font-semibold">Your Registration ID</p>
+                <p id="successRegId" class="text-3xl font-extrabold text-teal-600 tracking-widest mt-1 font-display">—
+                </p>
+            </div>
+
             <!-- WhatsApp Join Button Container -->
             <div id="waSuccessBtnContainer"
                 class="hidden mt-8 p-6 bg-brand-50/50 rounded-2xl border border-brand-100/50 animate-fade-in">
@@ -965,15 +1007,17 @@
                         <path
                             d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.717-1.45L0 24zm6.59-4.846c1.66.986 3.288 1.479 4.884 1.48 5.332 0 9.703-4.307 9.707-9.605.002-2.566-.996-4.979-2.811-6.797-1.814-1.819-4.225-2.82-6.786-2.82-5.328 0-9.697 4.307-9.702 9.607-.002 1.83.514 3.6 1.494 5.178l-.995 3.633 3.714-.976zm12.067-6.505c-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.496.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.568-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
                     </svg>
-                    Join Official SFADC WhatsApp Group
+                    Join Official IFADA WhatsApp Group
                 </a>
             </div>
 
             <!-- Download Card Button Container -->
             <div id="downloadCardBtnContainer" class="hidden mt-4">
-                <button id="downloadCardBtn" class="w-full sm:w-auto px-10 py-4 bg-amber-500 hover:bg-amber-600 text-slate-950 text-lg font-bold rounded-full shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-amber-500/30 focus:outline-none focus:ring-4 focus:ring-amber-500 focus:ring-offset-2 flex items-center justify-center mx-auto group font-display gap-2">
+                <button id="downloadCardBtn"
+                    class="w-full sm:w-auto px-10 py-4 bg-amber-500 hover:bg-amber-600 text-slate-950 text-lg font-bold rounded-full shadow-lg shadow-amber-500/20 transition-all hover:scale-[1.02] hover:-translate-y-0.5 hover:shadow-amber-500/30 focus:outline-none focus:ring-4 focus:ring-amber-500 focus:ring-offset-2 flex items-center justify-center mx-auto group font-display gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                     </svg>
                     <span>Download Membership Card</span>
                 </button>
@@ -991,7 +1035,7 @@
 
     <!-- Footer -->
     <footer class="absolute bottom-4 left-0 w-full text-center text-sm text-slate-500 z-10">
-        <p>&copy; 2026 SFADC Alumni Association. All rights reserved.</p>
+        <p>&copy; 2026 IFADA Alumni Association. All rights reserved.</p>
     </footer>
 
     <!-- Custom Scripts -->
@@ -1011,8 +1055,8 @@
                     if (error.code === 'PGRST116') return { success: false, error: "No configuration found." };
                     throw error;
                 }
-                return { 
-                    success: true, 
+                return {
+                    success: true,
                     data: {
                         templateUrl: data.template_url,
                         config: data.config
@@ -1041,15 +1085,15 @@
 
         window.loadBatchesList = async () => {
             const select = document.getElementById('membershipBatch');
-            if(!select) return;
+            if (!select) return;
             try {
                 const { data, error } = await supabaseClient
                     .from('batches')
                     .select('batch_name')
                     .order('created_at', { ascending: false });
-                    
+
                 if (error) throw error;
-                
+
                 if (data && data.length > 0) {
                     select.innerHTML = '<option value="" disabled selected>Select Batch</option>';
                     data.forEach(batch => {

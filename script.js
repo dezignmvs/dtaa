@@ -12,8 +12,8 @@ const SUPABASE_ANON_KEY = 'sb_publishable_CzQ_xwzXKrN0w0lMbsKDvA_iDjr5QNo';
 const SB_BASE = SUPABASE_URL.replace(/\/rest\/v1\/?$/, '').replace(/\/$/, '');
 const SB_ENDPOINT = `${SB_BASE}/rest/v1`;
 const SB_HEADERS = {
-    'Content-Type':  'application/json',
-    'apikey':        SUPABASE_ANON_KEY,
+    'Content-Type': 'application/json',
+    'apikey': SUPABASE_ANON_KEY,
 };
 
 
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.success) {
                 membershipConfig = result.data.config;
                 const imgSrc = result.data.templateUrl;
-                
+
                 // Preload template image
                 membershipTemplateImg = new Image();
                 membershipTemplateImg.crossOrigin = "Anonymous";
@@ -202,6 +202,74 @@ document.addEventListener('DOMContentLoaded', () => {
     checkFirebase();
 
     initCountryPicker();
+
+    // --- Dynamic Region Dropdowns Setup ---
+    const regionRadios = document.querySelectorAll('input[name="region"]');
+    const regionDropdownContainer = document.getElementById('regionDropdownContainer');
+    const indianStatesDiv = document.getElementById('indianStatesDiv');
+    const gccCountriesDiv = document.getElementById('gccCountriesDiv');
+    const otherCountriesDiv = document.getElementById('otherCountriesDiv');
+
+    const stateSelect = document.getElementById('stateSelect');
+    const otherCountriesSelect = document.getElementById('otherCountriesSelect');
+
+    const INDIAN_STATES = [
+        "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", 
+        "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Madhya Pradesh", 
+        "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", 
+        "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", 
+        "Uttarakhand", "West Bengal", "Andaman and Nicobar Islands", "Chandigarh", 
+        "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Jammu and Kashmir", "Ladakh", 
+        "Lakshadweep", "Puducherry"
+    ];
+
+    const GCC_COUNTRIES = ["Bahrain", "Kuwait", "Oman", "Qatar", "Saudi Arabia", "United Arab Emirates"];
+
+    // 1. Populate Indian States
+    if (stateSelect) {
+        INDIAN_STATES.forEach(state => {
+            const opt = document.createElement('option');
+            opt.value = state;
+            opt.textContent = state;
+            stateSelect.appendChild(opt);
+        });
+    }
+
+    // 2. Populate Other Countries (excl. India and GCC)
+    if (otherCountriesSelect && typeof COUNTRIES !== 'undefined') {
+        const filteredCountries = COUNTRIES.filter(c => c.name !== 'India' && !GCC_COUNTRIES.includes(c.name));
+        filteredCountries.sort((a, b) => a.name.localeCompare(b.name));
+        filteredCountries.forEach(country => {
+            const opt = document.createElement('option');
+            opt.value = country.name;
+            opt.textContent = `${country.flag} ${country.name}`;
+            otherCountriesSelect.appendChild(opt);
+        });
+    }
+
+    // 3. Add change event listeners to region radio buttons
+    regionRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            const val = e.target.value;
+            
+            // Hide all by default
+            regionDropdownContainer.classList.add('hidden');
+            indianStatesDiv.classList.add('hidden');
+            gccCountriesDiv.classList.add('hidden');
+            otherCountriesDiv.classList.add('hidden');
+
+            if (val === 'Other Indian States') {
+                regionDropdownContainer.classList.remove('hidden');
+                indianStatesDiv.classList.remove('hidden');
+            } else if (val === 'GCC Countries') {
+                regionDropdownContainer.classList.remove('hidden');
+                gccCountriesDiv.classList.remove('hidden');
+            } else if (val === 'Other Countries') {
+                regionDropdownContainer.classList.remove('hidden');
+                otherCountriesDiv.classList.remove('hidden');
+            }
+        });
+    });
 
     const landingPage = document.getElementById('landingPage');
     const surveyContainer = document.getElementById('surveyContainer');
@@ -420,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.log("Membership Scan Result:", text);
                     const matches = text.replace(/[\n\r]+/g, ' ').match(/[\d,]+\.?\d*/g);
                     let hasValidAmount = false;
-                    
+
                     if (matches) {
                         hasValidAmount = matches.some(m => {
                             const clean = m.replace(/,/g, '');
@@ -448,19 +516,36 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentStep === 1) {
             const fullName = document.getElementById('fullName').value.trim();
             const mobile = document.getElementById('mobile').value.trim();
-            if (!fullName || !mobile) {
-                alert('Please fill out all required fields (Full Name and Mobile Number).');
+            const dob = document.getElementById('dob').value.trim();
+            if (!fullName || !mobile || !dob) {
+                alert('Please fill out all required fields (Full Name, Mobile Number, and Date of Birth).');
                 return false;
             }
         }
-        if (currentStep === 6) {
+        if (currentStep === 2) {
+            const batch = document.getElementById('membershipBatch').value;
+            if (!batch) {
+                alert('Please select your Batch.');
+                return false;
+            }
+        }
+        if (currentStep === 5) {
+            const regionRadio = document.querySelector('input[name="region"]:checked')?.value;
+            if (regionRadio === 'Other Indian States' && !document.getElementById('stateSelect').value) {
+                alert('Please select your State.');
+                return false;
+            }
+            if (regionRadio === 'GCC Countries' && !document.getElementById('gccSelect').value) {
+                alert('Please select your GCC Country.');
+                return false;
+            }
+            if (regionRadio === 'Other Countries' && !document.getElementById('otherCountriesSelect').value) {
+                alert('Please select your Country.');
+                return false;
+            }
+
             const selectedMembership = document.querySelector('input[name="membership"]:checked')?.value;
             if (selectedMembership === 'Pay now') {
-                const batch = document.getElementById('membershipBatch').value;
-                if (!batch) {
-                    alert('Please select your Batch for the membership card.');
-                    return false;
-                }
                 const screenshotFile = screenshotInput ? screenshotInput.files[0] : null;
                 if (!screenshotFile) {
                     alert('Please upload your payment screenshot.');
@@ -513,7 +598,7 @@ document.addEventListener('DOMContentLoaded', () => {
             submitBtn.classList.remove('opacity-80', 'cursor-not-allowed');
         };
 
-        const generateAndSaveMembershipCard = async () => {
+        const generateMembershipCardCanvas = async (regId) => {
             if (!membershipConfig || !membershipTemplateImg) {
                 throw new Error("Membership configuration or template image is not loaded yet. Please wait or refresh.");
             }
@@ -522,25 +607,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const mobile = document.getElementById('mobile').value.trim();
             const batch = document.getElementById('membershipBatch').value;
 
-            // 1. Upload Payment Screenshot to Cloudinary
-            setLoading('Uploading proof…');
-            const proofFile = screenshotInput.files[0];
-            const formData = new FormData();
-            formData.append('file', proofFile);
-            formData.append('upload_preset', 'ifada-sanad');
-
-            const proofRes = await fetch(
-                `https://api.cloudinary.com/v1_1/da6fjyirm/image/upload`,
-                { method: 'POST', body: formData }
-            );
-            if (!proofRes.ok) {
-                throw new Error("Failed to upload payment screenshot.");
-            }
-            const proofData = await proofRes.json();
-            const paymentProofUrl = proofData.secure_url;
-
-            // 2. Draw the membership card
-            setLoading('Drawing card…');
+            // Draw the membership card
+            setLoading('Generating card…');
             const canvas = document.getElementById('card-canvas');
             const ctx = canvas.getContext('2d');
             canvas.width = membershipTemplateImg.width;
@@ -575,6 +643,20 @@ document.addEventListener('DOMContentLoaded', () => {
             drawTxt(fullName.toUpperCase(), membershipConfig.name, fontName);
             drawTxt(batch, membershipConfig.batch, fontBatch);
 
+            // Draw Registration ID
+            const regIdConf = membershipConfig.regId || {
+                x: membershipConfig.batch.x,
+                y: membershipConfig.batch.y + 8,
+                size: membershipConfig.batch.size * 0.9,
+                color: membershipConfig.batch.color || '#FFF',
+                weight: '600'
+            };
+            const fontRegId = `${regIdConf.weight} ${regIdConf.size * scaleFactor * 1.5}px 'Clash Grotesk'`;
+            try {
+                await document.fonts.load(fontRegId);
+            } catch (e) {}
+            drawTxt(regId, regIdConf, fontRegId);
+
             // QR Code
             if (mobile) {
                 try {
@@ -590,8 +672,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error("QR Code generation error:", e);
                 }
             }
+        };
 
-            // 3. Upload Generated Card to Cloudinary
+        const uploadAndSaveMembershipCard = async () => {
+            const fullName = document.getElementById('fullName').value.trim();
+            const mobile = document.getElementById('mobile').value.trim();
+            const batch = document.getElementById('membershipBatch').value;
+            const canvas = document.getElementById('card-canvas');
+
+            // 1. Upload Payment Screenshot to Cloudinary
+            setLoading('Uploading proof…');
+            const proofFile = screenshotInput.files[0];
+            const formData = new FormData();
+            formData.append('file', proofFile);
+            formData.append('upload_preset', 'ifada-sanad');
+
+            const proofRes = await fetch(
+                `https://api.cloudinary.com/v1_1/da6fjyirm/image/upload`,
+                { method: 'POST', body: formData }
+            );
+            if (!proofRes.ok) {
+                throw new Error("Failed to upload payment screenshot.");
+            }
+            const proofData = await proofRes.json();
+            const paymentProofUrl = proofData.secure_url;
+
+            // 2. Upload Generated Card to Cloudinary
             setLoading('Saving card…');
             const cardBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
             const cardFormData = new FormData();
@@ -608,7 +714,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const cardData = await cardRes.json();
             const cardImageUrl = cardData.secure_url;
 
-            // 4. Save to Firebase
+            // 3. Save to database
             const saveRes = await window.saveCardToDB({
                 name: fullName,
                 batch: batch,
@@ -642,10 +748,53 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // ── STEP 0.5: Generate and upload Membership Card if Pay Now is selected ──
+            // Generate registration code
+            const batchVal = document.getElementById('membershipBatch').value;
+            let batchCode = '01';
+            
+            if (batchVal) {
+                const name = batchVal.toLowerCase().trim();
+                if (name.includes('first') || name.includes('1st')) batchCode = '01';
+                else if (name.includes('second') || name.includes('2nd')) batchCode = '02';
+                else if (name.includes('third') || name.includes('3rd')) batchCode = '03';
+                else if (name.includes('fourth') || name.includes('4th')) batchCode = '04';
+                else if (name.includes('fifth') || name.includes('5th')) batchCode = '05';
+                else if (name.includes('sixth') || name.includes('6th')) batchCode = '06';
+                else if (name.includes('seventh') || name.includes('7th')) batchCode = '07';
+                else if (name.includes('eighth') || name.includes('8th')) batchCode = '08';
+                else if (name.includes('ninth') || name.includes('9th')) batchCode = '09';
+                else if (name.includes('tenth') || name.includes('10th')) batchCode = '10';
+                else {
+                    const digits = name.replace(/\D/g, '');
+                    if (digits.length > 0) {
+                        batchCode = digits.padStart(2, '0').slice(-2);
+                    }
+                }
+            }
+
+            const searchPrefix = `IFADA${batchCode}`;
+            let serialNumber = 1;
+            try {
+                const countRes = await fetch(
+                    `${SB_ENDPOINT}/alumni_responses?registration_id=ilike.${searchPrefix}*&select=id`,
+                    { headers: SB_HEADERS }
+                );
+                if (countRes.ok) {
+                    const matching = await countRes.json();
+                    serialNumber = matching.length + 1;
+                }
+            } catch (e) {
+                console.error("Error fetching matching registration count:", e);
+            }
+
+            const serialStr = String(serialNumber).padStart(2, '0');
+            const registrationId = `IFADA${batchCode}${serialStr}`;
+
+            // ── STEP 0.5: Generate and save Membership Card if Pay Now is selected ──
             const selectedMembership = document.querySelector('input[name="membership"]:checked')?.value;
             if (selectedMembership === 'Pay now') {
-                await generateAndSaveMembershipCard();
+                await generateMembershipCardCanvas(registrationId);
+                await uploadAndSaveMembershipCard();
             }
 
             // ── STEP 1: Upload photo to Cloudinary ───────────────────────
@@ -681,17 +830,35 @@ document.addEventListener('DOMContentLoaded', () => {
             // ── STEP 2: Collect all form data ────────────────────────────
             setLoading('Saving your response…');
 
+
+
             const skills = [...document.querySelectorAll('input[name="skills"]:checked')].map(el => el.value);
             const skillOther = document.getElementById('skillOtherText').value.trim();
             if (skillOther && document.getElementById('skillOtherCheck').checked) skills.push(skillOther);
-
-            const engagement = [...document.querySelectorAll('input[name="engagement"]:checked')].map(el => el.value);
 
             const fieldOfWork = document.querySelector('input[name="fieldOfWork"]:checked')?.value || null;
             const fieldOthersVal = document.getElementById('fieldOthersText').value.trim();
             const finalField = (fieldOfWork === 'Others' && fieldOthersVal) ? `Others: ${fieldOthersVal}` : fieldOfWork;
 
+            const qualificationVal = document.querySelector('input[name="qualification"]:checked')?.value || null;
+            const qualOthersVal = document.getElementById('qualOthersText').value.trim();
+            const finalQual = (qualificationVal === 'Others' && qualOthersVal) ? `Others: ${qualOthersVal}` : qualificationVal;
+
+            const regionRadio = document.querySelector('input[name="region"]:checked')?.value || null;
+            let finalRegion = regionRadio;
+            if (regionRadio === 'Other Indian States') {
+                const state = document.getElementById('stateSelect').value;
+                if (state) finalRegion = `Other Indian States: ${state}`;
+            } else if (regionRadio === 'GCC Countries') {
+                const country = document.getElementById('gccSelect').value;
+                if (country) finalRegion = `GCC Countries: ${country}`;
+            } else if (regionRadio === 'Other Countries') {
+                const country = document.getElementById('otherCountriesSelect').value;
+                if (country) finalRegion = `Other Countries: ${country}`;
+            }
+
             const payload = {
+                registration_id: registrationId,
                 full_name: document.getElementById('fullName').value.trim(),
                 mobile: document.getElementById('mobile').value.trim(),
                 country_code: document.getElementById('mobileCountryCode').value,
@@ -703,17 +870,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 admission_year: parseInt(document.getElementById('admissionYear').value) || null,
                 leaving_year: parseInt(document.getElementById('leavingYear').value) || null,
                 alumni_status: document.querySelector('input[name="alumniStatus"]:checked')?.value || null,
-                qualification: document.getElementById('qualification').value.trim() || null,
+                qualification: finalQual,
                 additional_degrees: document.getElementById('additionalDegrees').value.trim() || null,
+                highest_achievement: document.getElementById('highestAchievement').value.trim() || null,
                 profession: document.getElementById('profession').value.trim() || null,
                 organization: document.getElementById('organization').value.trim() || null,
                 field_of_work: finalField,
                 work_location: document.getElementById('workLocation').value.trim() || null,
                 skills: skills.length ? skills : null,
-                engagement: engagement.length ? engagement : null,
-                directory_include: document.querySelector('input[name="directoryInclude"]:checked')?.value || null,
+                engagement: null,
+                directory_include: null,
                 whatsapp_join: document.querySelector('input[name="whatsappJoin"]:checked')?.value || null,
-                region: document.querySelector('input[name="region"]:checked')?.value || null,
+                region: finalRegion,
                 coordinator: document.querySelector('input[name="coordinator"]:checked')?.value || null,
                 remarks: document.getElementById('remarks').value.trim() || null,
             };
@@ -734,19 +902,45 @@ document.addEventListener('DOMContentLoaded', () => {
             surveyContainer.classList.add('opacity-0');
             setTimeout(async () => {
                 surveyContainer.classList.add('hidden');
-                
+
+                // Display Registration ID on success screen
+                const successRegIdEl = document.getElementById('successRegId');
+                if (successRegIdEl) {
+                    successRegIdEl.textContent = registrationId;
+                }
+
                 // Show/hide download button depending on membership choice
                 const selectedMembership = document.querySelector('input[name="membership"]:checked')?.value;
                 const downloadCardContainer = document.getElementById('downloadCardBtnContainer');
                 if (selectedMembership === 'Pay now' && downloadCardContainer) {
                     downloadCardContainer.classList.remove('hidden');
+                    
+                    const downloadBtn = document.getElementById('downloadCardBtn');
+                    if (downloadBtn) {
+                        downloadBtn.onclick = () => {
+                            const canvas = document.getElementById('card-canvas');
+                            const link = document.createElement('a');
+                            const fullName = document.getElementById('fullName').value.trim();
+                            const batch = document.getElementById('membershipBatch').value;
+                            const mobile = document.getElementById('mobile').value.trim();
+                            
+                            const safeName = fullName.replace(/[^a-z0-9]/gi, '_');
+                            const safeBatch = batch.replace(/[^a-z0-9]/gi, '_');
+                            const safeMobile = mobile.replace(/[^a-z0-9]/gi, '_');
+                            const safeId = registrationId.replace(/[^a-z0-9]/gi, '_');
+                            
+                            link.download = `${safeName}_${safeBatch}_${safeMobile}_${safeId}.png`;
+                            link.href = canvas.toDataURL('image/png');
+                            link.click();
+                        };
+                    }
                 } else if (downloadCardContainer) {
                     downloadCardContainer.classList.add('hidden');
                 }
 
                 // Fetch WhatsApp link if the user chose 'Yes' to join
                 const whatsappJoinVal = document.querySelector('input[name="whatsappJoin"]:checked')?.value;
-                if (whatsappJoinVal === 'Yes' || whatsappJoinVal === 'No') {
+                if (whatsappJoinVal === 'Yes') {
                     try {
                         const waRes = await fetch(`${SB_ENDPOINT}/settings?key=eq.whatsapp_link&select=value`, { headers: SB_HEADERS });
                         if (waRes.ok) {
@@ -755,13 +949,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const waBtn = document.getElementById('waSuccessBtn');
                                 const waContainer = document.getElementById('waSuccessBtnContainer');
                                 const waText = waContainer.querySelector('p');
-                                                
-                                if (whatsappJoinVal === 'No' && waText) {
-                                    waText.textContent = 'Even though you opted not to join the official WhatsApp group, you can still join using the button below if you change your mind:';
-                                } else if (waText) {
+
+                                if (waText) {
                                     waText.textContent = 'Since you selected willingness to join the official WhatsApp group, click the button below to join:';
                                 }
-                                                
+
                                 waBtn.href = waData[0].value;
                                 waContainer.classList.remove('hidden');
                             }

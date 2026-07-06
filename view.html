@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IFADA Alumni - View Profile</title>
+    <meta name="description" content="View and manage your IFADA Alumni Association registration details and download your membership card.">
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Clash Grotesk Font for Membership Card -->
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@200,300,400,500,600,700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --brand: #0d9488;
+            --brand-light: #14b8a6;
+            --brand-dark: #0f766e;
+            --bg: #f8fafc;
+            --surface: rgba(255, 255, 255, 0.85);
+            --surface-solid: #ffffff;
+            --surface2: #f1f5f9;
+            --border: rgba(15, 23, 42, 0.08);
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.08);
+            --shadow-xl: 0 20px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Utility classes */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Header / Navigation */
+        .navbar {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+        }
+
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+        }
+
+        .navbar-logo span {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text);
+        }
+
+        .logout-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 0.6rem;
+            padding: 0.45rem 1.25rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .logout-btn:hover {
+            background: #ef4444;
+            color: #ffffff;
+            border-color: #ef4444;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+        }
+
+        /* Gate / Login Card */
+        .login-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-card {
+            background: var(--surface-solid);
+            border: 1px solid var(--border);
+            border-radius: 1.5rem;
+            padding: 3.5rem 2.5rem;
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            box-shadow: var(--shadow-xl);
+            animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .login-logo {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            margin: 0 auto 1.5rem;
+        }
+
+        .login-card h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .login-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .input-field {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 0.85rem 1.1rem;
+            color: var(--text);
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-field:focus {
+            border-color: var(--brand);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+            color: #fff;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0.9rem;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px -1px rgba(13, 148, 136, 0.15);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 15px rgba(13, 148, 136, 0.25);
+        }
+
+        .error-message {
+            color: #ef4444;
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            display: none;
+            font-weight: 500;
+        }
+
+        /* Profile Layout */
+        .main-content {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem;
+            flex: 1;
+        }
+
+        .profile-container {
+            animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-teal {
+            background: #ccfbf1;
+            color: #0f766e;
+        }
+
+        .badge-yellow {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* Animations */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loader */
+        .loader-overlay {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            flex-direction: column;
+            gap: 1.25rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3.5px solid var(--border);
+            border-top-color: var(--brand);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Profile details list styling */
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--brand);
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            background: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Topbar (Only visible when logged in) -->
+    <header id="topNavbar" class="navbar hidden">
+        <div class="navbar-logo">
+            <img src="favicon.png" class="logo-icon" alt="IFADA Logo">
+            <span>IFADA Alumni Portal</span>
+        </div>
+        <button onclick="logout()" class="logout-btn">
+            <svg style="width: 14px; height: 14px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Logout
+        </button>
+    </header>
+
+    <!-- Loader Area -->
+    <div id="loaderArea" class="loader-overlay hidden">
+        <div class="spinner"></div>
+        <div id="loaderText">Loading portal...</div>
+    </div>
+
+    <!-- Login Area -->
+    <div id="loginArea" class="login-container">
+        <div class="login-card">
+            <img src="favicon.png" class="login-logo" alt="IFADA Logo">
+            <h1>Member Response Portal</h1>
+            <p>Access your submitted registration responses and download your digital membership card.</p>
+            
+            <form onsubmit="handleLogin(event)">
+                <div class="input-group">
+                    <label for="regIdInput" class="input-label">Registration ID</label>
+                    <input type="text" id="regIdInput" class="input-field" placeholder="e.g. IFADA0101" required autocomplete="off">
+                </div>
+                
+                <button type="submit" class="submit-btn">View My Profile</button>
+                <div id="loginError" class="error-message">⚠️ Could not find a response with that Registration ID. Please verify and try again.</div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Authenticated Profile View Area -->
+    <main id="profileArea" class="main-content hidden">
+        <div class="profile-container" id="profileContent">
+            <!-- Dynamically populated profile content -->
+        </div>
+    </main>
+
+    <!-- Hidden canvas for generating membership card -->
+    <canvas id="card-canvas" style="display: none;"></canvas>
+
+    <!-- Payment / Unlock Modal -->
+    <div id="paymentModal" class="modal-overlay hidden" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem;">
+        <div class="login-card" style="max-width: 500px; text-align: left; position: relative; padding: 2.5rem 2rem;">
+            <button onclick="closePaymentModal()" style="position: absolute; right: 1.5rem; top: 1.5rem; background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; line-height: 1;">&times;</button>
+            <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>💳</span> Unlock Membership Card
+            </h2>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem;">To generate and download your official digital membership card, please complete the membership payment registration below.</p>
+            
+            <div style="background: rgba(13, 148, 136, 0.05); border: 1px solid rgba(13, 148, 136, 0.1); border-radius: 0.75rem; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--text);">
+                <div style="font-weight: 700; color: var(--brand); margin-bottom: 0.4rem;">Payment Instructions:</div>
+                Transfer <span style="font-weight: 700; color: var(--brand);">₹500</span> via Google Pay (GPay) to the official number:
+                <div style="font-size: 1.1rem; font-weight: 800; text-align: center; margin: 0.5rem 0; letter-spacing: 0.05em; color: var(--text);">86065 07672</div>
+            </div>
+
+            <!-- Upload Box -->
+            <div id="paymentFileUploadContainer" style="border: 2px dashed var(--border); border-radius: 1rem; padding: 1.75rem 1rem; text-align: center; background: rgba(255,255,255,0.5); cursor: pointer; transition: all 0.2s; margin-bottom: 1rem;">
+                <input type="file" id="paymentScreenshot" accept="image/*" style="display: none;">
+                <div id="paymentUploadIcon" style="font-size: 1.75rem; margin-bottom: 0.5rem;">📤</div>
+                <div id="paymentFileNameDisplay" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">Click to upload payment screenshot (₹500+)</div>
+            </div>
+            
+            <div id="paymentStatusText" style="font-size: 0.8rem; font-weight: 600; margin-bottom: 1.5rem; text-align: center; color: var(--text-muted);">
+                Waiting for screenshot upload...
+            </div>
+
+            <button id="submitPaymentBtn" disabled onclick="submitPaymentRegistration()" class="submit-btn" style="background: var(--brand); display: flex; align-items: center; justify-content: center; gap: 0.5rem; border: none; cursor: pointer;">
+                Verify & Generate Card
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        &copy; 2026 IFADA Alumni Association. All rights reserved.
+    </footer>
+
+    <!-- Supabase Client Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.3/dist/tesseract.min.js"></script>
+    <script>
+        const supabaseUrl = 'https://qqruwdwssaezwzugdsfr.supabase.co';
+        const supabaseKey = 'sb_publishable_CzQ_xwzXKrN0w0lMbsKDvA_iDjr5QNo';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const SB_ENDPOINT = `${supabaseUrl}/rest/v1`;
+        const SB_HEADERS = {
+            'Content-Type': 'application/json',
+            'apikey': supabaseKey,
+        };
+
+        let activeProfileData = null;
+        let membershipConfig = null;
+        let membershipTemplateImg = null;
+        let isMembershipVerified = false;
+
+        // Load Firebase configuration for Membership Card
+        const checkFirebase = async () => {
+            const result = await window.getGlobalSettings();
+            if (result.success) {
+                membershipConfig = result.data.config;
+                const imgSrc = result.data.templateUrl;
+
+                // Preload template image
+                membershipTemplateImg = new Image();
+                membershipTemplateImg.crossOrigin = "Anonymous";
+                membershipTemplateImg.src = imgSrc;
+                membershipTemplateImg.onload = () => {
+                    console.log("Membership template loaded successfully.");
+                };
+                membershipTemplateImg.onerror = () => {
+                    console.error("Failed to load membership template.");
+                };
+            } else {
+                console.error("Firebase config error:", result.error);
+            }
+        };
+
+        // Escaping helper
+        function esc(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function getBatchName(regId) {
+            if (!regId) return '—';
+            const match = regId.match(/IFADA(\d{2})/i);
+            if (!match) return '—';
+            const code = parseInt(match[1]);
+            const suffixes = ["th", "st", "nd", "rd"];
+            const val = code % 100;
+            const suffix = suffixes[(val - 20) % 10] || suffixes[val] || suffixes[0];
+            return `${code}${suffix} Batch`;
+        }
+
+        // On page load check session
+        window.addEventListener('DOMContentLoaded', () => {
+            checkFirebase();
+            const savedRegId = sessionStorage.getItem('regId') || localStorage.getItem('regId');
+            if (savedRegId) {
+                loadProfile(savedRegId);
+            }
+        });
+
+        // Toggle elements helper
+        function showEl(id) { document.getElementById(id).classList.remove('hidden'); }
+        function hideEl(id) { document.getElementById(id).classList.add('hidden'); }
+
+        // Handle Login Submission
+        async function handleLogin(e) {
+            e.preventDefault();
+            const regId = document.getElementById('regIdInput').value.trim();
+            if (!regId) return;
+
+            hideEl('loginError');
+            showEl('loaderArea');
+            hideEl('loginArea');
+            document.getElementById('loaderText').textContent = 'Authenticating...';
+
+            try {
+                // Fetch from alumni_responses
+                const { data, error } = await supabaseClient
+                    .from('alumni_responses')
+                    .select('*')
+                    .eq('registration_id', regId)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (!data) {
+                    hideEl('loaderArea');
+                    showEl('loginArea');
+                    showEl('loginError');
+                    return;
+                }
+
+                // Save session
+                sessionStorage.setItem('regId', regId);
+                
+                // Load details
+                renderProfileView(data);
+            } catch(err) {
+                console.error(err);
+                hideEl('loaderArea');
+                showEl('loginArea');
+                const errDiv = document.getElementById('loginError');
+                errDiv.textContent = `⚠️ Connection error: ${err.message}`;
+                showEl('loginError');
+            }
+        }
+
+        // Load profile if already authenticated
+        async function loadProfile(regId) {
+            showEl('loaderArea');
+            hideEl('loginArea');
+            document.getElementById('loaderText').textContent = 'Retrieving profile...';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('alumni_responses')
+                    .select('*')
+                    .eq('registration_id', regId)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (!data) {
+                    // Session expired or invalid
+                    sessionStorage.removeItem('regId');
+                    localStorage.removeItem('regId');
+                    hideEl('loaderArea');
+                    showEl('loginArea');
+                    return;
+                }
+
+                renderProfileView(data);
+            } catch(err) {
+                console.error(err);
+                hideEl('loaderArea');
+                showEl('loginArea');
+                alert(`Error loading profile: ${err.message}`);
+            }
+        }
+
+        // Render Profile details
+        async function renderProfileView(profileData) {
+            activeProfileData = profileData;
+            showEl('topNavbar');
+            hideEl('loaderArea');
+            showEl('profileArea');
+
+            const container = document.getElementById('profileContent');
+            
+            // Check if card is generated under membership table
+            let cardImageUrl = null;
+            try {
+                const { data: cardData } = await supabaseClient
+                    .from('membership')
+                    .select('image_url')
+                    .eq('mobile', profileData.mobile)
+                    .maybeSingle();
+
+                if (cardData) {
+                    cardImageUrl = cardData.image_url;
+                }
+            } catch(e) {
+                console.error("Could not fetch membership card link:", e);
+            }
+
+            const formatArray = arr => Array.isArray(arr) && arr.length ? arr.map(x => `<span class="badge badge-teal" style="margin:0.2rem 0.2rem 0.2rem 0; display:inline-block;">${esc(x)}</span>`).join('') : '—';
+            
+            container.innerHTML = `
+                <!-- Header Card Banner -->
+                <div style="background: linear-gradient(135deg, rgba(13, 148, 136, 0.08) 0%, rgba(20, 184, 166, 0.03) 100%); padding: 2rem; border-radius: 1.25rem; border: 1px solid var(--border); display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; margin-bottom: 2rem;">
+                    <div>
+                        ${profileData.photo_url 
+                            ? `<img src="${profileData.photo_url}" style="width:96px; height:96px; border-radius:50%; object-fit:cover; border:3px solid var(--brand); box-shadow: var(--shadow-lg);">` 
+                            : `<div style="width:96px; height:96px; border-radius:50%; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:3rem; border:3px solid var(--border); box-shadow: var(--shadow-lg);">👤</div>`
+                        }
+                    </div>
+                    <div style="flex: 1; min-width: 260px;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                            <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text); margin: 0;">${esc(profileData.full_name || '—')}</h1>
+                            <span class="badge badge-teal" style="font-size: 0.85rem; font-family: monospace; padding: 0.3rem 0.75rem; letter-spacing: 0.05em; border: 1px solid rgba(13,148,136,0.25);">${esc(profileData.registration_id || 'No ID')}</span>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; font-size: 0.85rem; color: var(--text-muted);">
+                            <span class="badge ${profileData.alumni_status==='Graduate'?'badge-teal':'badge-yellow'}">${esc(profileData.alumni_status || '—')}</span>
+                            <span>•</span>
+                            <span>Batch: <strong>${esc(getBatchName(profileData.registration_id))} (${esc(profileData.admission_year || '—')} – ${esc(profileData.leaving_year || '—')})</strong></span>
+                            <span>•</span>
+                            <span>Place: <strong>${esc(profileData.residence_place || '—')}</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Digital ID card display if paid -->
+                ${cardImageUrl ? `
+                <div style="background: var(--surface-solid); border: 1px solid var(--border); border-radius: 1.25rem; padding: 2rem; margin-bottom: 2rem; text-align: center; box-shadow: var(--shadow-md); display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                    <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--brand); margin: 0; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <span>💳</span> Your Digital Membership Card is Ready
+                    </h3>
+                    <button onclick="downloadCard('${esc(cardImageUrl)}', '${esc(profileData.full_name)}', '${esc(profileData.admission_year || 'Batch')}', '${esc(profileData.mobile)}', '${esc(profileData.registration_id)}')" 
+                        style="background: #f59e0b; color: #0f172a; font-weight: 700; border: none; padding: 0.86rem 2.5rem; border-radius: 0.6rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; box-shadow: 0 4px 10px rgba(245,158,11,0.25); font-size: 0.95rem;">
+                        <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        Download Card PNG
+                    </button>
+                </div>
+                ` : `
+                <div style="background: var(--surface-solid); border: 1px dashed var(--border); border-radius: 1.25rem; padding: 2rem; margin-bottom: 2rem; text-align: center; color: var(--text-muted); font-size: 0.95rem;">
+                    <span style="font-size: 2.2rem; display: block; margin-bottom: 0.75rem;">💳</span>
+                    <h4 style="font-weight: 700; color: var(--text); font-size: 1.1rem; margin-bottom: 0.5rem;">Digital Membership Card</h4>
+                    <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Your digital alumni membership card has not been generated yet. Complete payment registration to unlock yours!</p>
+                    <button onclick="openPaymentModal()" class="submit-btn" style="width: auto; padding: 0.75rem 2rem; display: inline-flex; align-items: center; gap: 0.5rem; background: var(--brand); border: none; cursor: pointer; color: white;">
+                        Unlock Membership Card
+                    </button>
+                </div>
+                `}
+
+                <!-- Profile Data Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <!-- Card 1: Contact -->
+                    <div style="background: var(--surface-solid); border: 1px solid var(--border); padding: 1.75rem; border-radius: 1.25rem; box-shadow: var(--shadow-sm);">
+                        <h3 style="font-size: 1rem; font-weight: 700; color: var(--brand); margin-top: 0; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+                            <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 00.9-.074l-1.36 1.36a1.5 1.5 0 00-.54 1.018a14.28 14.28 0 008.56 8.56a1.5 1.5 0 001.018-.54l1.36-1.36a1 1 0 01.83-.08l2.2.547a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                            Contact & Personal
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 0.85rem; font-size: 0.9rem;">
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Mobile:</span> <span style="font-weight: 600; color: var(--text);">${esc(profileData.country_code || '')} ${esc(profileData.mobile || '')}</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Email:</span> <span style="font-weight: 600; color: var(--text);">${profileData.email ? `<a href="mailto:${esc(profileData.email)}" style="color: var(--brand); text-decoration: none;">${esc(profileData.email)}</a>` : '—'}</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Date of Birth:</span> <span style="font-weight: 600; color: var(--text);">${profileData.dob ? new Date(profileData.dob).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) : '—'}</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Residence District:</span> <span style="font-weight: 600; color: var(--text);">${esc(profileData.country || '—')}</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Place:</span> <span style="font-weight: 600; color: var(--text);">${esc(profileData.residence_place || '—')}</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Professional -->
+                    <div style="background: var(--surface-solid); border: 1px solid var(--border); padding: 1.75rem; border-radius: 1.25rem; box-shadow: var(--shadow-sm);">
+                        <h3 style="font-size: 1rem; font-weight: 700; color: var(--brand); margin-top: 0; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+                            <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"/></svg>
+                            Education & Career
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.9rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;"><span style="color: var(--text-muted);">Qualification:</span> <span style="font-weight: 600; color: var(--text); text-align: right; max-width: 60%;">${esc(profileData.qualification || '—')}</span></div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;"><span style="color: var(--text-muted);">Addl. Degrees:</span> <span style="font-weight: 600; color: var(--text); text-align: right; max-width: 60%;">${esc(profileData.additional_degrees || '—')}</span></div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;"><span style="color: var(--text-muted);">Highest Achievement:</span> <span style="font-weight: 600; color: var(--text); text-align: right; max-width: 60%;">${esc(profileData.highest_achievement || '—')}</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Profession:</span> <span style="font-weight: 600; color: var(--text);">${esc(profileData.profession || '—')}</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Organization:</span> <span style="font-weight: 600; color: var(--text);">${esc(profileData.organization || '—')}</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Field of Work:</span> <span style="font-weight: 600; color: var(--text);">${esc(profileData.field_of_work || '—')}</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Work Location:</span> <span style="font-weight: 600; color: var(--text);">${esc(profileData.work_location || '—')}</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <!-- Skills Offered -->
+                    <div style="background: var(--surface-solid); border: 1px solid var(--border); padding: 1.75rem; border-radius: 1.25rem; box-shadow: var(--shadow-sm);">
+                        <h3 style="font-size: 1rem; font-weight: 700; color: var(--brand); margin-top: 0; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+                            <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                            Skills Offered
+                        </h3>
+                        <div style="margin-bottom: 1.25rem;">
+                            <div>${formatArray(profileData.skills)}</div>
+                        </div>
+                    </div>
+
+                    <!-- Preferences -->
+                    <div style="background: var(--surface-solid); border: 1px solid var(--border); padding: 1.75rem; border-radius: 1.25rem; box-shadow: var(--shadow-sm);">
+                        <h3 style="font-size: 1rem; font-weight: 700; color: var(--brand); margin-top: 0; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+                            <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31(2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            Willingness & Settings
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 0.85rem; font-size: 0.9rem;">
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Join WhatsApp Group:</span> <span style="font-weight: 600; color: var(--text);">${esc(profileData.whatsapp_join || '—')}</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Act as Batch Coordinator:</span> <span style="font-weight: 700; color: ${profileData.coordinator==='Yes'?'var(--brand)':'#ef4444'};">${esc(profileData.coordinator || '—')}</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Remarks -->
+                ${profileData.remarks ? `
+                <div style="background: rgba(15, 23, 42, 0.02); border: 1px dashed var(--border); padding: 1.5rem; border-radius: 1.25rem; position: relative;">
+                    <span style="position: absolute; right: 1.5rem; top: 1rem; font-size: 3rem; font-family: Georgia, serif; line-height: 1; color: rgba(13,148,136,0.1); pointer-events: none;">“</span>
+                    <h4 style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-top: 0; margin-bottom: 0.5rem; letter-spacing: 0.05em;">Remarks & Suggestions</h4>
+                    <p style="font-size: 0.95rem; line-height: 1.6; color: var(--text); font-style: italic; margin: 0;">"${esc(profileData.remarks)}"</p>
+                </div>
+                ` : ''}
+            `;
+        }
+
+        // Download card helper
+        async function downloadCard(imageUrl, name, batch, mobile, regId) {
+            const formattedName = name.replace(/\s+/g, '_');
+            const formattedBatch = batch.replace(/\s+/g, '_');
+            const filename = `${formattedName}_${formattedBatch}_${mobile}_${regId}.png`;
+
+            try {
+                const response = await fetch(imageUrl);
+                const blob = await response.blob();
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (e) {
+                // Fallback direct link
+                const link = document.createElement('a');
+                link.href = imageUrl;
+                link.target = '_blank';
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+
+        // Logout Session
+        function logout() {
+            sessionStorage.removeItem('regId');
+            localStorage.removeItem('regId');
+            
+            hideEl('topNavbar');
+            hideEl('profileArea');
+            showEl('loginArea');
+            document.getElementById('regIdInput').value = '';
+        }
+
+        /* ── Payment & Card Generation Helpers ── */
+        window.getGlobalSettings = async () => {
+            try {
+                const { data, error } = await supabaseClient.from('app_settings').select('*').eq('id', 'config').single();
+                if (error) {
+                    if (error.code === 'PGRST116') return { success: false, error: "No configuration found." };
+                    throw error;
+                }
+                return {
+                    success: true,
+                    data: {
+                        templateUrl: data.template_url,
+                        config: data.config
+                    }
+                };
+            } catch (e) { return { success: false, error: e.message }; }
+        };
+
+        window.saveCardToDB = async (data) => {
+            try {
+                const payload = {
+                    name: data.name,
+                    batch: data.batch,
+                    mobile: data.mobile || null,
+                    payment_proof_url: data.paymentProofUrl || null,
+                    image_url: data.imageUrl
+                };
+                const { error } = await supabaseClient.from('membership').insert([payload]);
+                if (error) throw error;
+                return { success: true };
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                return { success: false, error: e.message };
+            }
+        };
+
+        function openPaymentModal() {
+            isMembershipVerified = false;
+            document.getElementById('paymentScreenshot').value = '';
+            document.getElementById('paymentFileNameDisplay').textContent = 'Click to upload payment screenshot (₹500+)';
+            document.getElementById('paymentStatusText').innerHTML = 'Waiting for screenshot upload...';
+            document.getElementById('submitPaymentBtn').disabled = true;
+            
+            showEl('paymentModal');
+            initPaymentUploadListeners();
+        }
+
+        function closePaymentModal() {
+            hideEl('paymentModal');
+        }
+
+        let isPaymentListenersInitialized = false;
+        function initPaymentUploadListeners() {
+            if (isPaymentListenersInitialized) return;
+            isPaymentListenersInitialized = true;
+
+            const uploadContainer = document.getElementById('paymentFileUploadContainer');
+            const fileInput = document.getElementById('paymentScreenshot');
+            const nameDisplay = document.getElementById('paymentFileNameDisplay');
+            const statusText = document.getElementById('paymentStatusText');
+            const submitBtn = document.getElementById('submitPaymentBtn');
+
+            uploadContainer.addEventListener('click', () => fileInput.click());
+
+            fileInput.addEventListener('change', () => {
+                const file = fileInput.files[0];
+                if (!file) return;
+
+                nameDisplay.innerHTML = `<span style="color:var(--brand); font-weight:600;">${esc(file.name)}</span> (${(file.size/1024/1024).toFixed(2)} MB)`;
+                statusText.innerHTML = '<span style="color:#d97706; display:inline-flex; align-items:center; gap:0.4rem;"><svg class="animate-spin" style="width:14px; height:14px;" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Scanning screenshot...</span>';
+                submitBtn.disabled = true;
+
+                if (typeof Tesseract === 'undefined') {
+                    statusText.innerHTML = '<span style="color:#ef4444; font-weight:600;">Scanner library not loaded yet.</span>';
+                    return;
+                }
+
+                Tesseract.recognize(file, 'eng')
+                    .then(({ data: { text } }) => {
+                        console.log("Verification OCR Scan Result:", text);
+                        const matches = text.replace(/[\n\r]+/g, ' ').match(/[\d,]+\.?\d*/g);
+                        let hasValidAmount = false;
+
+                        if (matches) {
+                            hasValidAmount = matches.some(m => {
+                                const clean = m.replace(/,/g, '');
+                                const num = parseFloat(clean);
+                                return !isNaN(num) && num >= 500;
+                            });
+                        }
+
+                        if (hasValidAmount || text.includes('500')) {
+                            isMembershipVerified = true;
+                            statusText.innerHTML = '<span style="color:#16a34a; font-weight:700;">✓ Verified (₹500+ found)</span>';
+                            submitBtn.disabled = false;
+                        } else {
+                            statusText.innerHTML = '<span style="color:#ef4444; font-weight:600;">Could not read "500". Please upload a clearer screenshot.</span>';
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Scanner Error:", err);
+                        statusText.innerHTML = '<span style="color:#ef4444; font-weight:600;">Scanner error. Please try again.</span>';
+                    });
+            });
+        }
+
+        const generateMembershipCardCanvas = async (profileData) => {
+            if (!membershipConfig || !membershipTemplateImg) {
+                throw new Error("Membership configuration or template image is not loaded yet. Please wait or refresh.");
+            }
+
+            const fullName = profileData.full_name;
+            const mobile = profileData.mobile;
+            const batch = getBatchName(profileData.registration_id);
+
+            // Draw the membership card
+            const canvas = document.getElementById('card-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = membershipTemplateImg.width;
+            canvas.height = membershipTemplateImg.height;
+            ctx.drawImage(membershipTemplateImg, 0, 0);
+
+            const scaleFactor = canvas.width / 1000;
+            const nameWeight = membershipConfig.name.weight || '700';
+            const batchWeight = membershipConfig.batch.weight || '400';
+            const fontName = `${nameWeight} ${membershipConfig.name.size * scaleFactor * 1.5}px 'Clash Grotesk'`;
+            const fontBatch = `${batchWeight} ${membershipConfig.batch.size * scaleFactor * 1.5}px 'Clash Grotesk'`;
+
+            try {
+                const fontLoadPromise = Promise.all([
+                    document.fonts.load(fontName),
+                    document.fonts.load(fontBatch)
+                ]);
+                await Promise.race([fontLoadPromise, new Promise(r => setTimeout(r, 1000))]);
+            } catch (e) {
+                console.error("Font loading error:", e);
+            }
+
+            const drawTxt = (txt, conf, font) => {
+                const x = (conf.x / 100) * canvas.width;
+                const y = (conf.y / 100) * canvas.height;
+                ctx.font = font;
+                ctx.fillStyle = conf.color || '#FFF';
+                ctx.textAlign = 'center';
+                ctx.fillText(txt, x, y);
+            };
+
+            drawTxt(fullName.toUpperCase(), membershipConfig.name, fontName);
+            drawTxt(batch, membershipConfig.batch, fontBatch);
+
+            // Draw Registration ID
+            const regIdConf = membershipConfig.regId || {
+                x: membershipConfig.batch.x,
+                y: membershipConfig.batch.y + 8,
+                size: membershipConfig.batch.size * 0.9,
+                color: membershipConfig.batch.color || '#FFF',
+                weight: '600'
+            };
+            const fontRegId = `${regIdConf.weight} ${regIdConf.size * scaleFactor * 1.5}px 'Clash Grotesk'`;
+            try {
+                await document.fonts.load(fontRegId);
+            } catch (e) {}
+            drawTxt(profileData.registration_id, regIdConf, fontRegId);
+
+            // QR Code
+            if (mobile) {
+                try {
+                    const qrConf = membershipConfig.qrcode || { x: 50, y: 85, size: 15 };
+                    const size = (qrConf.size / 100) * canvas.width;
+                    const x = (qrConf.x / 100) * canvas.width - (size / 2);
+                    const y = (qrConf.y / 100) * canvas.height - (size / 2);
+
+                    const tmp = document.createElement('canvas');
+                    await QRCode.toCanvas(tmp, mobile, { width: 500, margin: 1 });
+                    ctx.drawImage(tmp, x, y, size, size);
+                } catch (e) {
+                    console.error("QR Code generation error:", e);
+                }
+            }
+        };
+
+        const uploadAndSaveMembershipCard = async (profileData, screenshotFile) => {
+            const fullName = profileData.full_name;
+            const mobile = profileData.mobile;
+            const batch = getBatchName(profileData.registration_id);
+            const canvas = document.getElementById('card-canvas');
+
+            // 1. Upload Payment Screenshot to Cloudinary
+            const formData = new FormData();
+            formData.append('file', screenshotFile);
+            formData.append('upload_preset', 'ifada-sanad');
+
+            const proofRes = await fetch(
+                `https://api.cloudinary.com/v1_1/da6fjyirm/image/upload`,
+                { method: 'POST', body: formData }
+            );
+            if (!proofRes.ok) {
+                throw new Error("Failed to upload payment screenshot.");
+            }
+            const proofData = await proofRes.json();
+            const paymentProofUrl = proofData.secure_url;
+
+            // 2. Upload Generated Card to Cloudinary
+            const cardBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            const cardFormData = new FormData();
+            cardFormData.append('file', cardBlob);
+            cardFormData.append('upload_preset', 'ifada-sanad');
+
+            const cardRes = await fetch(
+                `https://api.cloudinary.com/v1_1/da6fjyirm/image/upload`,
+                { method: 'POST', body: cardFormData }
+            );
+            if (!cardRes.ok) {
+                throw new Error("Failed to upload generated membership card.");
+            }
+            const cardData = await cardRes.json();
+            const cardImageUrl = cardData.secure_url;
+
+            // 3. Save to database
+            const saveRes = await window.saveCardToDB({
+                name: fullName,
+                batch: batch,
+                mobile: mobile,
+                paymentProofUrl: paymentProofUrl,
+                imageUrl: cardImageUrl
+            });
+
+            if (!saveRes.success) {
+                throw new Error("Failed to save membership card to database: " + saveRes.error);
+            }
+
+            return cardImageUrl;
+        };
+
+        async function submitPaymentRegistration() {
+            if (!isMembershipVerified) {
+                alert("Please upload a verified payment screenshot first.");
+                return;
+            }
+
+            const fileInput = document.getElementById('paymentScreenshot');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const submitBtn = document.getElementById('submitPaymentBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Generating Card...";
+
+            try {
+                // 1. Draw card on canvas
+                await generateMembershipCardCanvas(activeProfileData);
+
+                // 2. Upload and save
+                submitBtn.textContent = "Uploading & Saving...";
+                await uploadAndSaveMembershipCard(activeProfileData, file);
+
+                alert("✓ Success! Your membership card has been generated successfully.");
+                closePaymentModal();
+
+                // 3. Refresh profile view to show download button
+                loadProfile(activeProfileData.registration_id);
+            } catch(e) {
+                console.error(e);
+                alert("Error generating membership card: " + e.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        }
+    </script>
+</body>
+</html>
