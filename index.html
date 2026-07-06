@@ -529,6 +529,41 @@
                             <input type="text" id="workLocation" name="workLocation"
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
+
+                        <!-- Annual Income -->
+                        <div class="col-span-1 md:col-span-2 mt-4">
+                            <label class="block text-sm font-semibold text-slate-600 mb-2.5 font-display">19. What's your annual income?</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                <script>
+                                    const incomes = [
+                                        'No Income',
+                                        'Less than ₹1 LPA',
+                                        '₹1–2 LPA',
+                                        '₹2–3 LPA',
+                                        '₹3–5 LPA',
+                                        '₹5–7 LPA',
+                                        '₹7–10 LPA',
+                                        '₹10–15 LPA',
+                                        '₹15–25 LPA',
+                                        '₹25–50 LPA',
+                                        'Above ₹50 LPA'
+                                    ];
+                                    incomes.forEach(income => {
+                                        document.write(`
+                                            <label class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
+                                                <input type="radio" name="annualIncome" value="${income}" class="sr-only peer">
+                                                <div class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none"></div>
+                                                <div class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></div>
+                                                <div class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
+                                                    <div class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                                                </div>
+                                                <span class="text-sm text-slate-700 font-semibold relative z-10 font-display">${income}</span>
+                                            </label>
+                                        `);
+                                    });
+                                </script>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -544,9 +579,10 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold text-slate-600 mb-4 font-display">19. In which areas
+                        <label class="block text-sm font-semibold text-slate-600 mb-4 font-display">20. In which areas
                             can
-                            you contribute to SFADC? <span class="text-slate-400 font-normal text-xs">(Multiple
+                            you contribute to IFADA and SFADC? <span
+                                class="text-slate-400 font-normal text-xs">(Multiple
                                 selections allowed)</span></label>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                             <script>
@@ -616,7 +652,7 @@
 
                         <!-- 17. WhatsApp -->
                         <div>
-                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">20. Are you
+                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">21. Are you
                                 willing to join official IFADA WhatsApp groups and receive updates?</label>
                             <div class="flex flex-col sm:flex-row gap-3">
                                 <label
@@ -662,7 +698,7 @@
 
                         <!-- 18. Region -->
                         <div>
-                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">21. Which region
+                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">22. Which region
                                 are you currently residing in?</label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                                 <label
@@ -783,68 +819,6 @@
                             </div>
                         </div>
 
-                        <!-- 19. Batch Representative -->
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">22. Would you be
-                                interested in serving as a batch representative or local coordinator?</label>
-                            <div class="flex gap-4">
-                                <label
-                                    class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
-                                    <input type="radio" name="coordinator" value="Yes" class="sr-only peer">
-                                    <div
-                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
-                                    </div>
-                                    <div
-                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
-                                    </div>
-                                    <div
-                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
-                                        <div
-                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Yes</span>
-                                </label>
-                                <label
-                                    class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
-                                    <input type="radio" name="coordinator" value="Maybe" class="sr-only peer">
-                                    <div
-                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
-                                    </div>
-                                    <div
-                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
-                                    </div>
-                                    <div
-                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
-                                        <div
-                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">Maybe</span>
-                                </label>
-                                <label
-                                    class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
-                                    <input type="radio" name="coordinator" value="No" class="sr-only peer">
-                                    <div
-                                        class="absolute inset-0 border-2 border-transparent peer-checked:border-brand-500 rounded-2xl transition-all pointer-events-none">
-                                    </div>
-                                    <div
-                                        class="absolute inset-0 bg-brand-50/5 opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none">
-                                    </div>
-                                    <div
-                                        class="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center bg-white peer-checked:border-brand-500 peer-checked:bg-brand-500 transition-all mr-2.5 flex-shrink-0">
-                                        <div
-                                            class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity">
-                                        </div>
-                                    </div>
-                                    <span
-                                        class="text-slate-700 font-semibold relative z-10 font-display text-sm">No</span>
-                                </label>
-                            </div>
-                        </div>
-
                         <!-- 20. Remarks -->
                         <div>
                             <label for="remarks"
@@ -904,24 +878,46 @@
                             <!-- Membership Payment Details Sub-panel -->
                             <div id="membershipDetailsPanel"
                                 class="hidden border border-brand-500/20 p-6 rounded-2xl bg-brand-500/5 space-y-4">
-                                <h4 class="text-base font-bold text-brand-700 font-display">Generate Membership Card
-                                </h4>
-                                <p class="text-xs text-slate-500">Your card will be generated using your Full Name and
-                                    Mobile Number from Step 1.</p>
+                                <h4 class="text-base font-bold text-brand-700 font-display">Generate Membership Card</h4>
+                                <p class="text-xs text-slate-500">Your card will be generated using your Full Name and Mobile Number from Step 1.</p>
+
+                                <!-- PG Student Checkbox inside the green details box -->
+                                <div class="mt-4 mb-4 flex items-center gap-3">
+                                    <div class="checkbox-wrapper-12">
+                                        <div class="cbx">
+                                            <input type="checkbox" id="pgStudentCheck" name="pgStudent">
+                                            <label for="pgStudentCheck"></label>
+                                            <svg fill="none" viewBox="0 0 15 14" height="14" width="15">
+                                                <path d="M2 8.36364L6.23077 12L13 2"></path>
+                                            </svg>
+                                        </div>
+                                        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                                            <defs>
+                                                <filter id="goo-12">
+                                                    <feGaussianBlur result="blur" stdDeviation="4" in="SourceGraphic"></feGaussianBlur>
+                                                    <feColorMatrix result="goo-12" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 22 -7" mode="matrix" in="blur"></feColorMatrix>
+                                                    <feBlend in2="goo-12" in="SourceGraphic"></feBlend>
+                                                </filter>
+                                            </defs>
+                                        </svg>
+                                    </div>
+                                    <label for="pgStudentCheck" class="text-sm font-semibold text-slate-700 font-display cursor-pointer select-none">
+                                        PG Student (Membership fee: ₹50 only)
+                                    </label>
+                                </div>
 
                                 <!-- Screenshot Upload -->
                                 <div>
-                                    <label
-                                        class="block text-xs font-semibold text-slate-600 mb-1.5 font-display">Payment
-                                        Verification (Required) <span class="text-red-500">*</span></label>
-                                    <p class="text-xs text-slate-500 mb-2">Upload screenshot showing payment of <span
-                                            class="font-bold text-slate-700">₹500+</span> to GPAY number <span
-                                            class="font-bold text-slate-700">86065 07672</span>.</p>
-                                    <input type="file" id="membershipScreenshot" accept="image/*"
-                                        class="premium-input w-full px-4 py-3 rounded-xl text-slate-700 focus:outline-none bg-white/80 text-xs">
+                                    <label class="block text-xs font-semibold text-slate-600 mb-1.5 font-display">Payment Verification (Required) <span class="text-red-500">*</span></label>
+                                    <p class="text-xs text-slate-500 mb-2">Upload screenshot showing payment of <span id="membershipAmountText" class="font-bold text-slate-700">₹500+</span> to GPAY number <span class="font-bold text-slate-700">86065 07672</span>.</p>
+                                    
+                                    <div id="membershipUploadContainer" class="border-2 border-dashed border-slate-200 hover:border-brand-500 rounded-2xl p-6 text-center bg-white/50 cursor-pointer transition-all hover:bg-slate-50/50">
+                                        <input type="file" id="membershipScreenshot" accept="image/*" class="hidden">
+                                        <div class="text-2xl mb-2">📤</div>
+                                        <div id="membershipFileNameDisplay" class="text-xs text-slate-500 font-medium">Click to upload payment screenshot</div>
+                                    </div>
 
-                                    <div id="membershipStatusText" class="mt-2 text-xs text-slate-500 italic">Waiting
-                                        for upload...</div>
+                                    <div id="membershipStatusText" class="mt-2 text-xs text-slate-500 italic">Waiting for upload...</div>
                                 </div>
                             </div>
                         </div>

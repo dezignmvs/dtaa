@@ -1155,6 +1155,8 @@
                             <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Organization:</span> <span style="font-weight: 600; color: var(--text);">${esc(r.organization || '—')}</span></div>
                             <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Field of Work:</span> <span style="font-weight: 600; color: var(--text);">${esc(r.field_of_work || '—')}</span></div>
                             <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Work Location:</span> <span style="font-weight: 600; color: var(--text);">${esc(r.work_location || '—')}</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Annual Income:</span> <span style="font-weight: 600; color: var(--text);">${esc(r.annual_income || '—')}</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">PG Student:</span> <span style="font-weight: 600; color: var(--text);">${r.pg_student ? 'Yes (Fee: ₹50)' : 'No (Fee: ₹500)'}</span></div>
                         </div>
                     </div>
                 </div>
@@ -1255,6 +1257,8 @@
                 "Organization",
                 "Field of Work",
                 "Work Location",
+                "Annual Income",
+                "PG Student",
                 "Skills",
                 "Region",
                 "Coordinator Interest",
@@ -1281,6 +1285,8 @@
                 r.organization || '',
                 r.field_of_work || '',
                 r.work_location || '',
+                r.annual_income || '',
+                r.pg_student ? 'Yes' : 'No',
                 Array.isArray(r.skills) ? r.skills.join('; ') : (r.skills || ''),
                 r.region || '',
                 r.coordinator || '',

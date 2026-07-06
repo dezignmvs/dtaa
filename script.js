@@ -458,22 +458,62 @@ document.addEventListener('DOMContentLoaded', () => {
     const membershipPanel = document.getElementById('membershipDetailsPanel');
     const screenshotInput = document.getElementById('membershipScreenshot');
     const statusText = document.getElementById('membershipStatusText');
+    const pgStudentCheck = document.getElementById('pgStudentCheck');
+    const membershipAmountText = document.getElementById('membershipAmountText');
+    const membershipUploadContainer = document.getElementById('membershipUploadContainer');
+    const membershipFileNameDisplay = document.getElementById('membershipFileNameDisplay');
 
-    membershipRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            if (e.target.value === 'Pay now') {
-                membershipPanel.classList.remove('hidden');
-            } else {
-                membershipPanel.classList.add('hidden');
+    if (membershipRadios.length) {
+        membershipRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'Pay now') {
+                    membershipPanel.classList.remove('hidden');
+                } else {
+                    membershipPanel.classList.add('hidden');
+                }
+            });
+        });
+    }
+
+    if (membershipUploadContainer && screenshotInput) {
+        membershipUploadContainer.addEventListener('click', () => screenshotInput.click());
+    }
+
+    if (pgStudentCheck) {
+        pgStudentCheck.addEventListener('change', () => {
+            const isPg = pgStudentCheck.checked;
+            const amountText = isPg ? '₹50+' : '₹500+';
+            if (membershipAmountText) {
+                membershipAmountText.textContent = amountText;
+            }
+            if (!screenshotInput.files[0] && membershipFileNameDisplay) {
+                membershipFileNameDisplay.innerHTML = `Click to upload payment screenshot (<span class="font-bold text-slate-700">${amountText}</span>)`;
+            }
+            // Trigger scanner again if a file is already loaded
+            if (screenshotInput.files[0]) {
+                screenshotInput.dispatchEvent(new Event('change'));
             }
         });
-    });
+    }
 
     // --- Tesseract OCR Scanning ---
     if (screenshotInput) {
         screenshotInput.addEventListener('change', () => {
             const file = screenshotInput.files[0];
-            if (!file) return;
+            const isPg = pgStudentCheck && pgStudentCheck.checked;
+            const requiredAmount = isPg ? 50 : 500;
+            const amountStr = isPg ? '₹50+' : '₹500+';
+
+            if (!file) {
+                if (membershipFileNameDisplay) {
+                    membershipFileNameDisplay.innerHTML = `Click to upload payment screenshot (<span class="font-bold text-slate-700">${amountStr}</span>)`;
+                }
+                return;
+            }
+
+            if (membershipFileNameDisplay) {
+                membershipFileNameDisplay.innerHTML = `<span class="text-brand-600 font-semibold">${file.name}</span> (${(file.size/1024/1024).toFixed(2)} MB)`;
+            }
 
             statusText.innerHTML = '<span class="text-amber-600 flex items-center gap-1.5"><svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Scanning screenshot...</span>';
             isMembershipVerified = false;
@@ -493,15 +533,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         hasValidAmount = matches.some(m => {
                             const clean = m.replace(/,/g, '');
                             const num = parseFloat(clean);
-                            return !isNaN(num) && num >= 500;
+                            return !isNaN(num) && num >= requiredAmount;
                         });
                     }
 
-                    if (hasValidAmount || text.includes('500')) {
+                    if (hasValidAmount || text.includes(String(requiredAmount))) {
                         isMembershipVerified = true;
-                        statusText.innerHTML = '<span class="text-emerald-600 font-bold flex items-center gap-1">✓ Verified (₹500+ found)</span>';
+                        statusText.innerHTML = `<span class="text-emerald-600 font-bold flex items-center gap-1">✓ Verified (₹${requiredAmount}+ found)</span>`;
                     } else {
-                        statusText.innerHTML = '<span class="text-red-500 font-semibold">Could not read "500". Please upload a clearer screenshot.</span>';
+                        statusText.innerHTML = `<span class="text-red-500 font-semibold">Could not read "${requiredAmount}". Please upload a clearer screenshot.</span>`;
                     }
                 })
                 .catch(err => {
@@ -552,7 +592,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     return false;
                 }
                 if (!isMembershipVerified) {
-                    alert('Payment screenshot has not been successfully verified yet. Please ensure ₹500 or more is visible.');
+                    const requiredAmount = document.getElementById('pgStudentCheck')?.checked ? 50 : 500;
+                    alert(`Payment screenshot has not been successfully verified yet. Please ensure ₹${requiredAmount} or more is visible.`);
                     return false;
                 }
             }
@@ -840,6 +881,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const fieldOthersVal = document.getElementById('fieldOthersText').value.trim();
             const finalField = (fieldOfWork === 'Others' && fieldOthersVal) ? `Others: ${fieldOthersVal}` : fieldOfWork;
 
+            const annualIncome = document.querySelector('input[name="annualIncome"]:checked')?.value || null;
+
             const qualificationVal = document.querySelector('input[name="qualification"]:checked')?.value || null;
             const qualOthersVal = document.getElementById('qualOthersText').value.trim();
             const finalQual = (qualificationVal === 'Others' && qualOthersVal) ? `Others: ${qualOthersVal}` : qualificationVal;
@@ -877,6 +920,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 organization: document.getElementById('organization').value.trim() || null,
                 field_of_work: finalField,
                 work_location: document.getElementById('workLocation').value.trim() || null,
+                annual_income: annualIncome,
+                pg_student: document.getElementById('pgStudentCheck')?.checked || false,
                 skills: skills.length ? skills : null,
                 engagement: null,
                 directory_include: null,
