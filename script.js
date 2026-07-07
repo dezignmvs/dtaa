@@ -558,21 +558,120 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentStep === 1) {
             const fullName = document.getElementById('fullName').value.trim();
             const mobile = document.getElementById('mobile').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const residencePlace = document.getElementById('residencePlace').value.trim();
+            const district = document.getElementById('country').value;
             const dob = document.getElementById('dob').value.trim();
-            if (!fullName || !mobile || !dob) {
-                alert('Please fill out all required fields (Full Name, Mobile Number, and Date of Birth).');
+            const photoInput = document.getElementById('photo');
+            const photoFile = photoInput ? photoInput.files[0] : null;
+
+            if (!fullName || !mobile || !email || !residencePlace || !district || !dob || !photoFile) {
+                alert('Please fill out all required fields (Full Name, Mobile Number, Email, Place, District, Date of Birth, and Photo).');
+                return false;
+            }
+
+            const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailReg.test(email)) {
+                alert('Please enter a valid Email Address.');
+                return false;
+            }
+
+            const phoneDigits = mobile.replace(/\D/g, '');
+            if (phoneDigits.length < 7 || phoneDigits.length > 15) {
+                alert('Please enter a valid Mobile Number.');
                 return false;
             }
         }
         if (currentStep === 2) {
+            const admissionYear = document.getElementById('admissionYear').value.trim();
+            const leavingYear = document.getElementById('leavingYear').value.trim();
             const batch = document.getElementById('membershipBatch').value;
-            if (!batch) {
-                alert('Please select your Batch.');
+            const alumniStatus = document.querySelector('input[name="alumniStatus"]:checked')?.value;
+            const qualification = document.querySelector('input[name="qualification"]:checked')?.value;
+            const additionalDegrees = document.getElementById('additionalDegrees').value.trim();
+            const highestAchievement = document.getElementById('highestAchievement').value.trim();
+
+            if (!admissionYear || !leavingYear || !batch || !alumniStatus || !qualification || !additionalDegrees || !highestAchievement) {
+                alert('Please fill out all required fields (Admission Year, Leaving Year, Batch, Alumni Status, Highest Qualification, Additional Degrees, and Highest Achievement).');
                 return false;
+            }
+
+            const admYear = parseInt(admissionYear);
+            const lvYear = parseInt(leavingYear);
+            if (isNaN(admYear) || admYear < 1950 || admYear > 2030) {
+                alert('Please enter a valid Admission Year (1950-2030).');
+                return false;
+            }
+            if (isNaN(lvYear) || lvYear < 1950 || lvYear > 2030) {
+                alert('Please enter a valid Leaving Year (1950-2030).');
+                return false;
+            }
+            if (lvYear < admYear) {
+                alert('Leaving Year cannot be before Admission Year.');
+                return false;
+            }
+
+            if (qualification === 'Others') {
+                const qualOthersText = document.getElementById('qualOthersText').value.trim();
+                if (!qualOthersText) {
+                    alert('Please specify your other highest qualification.');
+                    return false;
+                }
+            }
+        }
+        if (currentStep === 3) {
+            const profession = document.getElementById('profession').value.trim();
+            const organization = document.getElementById('organization').value.trim();
+            const fieldOfWork = document.querySelector('input[name="fieldOfWork"]:checked')?.value;
+            const workLocation = document.getElementById('workLocation').value.trim();
+            const annualIncome = document.querySelector('input[name="annualIncome"]:checked')?.value;
+
+            if (!profession || !organization || !fieldOfWork || !workLocation || !annualIncome) {
+                alert('Please fill out all required fields (Current Profession, Organization, Field of Work, Work Location, and Annual Income).');
+                return false;
+            }
+
+            if (fieldOfWork === 'Others') {
+                const fieldOthersText = document.getElementById('fieldOthersText').value.trim();
+                if (!fieldOthersText) {
+                    alert('Please specify your other field of work.');
+                    return false;
+                }
+            }
+        }
+        if (currentStep === 4) {
+            const selectedSkills = document.querySelectorAll('input[name="skills"]:checked');
+            if (selectedSkills.length === 0) {
+                alert('Please select at least one area of contribution.');
+                return false;
+            }
+
+            let otherChecked = false;
+            selectedSkills.forEach(skill => {
+                if (skill.value === 'Other') {
+                    otherChecked = true;
+                }
+            });
+
+            if (otherChecked) {
+                const skillOtherText = document.getElementById('skillOtherText').value.trim();
+                if (!skillOtherText) {
+                    alert('Please specify your other area of contribution.');
+                    return false;
+                }
             }
         }
         if (currentStep === 5) {
+            const whatsappJoin = document.querySelector('input[name="whatsappJoin"]:checked')?.value;
             const regionRadio = document.querySelector('input[name="region"]:checked')?.value;
+            const remarks = document.getElementById('remarks').value.trim();
+            const selectedMembership = document.querySelector('input[name="membership"]:checked')?.value;
+
+            if (!whatsappJoin || !regionRadio || !remarks || !selectedMembership) {
+                alert('Please fill out all required fields (WhatsApp updates choice, Residing Region, Suggestions/remarks, and Annual Membership option).');
+                return false;
+            }
+
             if (regionRadio === 'Other Indian States' && !document.getElementById('stateSelect').value) {
                 alert('Please select your State.');
                 return false;
@@ -586,17 +685,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 return false;
             }
 
-            const selectedMembership = document.querySelector('input[name="membership"]:checked')?.value;
             if (selectedMembership === 'Pay now') {
                 const screenshotFile = screenshotInput ? screenshotInput.files[0] : null;
                 if (!screenshotFile) {
                     alert('Please upload your payment screenshot.');
                     return false;
                 }
-                if (!isMembershipVerified) {
+                if (typeof isMembershipVerified !== 'undefined' && !isMembershipVerified) {
                     const requiredAmount = document.getElementById('pgStudentCheck')?.checked ? 50 : 500;
-                    alert(`Payment screenshot has not been successfully verified yet. Please ensure ₹${requiredAmount} or more is visible.`);
-                    return false;
+                    const proceed = confirm(`We couldn't automatically verify the payment amount (₹${requiredAmount}) in your screenshot. If you have uploaded the correct payment proof, click OK to submit for manual verification. Otherwise, click Cancel to upload a clearer screenshot.`);
+                    if (!proceed) {
+                        return false;
+                    }
+                    isMembershipVerified = true;
                 }
             }
         }
@@ -616,6 +717,57 @@ document.addEventListener('DOMContentLoaded', () => {
             updateFormSteps();
         }
     });
+
+    // Helper function to compress images client-side before uploading
+    function compressImage(file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) {
+        return new Promise((resolve) => {
+            if (!file || !file.type.startsWith('image/')) {
+                return resolve(file); // Return original if not an image
+            }
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width = Math.round((width * maxHeight) / height);
+                            height = maxHeight;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            const compressedFile = new File([blob], file.name, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            resolve(compressedFile);
+                        } else {
+                            resolve(file);
+                        }
+                    }, 'image/jpeg', quality);
+                };
+                img.onerror = () => resolve(file);
+            };
+            reader.onerror = () => resolve(file);
+        });
+    }
 
     // ── Handle Form Submission ──────────────────────────────────────────
     form.addEventListener('submit', async (e) => {
@@ -725,7 +877,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 1. Upload Payment Screenshot to Cloudinary
             setLoading('Uploading proof…');
-            const proofFile = screenshotInput.files[0];
+            let proofFile = screenshotInput.files[0];
+            if (proofFile) {
+                try {
+                    proofFile = await compressImage(proofFile, 1200, 1200, 0.75);
+                } catch (e) {
+                    console.error("Proof compression error:", e);
+                }
+            }
             const formData = new FormData();
             formData.append('file', proofFile);
             formData.append('upload_preset', 'ifada-sanad');
@@ -842,10 +1001,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // ── STEP 1: Upload photo to Cloudinary ───────────────────────
             let photoUrl = null;
-            const photoFile = document.getElementById('photo').files[0];
+            let photoFile = document.getElementById('photo').files[0];
 
             if (photoFile) {
                 setLoading('Uploading photo…');
+                try {
+                    photoFile = await compressImage(photoFile, 1024, 1024, 0.7);
+                } catch (e) {
+                    console.error("Photo compression error:", e);
+                }
                 const formData = new FormData();
                 formData.append('file', photoFile);
                 formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);

@@ -144,7 +144,7 @@
             </div>
 
             <!-- Form Container -->
-            <form id="alumniForm" class="px-6 py-8 md:px-10 md:py-10">
+            <form id="alumniForm" class="px-6 py-8 md:px-10 md:py-10" novalidate>
 
                 <!-- Section 1: Personal Information -->
                 <section class="form-section step-section" data-step="1">
@@ -208,16 +208,16 @@
                         <!-- Email -->
                         <div>
                             <label for="email" class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">3.
-                                Email Address</label>
-                            <input type="email" id="email" name="email"
+                                Email Address <span class="text-red-500">*</span></label>
+                            <input type="email" id="email" name="email" required
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
                         <!-- Place of Residence -->
                         <div>
                             <label for="residencePlace"
-                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">4. Place</label>
-                            <input type="text" id="residencePlace" name="residencePlace"
+                                class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">4. Place <span class="text-red-500">*</span></label>
+                            <input type="text" id="residencePlace" name="residencePlace" required
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
@@ -225,8 +225,8 @@
                         <div>
                             <label for="country"
                                 class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">5.
-                                District</label>
-                            <select id="country" name="country"
+                                District <span class="text-red-500">*</span></label>
+                            <select id="country" name="country" required
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 focus:outline-none bg-white/80">
                                 <option value="" disabled selected>Select District</option>
                                 <option value="Alappuzha">Alappuzha</option>
@@ -257,7 +257,7 @@
                         <!-- Photo Upload -->
                         <div class="col-span-1 md:col-span-2">
                             <label for="photo" class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">7.
-                                Latest photo of yours</label>
+                                Latest photo of yours <span class="text-red-500">*</span></label>
                             <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-2xl bg-white/50 hover:bg-slate-50 transition-colors cursor-pointer"
                                 id="fileUploadContainer">
                                 <div class="space-y-1 text-center">
@@ -301,8 +301,8 @@
                         <div>
                             <label for="admissionYear"
                                 class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">8. Year of
-                                Admission to SFADC</label>
-                            <input type="number" min="1950" max="2030" id="admissionYear" name="admissionYear"
+                                Admission to SFADC <span class="text-red-500">*</span></label>
+                            <input type="number" min="1950" max="2030" id="admissionYear" name="admissionYear" required
                                 placeholder="e.g. 2015"
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
@@ -311,8 +311,8 @@
                         <div>
                             <label for="leavingYear"
                                 class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">9. Year of
-                                Leaving SFADC</label>
-                            <input type="number" min="1950" max="2030" id="leavingYear" name="leavingYear"
+                                Leaving SFADC <span class="text-red-500">*</span></label>
+                            <input type="number" min="1950" max="2030" id="leavingYear" name="leavingYear" required
                                 placeholder="e.g. 2020"
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
@@ -331,7 +331,7 @@
                         <!-- Alumni Status -->
                         <div class="col-span-1 md:col-span-2">
                             <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">11. Alumni
-                                Status</label>
+                                Status <span class="text-red-500">*</span></label>
                             <div class="flex flex-col sm:flex-row gap-4">
                                 <label
                                     class="flex items-center p-4 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all w-full sm:w-1/2 bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
@@ -377,7 +377,7 @@
                         <!-- Highest Qualification -->
                         <div class="col-span-1 md:col-span-2">
                             <label class="block text-sm font-semibold text-slate-600 mb-2.5 font-display">12. Highest
-                                Qualification Attained</label>
+                                Qualification Attained <span class="text-red-500">*</span></label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                 <script>
                                     const quals = [
@@ -435,9 +435,8 @@
                         <div class="col-span-1 md:col-span-2">
                             <label for="additionalDegrees"
                                 class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">13. Additional
-                                Degrees, Diplomas, or Certifications <span
-                                    class="text-slate-400 text-xs font-normal">(Optional)</span></label>
-                            <textarea id="additionalDegrees" name="additionalDegrees" rows="2"
+                                Degrees, Diplomas, or Certifications <span class="text-red-500">*</span></label>
+                            <textarea id="additionalDegrees" name="additionalDegrees" rows="2" required
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none resize-y"></textarea>
                         </div>
 
@@ -445,9 +444,8 @@
                         <div class="col-span-1 md:col-span-2">
                             <label for="highestAchievement"
                                 class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">14. Highest
-                                Achievement so Far <span
-                                    class="text-slate-400 text-xs font-normal">(Optional)</span></label>
-                            <textarea id="highestAchievement" name="highestAchievement" rows="2"
+                                Achievement so Far <span class="text-red-500">*</span></label>
+                            <textarea id="highestAchievement" name="highestAchievement" rows="2" required
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none resize-y"
                                 placeholder="List any notable achievements, awards, or recognitions..."></textarea>
                         </div>
@@ -469,8 +467,8 @@
                         <div>
                             <label for="profession"
                                 class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">15. Current
-                                Profession / Designation</label>
-                            <input type="text" id="profession" name="profession"
+                                Profession / Designation <span class="text-red-500">*</span></label>
+                            <input type="text" id="profession" name="profession" required
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
@@ -478,15 +476,15 @@
                         <div>
                             <label for="organization"
                                 class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">16. Organization
-                                / Institution Name</label>
-                            <input type="text" id="organization" name="organization"
+                                / Institution Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="organization" name="organization" required
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
                         <!-- Field of Work -->
                         <div class="col-span-1 md:col-span-2">
                             <label class="block text-sm font-semibold text-slate-600 mb-2.5 font-display">17. Field of
-                                Work</label>
+                                Work <span class="text-red-500">*</span></label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                 <!-- Radio inputs mapped to a styled label -->
                                 <script>
@@ -534,14 +532,14 @@
                         <div class="col-span-1 md:col-span-2">
                             <label for="workLocation"
                                 class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">18. Work
-                                Location</label>
-                            <input type="text" id="workLocation" name="workLocation"
+                                Location <span class="text-red-500">*</span></label>
+                            <input type="text" id="workLocation" name="workLocation" required
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none">
                         </div>
 
                         <!-- Annual Income -->
                         <div class="col-span-1 md:col-span-2 mt-4">
-                            <label class="block text-sm font-semibold text-slate-600 mb-2.5 font-display">19. What's your annual income?</label>
+                            <label class="block text-sm font-semibold text-slate-600 mb-2.5 font-display">19. What's your annual income? <span class="text-red-500">*</span></label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                                 <script>
                                     const incomes = [
@@ -590,7 +588,7 @@
                     <div>
                         <label class="block text-sm font-semibold text-slate-600 mb-4 font-display">20. In which areas
                             can
-                            you contribute to IFADA and SFADC? <span
+                            you contribute to IFADA and SFADC? <span class="text-red-500">*</span> <span
                                 class="text-slate-400 font-normal text-xs">(Multiple
                                 selections allowed)</span></label>
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -662,7 +660,7 @@
                         <!-- 17. WhatsApp -->
                         <div>
                             <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">21. Are you
-                                willing to join official IFADA WhatsApp groups and receive updates?</label>
+                                willing to join official IFADA WhatsApp groups and receive updates? <span class="text-red-500">*</span></label>
                             <div class="flex flex-col sm:flex-row gap-3">
                                 <label
                                     class="flex items-center p-3.5 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
@@ -708,7 +706,7 @@
                         <!-- 18. Region -->
                         <div>
                             <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">22. Which region
-                                are you currently residing in?</label>
+                                are you currently residing in? <span class="text-red-500">*</span></label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                                 <label
                                     class="flex items-center p-3 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
@@ -832,9 +830,8 @@
                         <div>
                             <label for="remarks"
                                 class="block text-sm font-semibold text-slate-600 mb-1.5 font-display">23. Any
-                                suggestions or remarks for SFADC and IMAD <span
-                                    class="text-slate-400 text-xs font-normal">(Optional)</span></label>
-                            <textarea id="remarks" name="remarks" rows="4"
+                                suggestions or remarks for SFADC and IMAD <span class="text-red-500">*</span></label>
+                            <textarea id="remarks" name="remarks" rows="4" required
                                 class="premium-input w-full px-4 py-3.5 rounded-2xl text-slate-700 placeholder-slate-400 focus:outline-none resize-y"
                                 placeholder="We value your feedback..."></textarea>
                         </div>
@@ -842,7 +839,7 @@
                         <!-- 21. Annual Membership -->
                         <div class="mt-6">
                             <label class="block text-sm font-semibold text-slate-600 mb-3 font-display">24. Annual
-                                Membership</label>
+                                Membership <span class="text-red-500">*</span></label>
                             <div class="flex flex-col sm:flex-row gap-4 mb-4">
                                 <label
                                     class="flex items-center p-3.5 px-6 border border-slate-200 rounded-2xl cursor-pointer hover:bg-slate-50/50 transition-all bg-white/50 relative overflow-hidden focus-within:ring-2 focus-within:ring-brand-500/20">
