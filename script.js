@@ -591,8 +591,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const additionalDegrees = document.getElementById('additionalDegrees').value.trim();
             const highestAchievement = document.getElementById('highestAchievement').value.trim();
 
-            if (!admissionYear || !leavingYear || !batch || !alumniStatus || !qualification || !additionalDegrees || !highestAchievement) {
-                alert('Please fill out all required fields (Admission Year, Leaving Year, Batch, Alumni Status, Highest Qualification, Additional Degrees, and Highest Achievement).');
+            if (!admissionYear || !leavingYear || !batch || !alumniStatus || !qualification) {
+                alert('Please fill out all required fields (Admission Year, Leaving Year, Batch, Alumni Status, and Highest Qualification).');
                 return false;
             }
 
@@ -667,8 +667,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const remarks = document.getElementById('remarks').value.trim();
             const selectedMembership = document.querySelector('input[name="membership"]:checked')?.value;
 
-            if (!whatsappJoin || !regionRadio || !remarks || !selectedMembership) {
-                alert('Please fill out all required fields (WhatsApp updates choice, Residing Region, Suggestions/remarks, and Annual Membership option).');
+            if (!whatsappJoin || !regionRadio || !selectedMembership) {
+                alert('Please fill out all required fields (WhatsApp updates choice, Residing Region, and Annual Membership option).');
                 return false;
             }
 

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-slate-50 text-slate-800 antialiased">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SFADC Alumni Portal — Directory</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Tailwind CSS (Warning Suppressed for Production) -->
+    <script>
+        (function() {
+            const originalWarn = console.warn;
+            console.warn = function(...args) {
+                if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
+                originalWarn.apply(console, args);
+            };
+        })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f4fbf7',
+                            100: '#e6f7ef',
+                            200: '#c2edd9',
+                            300: '#9ee3c3',
+                            400: '#56ce97',
+                            500: '#0ea765',
+                            600: '#0c9258',
+                            700: '#0a7a4a',
+                            800: '#08623b',
+                            900: '#064a2d',
+                        },
+                        accent: {
+                            gold: '#dfb76c',
+                            goldHover: '#cfa557',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Extra custom animations/styles specific to the hub */
+        .hub-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hub-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px -15px rgba(14, 167, 101, 0.15),
+                        0 0 0 1px rgba(14, 167, 101, 0.2);
+        }
+        .hub-card-blue:hover {
+            box-shadow: 0 30px 60px -15px rgba(13, 148, 136, 0.15),
+                        0 0 0 1px rgba(13, 148, 136, 0.2);
+        }
+        .hub-card-gold:hover {
+            box-shadow: 0 30px 60px -15px rgba(223, 183, 108, 0.2),
+                        0 0 0 1px rgba(223, 183, 108, 0.25);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col justify-between pt-6 pb-6 px-4 sm:px-6 lg:px-8 relative overflow-x-hidden"
+    style="zoom: 0.85;">
+    <!-- Background Design -->
+    <div class="fixed inset-0 z-[-1] bg-gradient-to-br from-slate-50 via-slate-100 to-zinc-200 overflow-hidden">
+        <div class="bg-blob blob-1 absolute top-0 right-0 -mr-20 -mt-20"></div>
+        <div class="bg-blob blob-2 absolute bottom-0 left-0 -ml-20 -mb-20"></div>
+        <div class="bg-blob blob-3 absolute top-1/2 left-1/3 -translate-y-1/2"></div>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="w-full max-w-6xl mx-auto z-10 flex items-center justify-between py-4 mb-8">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-brand-50 text-brand-600 rounded-xl flex items-center justify-center shadow-md border border-brand-100/50">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253">
+                    </path>
+                </svg>
+            </div>
+            <div>
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-widest block font-display">SFADC</span>
+                <span class="text-sm font-extrabold text-slate-800 tracking-tight block font-display">Alumni Association</span>
+            </div>
+        </div>
+        <div>
+            <a href="admin.html"
+                class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white/60 hover:bg-white/80 border border-slate-200/50 rounded-xl transition-all shadow-sm flex items-center gap-1.5 backdrop-blur-sm">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                </svg>
+                Admin Panel
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="w-full max-w-6xl mx-auto z-10 my-auto flex flex-col items-center justify-center animate-fade-in-up">
+        <!-- Title & Subtitle -->
+        <div class="text-center max-w-2xl mx-auto mb-12">
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand-100 text-brand-700 text-xs font-bold tracking-wider uppercase mb-3 font-display">
+                Central Portal
+            </span>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight font-display mb-4 leading-tight">
+                Alumni Network Hub
+            </h1>
+            <p class="text-slate-600 text-base md:text-lg leading-relaxed">
+                Access the official SFADC Alumni services. Register your details, explore statistical dashboards, or view and verify existing profiles.
+            </p>
+        </div>
+
+        <!-- 3-Column Navigation Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+            
+            <!-- 1. Data Entry Card -->
+            <div class="glass-card hub-card rounded-3xl overflow-hidden p-8 flex flex-col justify-between border border-white/60 relative group">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-brand-500/5 rounded-bl-full group-hover:bg-brand-500/10 transition-colors"></div>
+                <div>
+                    <!-- Icon -->
+                    <div class="w-14 h-14 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-brand-100/50">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                    </div>
+                    <!-- Badge -->
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 mb-3 font-display">
+                        Register / Survey
+                    </span>
+                    <!-- Title -->
+                    <h3 class="text-xl font-bold text-slate-800 mb-3 font-display">Data Entry Portal</h3>
+                    <!-- Description -->
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6">
+                        Complete your SFADC Alumni Association survey. Enter personal details, career info, and upload assets to finalize your official profile.
+                    </p>
+                </div>
+                <!-- Button -->
+                <a href="index.html" class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-2xl shadow-md shadow-brand-500/10 transition-all hover:scale-[1.02] flex items-center justify-center gap-2 group/btn font-display">
+                    <span>Start Survey Form</span>
+                    <svg class="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- 2. Analytics Card -->
+            <div class="glass-card hub-card hub-card-blue rounded-3xl overflow-hidden p-8 flex flex-col justify-between border border-white/60 relative group">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-teal-500/5 rounded-bl-full group-hover:bg-teal-500/10 transition-colors"></div>
+                <div>
+                    <!-- Icon -->
+                    <div class="w-14 h-14 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-teal-100/50">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10a2 2 0 01-2 2h-2a2 2 0 01-2-2zm0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <!-- Badge -->
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-teal-100 text-teal-800 mb-3 font-display">
+                        Real-time Data
+                    </span>
+                    <!-- Title -->
+                    <h3 class="text-xl font-bold text-slate-800 mb-3 font-display">Analytics Dashboard</h3>
+                    <!-- Description -->
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6">
+                        Explore demographic insights, employment statuses, and aggregate statistical charts representing the global SFADC alumni community.
+                    </p>
+                </div>
+                <!-- Button -->
+                <a href="analytics.html" class="w-full py-3.5 px-4 bg-teal-600 hover:bg-teal-700 text-white text-sm font-bold rounded-2xl shadow-md shadow-teal-500/10 transition-all hover:scale-[1.02] flex items-center justify-center gap-2 group/btn font-display">
+                    <span>Open Dashboard</span>
+                    <svg class="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- 3. Userpage Card -->
+            <div class="glass-card hub-card hub-card-gold rounded-3xl overflow-hidden p-8 flex flex-col justify-between border border-white/60 relative group">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-bl-full group-hover:bg-amber-500/10 transition-colors"></div>
+                <div>
+                    <!-- Icon -->
+                    <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm border border-amber-100/50">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 012-2h2a2 2 0 012 2v1m-6 7a3 3 0 116 0 3 3 0 01-6 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <!-- Badge -->
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 mb-3 font-display">
+                        Profile & ID Card
+                    </span>
+                    <!-- Title -->
+                    <h3 class="text-xl font-bold text-slate-800 mb-3 font-display">User Profile Portal</h3>
+                    <!-- Description -->
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6">
+                        Access your profile details, edit registered information, verify credentials, and download your personalized digital Membership Card.
+                    </p>
+                </div>
+                <!-- Button -->
+                <a href="view.html" class="w-full py-3.5 px-4 bg-amber-600 hover:bg-amber-700 text-white text-sm font-bold rounded-2xl shadow-md shadow-amber-500/10 transition-all hover:scale-[1.02] flex items-center justify-center gap-2 group/btn font-display">
+                    <span>Access Profile</span>
+                    <svg class="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-6xl mx-auto z-10 py-6 border-t border-slate-200/50 mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-display">
+        <p>&copy; 2026 SFADC Alumni Association. All rights reserved.</p>
+        <div class="flex gap-6">
+            <a href="index.html" class="hover:text-slate-800 transition-colors font-display">Data Entry</a>
+            <a href="analytics.html" class="hover:text-slate-800 transition-colors font-display">Analytics</a>
+            <a href="view.html" class="hover:text-slate-800 transition-colors font-display">Alumni Profiles</a>
+            <a href="admin.html" class="hover:text-slate-800 transition-colors font-display">Administration</a>
+        </div>
+    </footer>
+</body>
+
+</html>
