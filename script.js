@@ -183,7 +183,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Preload template image
                 membershipTemplateImg = new Image();
-                membershipTemplateImg.crossOrigin = "Anonymous";
+                if (imgSrc && (imgSrc.startsWith('http') || imgSrc.startsWith('//'))) {
+                    membershipTemplateImg.crossOrigin = "Anonymous";
+                }
                 membershipTemplateImg.src = imgSrc;
                 membershipTemplateImg.onload = () => {
                     console.log("Membership template loaded successfully.");
