@@ -1448,91 +1448,171 @@
             isEditing = false;
             renderDetailedProfile(activeMembershipData);
         }
-
         function printProfilePDF() {
             const r = allData[activeIndex];
             if (!r) return;
 
             const tempDiv = document.createElement('div');
-            tempDiv.style.fontFamily = "'Inter', sans-serif";
-            tempDiv.style.color = "#0f172a";
-            tempDiv.style.padding = "30px";
+            tempDiv.style.fontFamily = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+            tempDiv.style.color = "#1e293b";
+            tempDiv.style.padding = "35px";
             tempDiv.style.background = "#ffffff";
-            tempDiv.style.fontSize = "12px";
             tempDiv.style.lineHeight = "1.5";
 
-            // Header
-            let headerHtml = `
-                <div style="border-bottom: 2px solid #0d9488; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #0f172a;">${esc(r.full_name || 'Alumni Profile')}</h1>
-                        <div style="margin-top: 5px; font-size: 13px; color: #64748b; font-weight: 600;">
-                            Registration ID: <span style="font-family: monospace; color: #0d9488; font-weight: 700;">${esc(r.registration_id || '—')}</span>
-                            &nbsp;|&nbsp;
-                            Batch: ${esc(getBatchName(r.registration_id))} (${esc(r.admission_year || '—')} – ${esc(r.leaving_year || '—')})
-                        </div>
-                    </div>
-                    ${r.photo_url ? `<img src="${r.photo_url}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #0d9488;">` : ''}
-                </div>
-            `;
-
-            const sectionHeader = (title) => `
-                <h3 style="margin: 15px 0 8px 0; font-size: 13px; font-weight: 700; color: #0d9488; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px;">${title}</h3>
-            `;
-
-            const printField = (label, val) => `
-                <div style="display: flex; margin-bottom: 6px; font-size: 11px;">
-                    <div style="width: 200px; color: #64748b; font-weight: 600;">${label}:</div>
-                    <div style="flex: 1; color: #0f172a; font-weight: 500;">${esc(val || '—')}</div>
-                </div>
-            `;
-
             const dobFormatted = r.dob ? new Date(r.dob).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) : '—';
-            const skillsFormatted = Array.isArray(r.skills) ? r.skills.join(', ') : (r.skills || '—');
+            const skillsArray = Array.isArray(r.skills) ? r.skills : (r.skills ? [r.skills] : []);
+            const skillsBadges = skillsArray.map(s => 
+                `<span style="display: inline-block; background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; font-weight: 700; font-size: 9.5px; padding: 2px 6px; border-radius: 4px; margin-right: 4px; margin-bottom: 4px;">${esc(s)}</span>`
+            ).join('') || '<span style="color:#94a3b8;">—</span>';
 
-            let bodyHtml = `
-                ${sectionHeader("1. Personal Information")}
-                ${printField("Full Name", r.full_name)}
-                ${printField("Mobile Number", `${r.country_code || ''} ${r.mobile || ''}`)}
-                ${printField("Email Address", r.email)}
-                ${printField("Place of Residence", r.residence_place)}
-                ${printField("District / State", r.country)}
-                ${printField("Date of Birth", dobFormatted)}
+            const coordinatorBadge = r.coordinator === 'Yes' 
+                ? `<span style="display: inline-block; background: #dcfce7; color: #15803d; font-weight: 700; font-size: 9.5px; padding: 2px 6px; border-radius: 4px;">Yes</span>` 
+                : `<span style="display: inline-block; background: #f1f5f9; color: #64748b; font-weight: 600; font-size: 9.5px; padding: 2px 6px; border-radius: 4px;">No</span>`;
 
-                ${sectionHeader("2. Academic Background")}
-                ${printField("Year of Admission", r.admission_year)}
-                ${printField("Year of Leaving", r.leaving_year)}
-                ${printField("Alumni Status", r.alumni_status)}
-                ${printField("Highest Qualification", r.qualification)}
-                ${printField("Specify Subject / Area", r.subject_area)}
-                ${printField("Additional Qualifications", r.additional_degrees)}
-                ${printField("Highest Achievement", r.highest_achievement)}
+            const pgText = (r.pg_student === true || r.pg_student === 'true' || r.pg_student === 'Yes' || r.pg_student === 1 || r.pg_student === '1') 
+                ? 'Yes (Fee: ₹50)' 
+                : 'No (Fee: ₹500)';
 
-                ${sectionHeader("3. Professional Profile")}
-                ${printField("Current Profession", r.profession)}
-                ${printField("Organization Name", r.organization)}
-                ${printField("Field of Work", r.field_of_work)}
-                ${printField("Work Location", r.work_location)}
-                ${printField("Annual Income Range", r.annual_income)}
+            const membershipOption = activeMembershipData 
+                ? `<span style="display: inline-block; background: #dcfce7; color: #15803d; font-weight: 700; font-size: 9.5px; padding: 2px 6px; border-radius: 4px;">Pay Now (Paid)</span>` 
+                : `<span style="display: inline-block; background: #fef3c7; color: #b45309; font-weight: 700; font-size: 9.5px; padding: 2px 6px; border-radius: 4px;">Pay Later (Unpaid)</span>`;
 
-                ${sectionHeader("4. Contribution & Preferences")}
-                ${printField("Areas of Contribution", skillsFormatted)}
-                ${printField("Join WhatsApp updates", r.whatsapp_join)}
-                ${printField("Residing Region", r.region)}
-                
-                ${r.remarks ? `
-                    ${sectionHeader("5. Suggestions or Remarks")}
-                    <div style="font-size: 11px; color: #334155; font-style: italic; margin-top: 5px; padding: 10px; background: #f8fafc; border-radius: 5px; border-left: 3px solid #0d9488;">
+            const cardUrlText = activeMembershipData 
+                ? `<span style="color: #0d9488; font-weight: 700;">Generated ✓</span>` 
+                : '<span style="color:#94a3b8;">Not Generated</span>';
+
+            const proofUrlText = activeMembershipData && activeMembershipData.payment_proof_url 
+                ? `<span style="color: #0d9488; font-weight: 700;">Uploaded ✓</span>` 
+                : '<span style="color:#94a3b8;">N/A</span>';
+
+            const mobileFormatted = `${r.country_code || ''} ${r.mobile || ''}`.trim();
+
+            const remarksHtml = r.remarks ? `
+                <div style="margin-top: 15px; background: #f8fafc; border-left: 4px solid #0d9488; padding: 12px; border-radius: 6px;">
+                    <h4 style="margin: 0 0 6px 0; font-size: 11px; font-weight: 800; color: #0f766e; text-transform: uppercase; letter-spacing: 0.05em;">5. Suggestions or Remarks</h4>
+                    <div style="font-size: 11px; color: #334155; font-style: italic; line-height: 1.45;">
                         "${esc(r.remarks)}"
                     </div>
-                ` : ''}
+                </div>
+            ` : '';
+
+            const printRow = (label, val) => `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; font-size: 10.5px; border-bottom: 1px solid #f1f5f9; padding: 5px 0;">
+                    <div style="color: #64748b; font-weight: 600; width: 45%;">${label}</div>
+                    <div style="color: #0f172a; font-weight: 700; width: 55%; text-align: right; word-break: break-word;">${val}</div>
+                </div>
+            `;
+
+            const printRowEsc = (label, val) => printRow(label, val ? esc(val) : '<span style="color:#94a3b8;">—</span>');
+
+            const printCard = (title, emoji, fields) => `
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                    <h3 style="margin: 0 0 12px 0; font-size: 11px; font-weight: 800; color: #0d9488; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 2px solid #ccfbf1; padding-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 13px;">${emoji}</span> ${title}
+                    </h3>
+                    <div style="display: flex; flex-direction: column;">
+                        ${fields}
+                    </div>
+                </div>
+            `;
+
+            const headerHtml = `
+                <div style="background: linear-gradient(135deg, #0f766e, #0d9488); border-radius: 12px; padding: 22px; margin-bottom: 20px; color: #ffffff; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
+                            <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">${esc(r.full_name || 'Alumni Profile')}</h1>
+                            <span style="display: inline-block; background: rgba(255,255,255,0.18); color: #ffffff; border: 1px solid rgba(255,255,255,0.3); font-weight: 700; font-size: 10.5px; padding: 2px 8px; border-radius: 6px; font-family: monospace; letter-spacing: 0.05em;">${esc(r.registration_id || 'No ID')}</span>
+                        </div>
+                        <div style="font-size: 13px; opacity: 0.95; font-weight: 500;">
+                            Batch: <strong style="font-weight: 700;">${esc(getBatchName(r.registration_id))} (${esc(r.admission_year || '—')} – ${esc(r.leaving_year || '—')})</strong>
+                            <span style="margin: 0 8px; opacity: 0.4;">|</span>
+                            Status: <span style="display: inline-block; background: ${r.alumni_status === 'Graduate' ? '#ccfbf1' : '#fef9c3'}; color: ${r.alumni_status === 'Graduate' ? '#0f766e' : '#713f12'}; font-weight: 800; font-size: 9.5px; padding: 1px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.03em;">${esc(r.alumni_status || '—')}</span>
+                        </div>
+                    </div>
+                    ${r.photo_url ? `
+                    <div style="margin-left: 20px; flex-shrink: 0;">
+                        <img src="${esc(r.photo_url)}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #ffffff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);" />
+                    </div>
+                    ` : `
+                    <div style="margin-left: 20px; flex-shrink: 0; width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 3px solid #ffffff; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                        👤
+                    </div>
+                    `}
+                </div>
+            `;
+
+            const leftColHtml = `
+                ${printCard("1. Personal Information", "👤", `
+                    ${printRowEsc("Full Name", r.full_name)}
+                    ${printRowEsc("Mobile Number", mobileFormatted)}
+                    ${printRowEsc("Email Address", r.email)}
+                    ${printRowEsc("Place of Residence", r.residence_place)}
+                    ${printRowEsc("District / State", r.country)}
+                    ${printRowEsc("Date of Birth", dobFormatted)}
+                `)}
+
+                ${printCard("2. Academic Background", "🎓", `
+                    ${printRowEsc("Admission Year", r.admission_year)}
+                    ${printRowEsc("Leaving Year", r.leaving_year)}
+                    ${printRowEsc("Highest Qualification", r.qualification)}
+                    ${printRowEsc("Specify Subject / Area", r.subject_area)}
+                    ${printRowEsc("Additional Qualifications", r.additional_degrees)}
+                    ${printRowEsc("Highest Achievement", r.highest_achievement)}
+                `)}
+            `;
+
+            const rightColHtml = `
+                ${printCard("3. Professional Profile", "💼", `
+                    ${printRowEsc("Current Profession", r.profession)}
+                    ${printRowEsc("Organization Name", r.organization)}
+                    ${printRowEsc("Field of Work", r.field_of_work)}
+                    ${printRowEsc("Work Location", r.work_location)}
+                    ${printRowEsc("Annual Income Range", r.annual_income)}
+                `)}
+
+                ${printCard("4. Preferences & Consent", "💡", `
+                    ${printRowEsc("Join WhatsApp Updates", r.whatsapp_join)}
+                    ${printRowEsc("Residing Region", r.region)}
+                    ${printRow("Batch Coordinator Consent", coordinatorBadge)}
+                    <div style="display: flex; flex-direction: column; font-size: 10.5px; padding: 5px 0;">
+                        <div style="color: #64748b; font-weight: 600; margin-bottom: 6px;">Areas of Contribution:</div>
+                        <div style="display: flex; flex-wrap: wrap;">${skillsBadges}</div>
+                    </div>
+                `)}
+
+                ${printCard("5. Annual Membership Dues", "💳", `
+                    ${printRow("Is PG Student?", pgText)}
+                    ${printRow("Membership Status", membershipOption)}
+                    ${printRow("Digital ID Card", cardUrlText)}
+                    ${printRow("Payment Screenshot", proofUrlText)}
+                `)}
+            `;
+
+            const bodyHtml = `
+                <table style="width: 100%; border-collapse: collapse; border: 0;" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="width: 49%; vertical-align: top; padding-right: 8px;">
+                            ${leftColHtml}
+                        </td>
+                        <td style="width: 2%;"></td>
+                        <td style="width: 49%; vertical-align: top; padding-left: 8px;">
+                            ${rightColHtml}
+                        </td>
+                    </tr>
+                </table>
+                ${remarksHtml}
+                
+                <div style="margin-top: 25px; border-top: 1.5px solid #e2e8f0; padding-top: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 9px; color: #94a3b8; font-weight: 600;">
+                    <div>IFADA Alumni Association Profile Registry • Confidential</div>
+                    <div>Generated on ${new Date().toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'})}</div>
+                </div>
             `;
 
             tempDiv.innerHTML = headerHtml + bodyHtml;
             document.body.appendChild(tempDiv);
 
             const opt = {
-                margin: 0.4,
+                margin: 0.35,
                 filename: `${r.full_name.replace(/\s+/g, '_')}_Profile.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, logging: false },
