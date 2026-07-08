@@ -576,6 +576,26 @@
         </div>
     </div>
 
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal-overlay hidden" style="position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 1rem;">
+        <div class="login-card" style="max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; text-align: left; position: relative; padding: 2.5rem 2rem; background: #ffffff !important; border: 1px solid rgba(0,0,0,0.1); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+            <button onclick="closeEditModal()" style="position: absolute; right: 1.5rem; top: 1.5rem; background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; line-height: 1;">&times;</button>
+            
+            <h2 style="font-size: 1.5rem; font-weight: 800; color: var(--text); margin-bottom: 1.5rem; border-bottom: 2px solid var(--border); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+                <span>✏️</span> Edit My Profile
+            </h2>
+
+            <div id="editProfileFormContainer">
+                <!-- Dynamically populated form -->
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem; justify-content: flex-end;">
+                <button type="button" onclick="closeEditModal()" class="submit-btn" style="background: var(--surface2); color: var(--text); width: auto; padding: 0.75rem 2rem; border: 1px solid var(--border);">Cancel</button>
+                <button id="saveProfileBtn" onclick="saveProfileChanges()" class="submit-btn" style="background: var(--brand); width: auto; padding: 0.75rem 2rem;">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer>
         &copy; 2026 IFADA Alumni Association. All rights reserved.
@@ -828,25 +848,33 @@
 
             container.innerHTML = `
                 <!-- Header Card Banner -->
-                <div style="background: linear-gradient(135deg, rgba(13, 148, 136, 0.08) 0%, rgba(20, 184, 166, 0.03) 100%); padding: 2rem; border-radius: 1.25rem; border: 1px solid var(--border); display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; margin-bottom: 2rem;">
-                    <div>
-                        ${profileData.photo_url 
-                            ? `<img src="${profileData.photo_url}" style="width:96px; height:96px; border-radius:50%; object-fit:cover; border:3px solid var(--brand); box-shadow: var(--shadow-lg);">` 
-                            : `<div style="width:96px; height:96px; border-radius:50%; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:3rem; border:3px solid var(--border); box-shadow: var(--shadow-lg);">👤</div>`
-                        }
+                <div style="background: linear-gradient(135deg, rgba(13, 148, 136, 0.08) 0%, rgba(20, 184, 166, 0.03) 100%); padding: 2rem; border-radius: 1.25rem; border: 1px solid var(--border); display: flex; gap: 1.5rem; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 2rem;">
+                    <div style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; flex: 1;">
+                        <div>
+                            ${profileData.photo_url 
+                                ? `<img src="${profileData.photo_url}" style="width:96px; height:96px; border-radius:50%; object-fit:cover; border:3px solid var(--brand); box-shadow: var(--shadow-lg);">` 
+                                : `<div style="width:96px; height:96px; border-radius:50%; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:3rem; border:3px solid var(--border); box-shadow: var(--shadow-lg);">👤</div>`
+                            }
+                        </div>
+                        <div style="flex: 1; min-width: 260px;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                                <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text); margin: 0;">${esc(profileData.full_name || '—')}</h1>
+                                <span class="badge badge-teal" style="font-size: 0.85rem; font-family: monospace; padding: 0.3rem 0.75rem; letter-spacing: 0.05em; border: 1px solid rgba(13,148,136,0.25);">${esc(profileData.registration_id || 'No ID')}</span>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; font-size: 0.85rem; color: var(--text-muted);">
+                                <span class="badge ${profileData.alumni_status==='Graduate'?'badge-teal':'badge-yellow'}">${esc(profileData.alumni_status || '—')}</span>
+                                <span>•</span>
+                                <span>Batch: <strong>${esc(getBatchName(profileData.registration_id))} (${esc(profileData.admission_year || '—')} – ${esc(profileData.leaving_year || '—')})</strong></span>
+                                <span>•</span>
+                                <span>Place: <strong>${esc(profileData.residence_place || '—')}</strong></span>
+                            </div>
+                        </div>
                     </div>
-                    <div style="flex: 1; min-width: 260px;">
-                        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
-                            <h1 style="font-size: 1.75rem; font-weight: 800; color: var(--text); margin: 0;">${esc(profileData.full_name || '—')}</h1>
-                            <span class="badge badge-teal" style="font-size: 0.85rem; font-family: monospace; padding: 0.3rem 0.75rem; letter-spacing: 0.05em; border: 1px solid rgba(13,148,136,0.25);">${esc(profileData.registration_id || 'No ID')}</span>
-                        </div>
-                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; font-size: 0.85rem; color: var(--text-muted);">
-                            <span class="badge ${profileData.alumni_status==='Graduate'?'badge-teal':'badge-yellow'}">${esc(profileData.alumni_status || '—')}</span>
-                            <span>•</span>
-                            <span>Batch: <strong>${esc(getBatchName(profileData.registration_id))} (${esc(profileData.admission_year || '—')} – ${esc(profileData.leaving_year || '—')})</strong></span>
-                            <span>•</span>
-                            <span>Place: <strong>${esc(profileData.residence_place || '—')}</strong></span>
-                        </div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                        <button onclick="openEditModal()" class="submit-btn" style="width: auto; padding: 0.6rem 1.5rem; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; background: var(--brand); border: none; cursor: pointer; border-radius: 0.75rem; color: white;">
+                            <svg style="width:16px;height:16px" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                            Edit Profile
+                        </button>
                     </div>
                 </div>
 
@@ -917,6 +945,7 @@
                             ${renderField(calendarIcon, "Admission Year", profileData.admission_year)}
                             ${renderField(calendarIcon, "Leaving Year", profileData.leaving_year)}
                             ${renderField(bookIcon, "Course / Qualification", profileData.qualification)}
+                            ${renderField(bookIcon, "Specify Subject / Area", profileData.subject_area)}
                             ${renderField(awardIcon, "Additional Degrees", profileData.additional_degrees)}
                             ${renderField(trophyIcon, "Highest Achievement", profileData.highest_achievement)}
                         </div>
@@ -1312,6 +1341,472 @@
                 alert("Error generating membership card: " + e.message);
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;
+            }
+        }
+
+        function openEditModal() {
+            if (!activeProfileData) return;
+            const container = document.getElementById('editProfileFormContainer');
+            
+            const r = activeProfileData;
+            
+            const districts = ["Alappuzha", "Ernakulam", "Idukki", "Kannur", "Kasaragod", "Kollam", "Kottayam", "Kozhikode", "Malappuram", "Palakkad", "Pathanamthitta", "Thiruvananthapuram", "Thrissur", "Wayanad"];
+            const districtOptions = districts.map(d => `<option value="${d}" ${r.country === d ? 'selected' : ''}>${d}</option>`).join('');
+
+            const quals = ['Certificate Course', 'Diploma', 'Advanced Diploma', "Bachelor's Degree (BA/BSc/BCom/BBA/BCA/BTech etc.)", "Bachelor's Degree (Religious/Islamic Studies)", 'Postgraduate Diploma', "Master's Degree (MA/MSc/MCom/MBA/MTech etc.)", 'MPhil', 'PhD/Doctorate', 'Postdoctoral Qualification'];
+            let isQualOthers = r.qualification && !quals.includes(r.qualification);
+            const qualOptions = quals.map(q => `<option value="${q}" ${r.qualification === q ? 'selected' : ''}>${q}</option>`).join('');
+
+            const fieldsOfWork = ['Education', 'Business', 'IT', 'Healthcare', 'Government', "Religious Service / Da'wah", 'Media'];
+            let isFieldOthers = r.field_of_work && !fieldsOfWork.includes(r.field_of_work) && r.field_of_work.startsWith('Others:');
+            let fieldOthersValue = isFieldOthers ? r.field_of_work.replace('Others: ', '') : '';
+            let cleanFieldOfWork = isFieldOthers ? 'Others' : r.field_of_work;
+            const fieldOptions = fieldsOfWork.map(f => `<option value="${f}" ${cleanFieldOfWork === f ? 'selected' : ''}>${f}</option>`).join('');
+
+            const incomes = ['No Income', 'Less than ₹1 LPA', '₹1–2 LPA', '₹2–3 LPA', '₹3–5 LPA', '₹5–7 LPA', '₹7–10 LPA', '₹10–15 LPA', '₹15–25 LPA', '₹25–50 LPA', 'Above ₹50 LPA'];
+            const incomeOptions = incomes.map(i => `<option value="${i}" ${r.annual_income === i ? 'selected' : ''}>${i}</option>`).join('');
+
+            const skillsList = ['Career Guidance', 'Teaching & Training', 'Public Speaking', 'Writing & Editing', 'Business & Entrepreneurship', 'IT / Web Development', 'Graphic Design & Media', 'Social Media Management', 'Event Management', 'Research', 'Fundraising', 'Mentorship & Counseling'];
+            
+            let currentSkills = Array.isArray(r.skills) ? r.skills : [];
+            let otherSkill = '';
+            currentSkills.forEach(s => {
+                if (!skillsList.includes(s)) otherSkill = s;
+            });
+            const skillsCheckboxes = skillsList.map(s => {
+                const checked = currentSkills.includes(s) ? 'checked' : '';
+                return `
+                    <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.88rem; cursor:pointer; margin-bottom: 0.25rem;">
+                        <input type="checkbox" name="edit_skills" value="${s}" ${checked}>
+                        <span>${s}</span>
+                    </label>
+                `;
+            }).join('');
+
+            let cleanRegion = '';
+            let regionDetail = '';
+            if (r.region) {
+                if (r.region.startsWith('Other Indian States:')) {
+                    cleanRegion = 'Other Indian States';
+                    regionDetail = r.region.replace('Other Indian States: ', '');
+                } else if (r.region.startsWith('GCC Countries:')) {
+                    cleanRegion = 'GCC Countries';
+                    regionDetail = r.region.replace('GCC Countries: ', '');
+                } else if (r.region.startsWith('Other Countries:')) {
+                    cleanRegion = 'Other Countries';
+                    regionDetail = r.region.replace('Other Countries: ', '');
+                } else {
+                    cleanRegion = r.region;
+                }
+            }
+
+            container.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 1.5rem; text-align: left;">
+                    
+                    <!-- Section 1 -->
+                    <div>
+                        <h3 style="font-size:1rem; font-weight:700; color:var(--brand); margin-bottom:0.75rem; border-bottom: 1.5px solid var(--border); padding-bottom:0.25rem;">1. Personal Details</h3>
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Full Name *</label>
+                                <input type="text" id="edit_fullName" value="${esc(r.full_name || '')}" class="input-field">
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Country Code *</label>
+                                <input type="text" id="edit_countryCode" value="${esc(r.country_code || '+91')}" class="input-field">
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Mobile Number *</label>
+                                <input type="text" id="edit_mobile" value="${esc(r.mobile || '')}" class="input-field">
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Email Address *</label>
+                                <input type="email" id="edit_email" value="${esc(r.email || '')}" class="input-field">
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Place of Residence *</label>
+                                <input type="text" id="edit_residencePlace" value="${esc(r.residence_place || '')}" class="input-field">
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">District *</label>
+                                <select id="edit_country" class="input-field">
+                                    <option value="" disabled>Select District</option>
+                                    ${districtOptions}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Date of Birth *</label>
+                                <input type="date" id="edit_dob" value="${r.dob || ''}" class="input-field">
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Profile Photo URL</label>
+                                <input type="text" id="edit_photoUrl" value="${esc(r.photo_url || '')}" class="input-field" placeholder="Image URL">
+                                <div style="margin-top:0.25rem; font-size:0.7rem; color:var(--text-muted);">Or upload new file:</div>
+                                <input type="file" id="edit_photoFile" accept="image/*" style="font-size:0.75rem; margin-top:0.2rem;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2 -->
+                    <div>
+                        <h3 style="font-size:1rem; font-weight:700; color:var(--brand); margin-bottom:0.75rem; border-bottom: 1.5px solid var(--border); padding-bottom:0.25rem;">2. Academic Details</h3>
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin-bottom:1rem;">
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Admission Year *</label>
+                                <input type="number" id="edit_admissionYear" value="${r.admission_year || ''}" class="input-field">
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Leaving Year *</label>
+                                <input type="number" id="edit_leavingYear" value="${r.leaving_year || ''}" class="input-field">
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Alumni Status *</label>
+                                <select id="edit_alumniStatus" class="input-field">
+                                    <option value="Graduate" ${r.alumni_status==='Graduate'?'selected':''}>Graduate</option>
+                                    <option value="Discontinued / Dropout" ${r.alumni_status==='Discontinued / Dropout'?'selected':''}>Discontinued / Dropout</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Highest Qualification *</label>
+                                <select id="edit_qualification" class="input-field" onchange="
+                                    const isOthers = this.value === 'Others';
+                                    document.getElementById('edit_qualOthersDiv').style.display = isOthers ? 'block' : 'none';
+                                ">
+                                    <option value="" disabled>Select Qualification</option>
+                                    ${qualOptions}
+                                    <option value="Others" ${isQualOthers ? 'selected' : ''}>Other (Specify)</option>
+                                </select>
+                                <div id="edit_qualOthersDiv" style="margin-top:0.4rem; display:${isQualOthers ? 'block' : 'none'};">
+                                    <input type="text" id="edit_qualOthersText" value="${isQualOthers ? esc(r.qualification) : ''}" class="input-field" placeholder="Please specify qualification...">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Specify Subject / Area *</label>
+                                <input type="text" id="edit_subjectArea" value="${esc(r.subject_area || '')}" class="input-field" placeholder="e.g. Commerce, Science, Theology">
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr; gap:1rem;">
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Additional Degrees/Diplomas</label>
+                                <textarea id="edit_additionalDegrees" class="input-field" rows="2">${esc(r.additional_degrees || '')}</textarea>
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Highest Achievement so Far</label>
+                                <textarea id="edit_highestAchievement" class="input-field" rows="2">${esc(r.highest_achievement || '')}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3 -->
+                    <div>
+                        <h3 style="font-size:1rem; font-weight:700; color:var(--brand); margin-bottom:0.75rem; border-bottom: 1.5px solid var(--border); padding-bottom:0.25rem;">3. Professional Information</h3>
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Current Profession *</label>
+                                <input type="text" id="edit_profession" value="${esc(r.profession || '')}" class="input-field">
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Organization Name *</label>
+                                <input type="text" id="edit_organization" value="${esc(r.organization || '')}" class="input-field">
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Field of Work *</label>
+                                <select id="edit_fieldOfWork" class="input-field" onchange="
+                                    const isOthers = this.value === 'Others';
+                                    document.getElementById('edit_fieldOthersDiv').style.display = isOthers ? 'block' : 'none';
+                                ">
+                                    <option value="" disabled>Select Field of Work</option>
+                                    ${fieldOptions}
+                                    <option value="Others" ${isFieldOthers ? 'selected' : ''}>Others (Specify)</option>
+                                </select>
+                                <div id="edit_fieldOthersDiv" style="margin-top:0.4rem; display:${isFieldOthers ? 'block' : 'none'};">
+                                    <input type="text" id="edit_fieldOthersText" value="${esc(fieldOthersValue)}" class="input-field" placeholder="Please specify field...">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Work Location *</label>
+                                <input type="text" id="edit_workLocation" value="${esc(r.work_location || '')}" class="input-field">
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Annual Income *</label>
+                                <select id="edit_annualIncome" class="input-field">
+                                    <option value="" disabled>Select Annual Income</option>
+                                    ${incomeOptions}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 4 -->
+                    <div>
+                        <h3 style="font-size:1rem; font-weight:700; color:var(--brand); margin-bottom:0.75rem; border-bottom: 1.5px solid var(--border); padding-bottom:0.25rem;">4. Contribution & Consent</h3>
+                        
+                        <div style="margin-bottom:1rem;">
+                            <label class="input-label" style="font-size:0.75rem; margin-bottom:0.5rem;">In which areas can you contribute? (Select multiple) *</label>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:0.25rem; margin-bottom:0.5rem;">
+                                ${skillsCheckboxes}
+                            </div>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <label style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">Other (Specify):</label>
+                                <input type="text" id="edit_skillsOtherText" value="${esc(otherSkill)}" class="input-field" style="flex:1; max-width:250px; padding:0.5rem 0.75rem;">
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin-bottom:1rem;">
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Join WhatsApp updates? *</label>
+                                <select id="edit_whatsappJoin" class="input-field">
+                                    <option value="Yes" ${r.whatsapp_join==='Yes'?'selected':''}>Yes</option>
+                                    <option value="Already a Member" ${r.whatsapp_join==='Already a Member'?'selected':''}>Already a Member</option>
+                                    <option value="No" ${r.whatsapp_join==='No'?'selected':''}>No</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Residing Region *</label>
+                                <select id="edit_region" class="input-field" onchange="
+                                    const val = this.value;
+                                    document.getElementById('edit_regionDetailLabel').textContent = val === 'Other Indian States' ? 'Specify State *' : 'Specify Country *';
+                                    document.getElementById('edit_regionDetailDiv').style.display = (val === 'Kerala' || !val) ? 'none' : 'block';
+                                ">
+                                    <option value="Kerala" ${cleanRegion==='Kerala'?'selected':''}>Kerala</option>
+                                    <option value="Other Indian States" ${cleanRegion==='Other Indian States'?'selected':''}>Other Indian States</option>
+                                    <option value="GCC Countries" ${cleanRegion==='GCC Countries'?'selected':''}>GCC Countries</option>
+                                    <option value="Other Countries" ${cleanRegion==='Other Countries'?'selected':''}>Other Countries</option>
+                                </select>
+                                <div id="edit_regionDetailDiv" style="margin-top:0.4rem; display:${(cleanRegion==='Kerala' || !cleanRegion) ? 'none' : 'block'};">
+                                    <label id="edit_regionDetailLabel" class="input-label" style="font-size:0.75rem;">Specify State / Country *</label>
+                                    <input type="text" id="edit_regionDetail" value="${esc(regionDetail)}" class="input-field">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="input-label" style="font-size:0.75rem;">Act as Batch Coordinator *</label>
+                                <select id="edit_coordinator" class="input-field">
+                                    <option value="Yes" ${r.coordinator==='Yes'?'selected':''}>Yes</option>
+                                    <option value="No" ${r.coordinator==='No'?'selected':''}>No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="input-label" style="font-size:0.75rem;">Suggestions or Remarks</label>
+                            <textarea id="edit_remarks" class="input-field" rows="3">${esc(r.remarks || '')}</textarea>
+                        </div>
+                    </div>
+
+                </div>
+            `;
+            
+            showEl('editProfileModal');
+        }
+
+        function closeEditModal() {
+            hideEl('editProfileModal');
+        }
+
+        async function saveProfileChanges() {
+            const r = activeProfileData;
+            if (!r) return;
+
+            // Gather inputs
+            const fullName = document.getElementById('edit_fullName').value.trim();
+            const countryCode = document.getElementById('edit_countryCode').value.trim();
+            const mobile = document.getElementById('edit_mobile').value.trim();
+            const email = document.getElementById('edit_email').value.trim();
+            const residencePlace = document.getElementById('edit_residencePlace').value.trim();
+            const country = document.getElementById('edit_country').value;
+            const dob = document.getElementById('edit_dob').value;
+            let photoUrl = document.getElementById('edit_photoUrl').value.trim();
+
+            const admissionYear = document.getElementById('edit_admissionYear').value.trim();
+            const leavingYear = document.getElementById('edit_leavingYear').value.trim();
+            const alumniStatus = document.getElementById('edit_alumniStatus').value;
+            
+            let qualification = document.getElementById('edit_qualification').value;
+            if (qualification === 'Others') {
+                qualification = document.getElementById('edit_qualOthersText').value.trim();
+                if (!qualification) {
+                    alert('Please specify your other highest qualification.');
+                    return;
+                }
+            }
+
+            const subjectArea = document.getElementById('edit_subjectArea').value.trim();
+            const additionalDegrees = document.getElementById('edit_additionalDegrees').value.trim();
+            const highestAchievement = document.getElementById('edit_highestAchievement').value.trim();
+
+            const profession = document.getElementById('edit_profession').value.trim();
+            const organization = document.getElementById('edit_organization').value.trim();
+            
+            let fieldOfWork = document.getElementById('edit_fieldOfWork').value;
+            if (fieldOfWork === 'Others') {
+                const spec = document.getElementById('edit_fieldOthersText').value.trim();
+                if (!spec) {
+                    alert('Please specify your other field of work.');
+                    return;
+                }
+                fieldOfWork = 'Others: ' + spec;
+            }
+
+            const workLocation = document.getElementById('edit_workLocation').value.trim();
+            const annualIncome = document.getElementById('edit_annualIncome').value;
+
+            // Skills checkboxes
+            const skills = [...document.querySelectorAll('input[name="edit_skills"]:checked')].map(el => el.value);
+            const otherSkill = document.getElementById('edit_skillsOtherText').value.trim();
+            if (otherSkill) skills.push(otherSkill);
+
+            const whatsappJoin = document.getElementById('edit_whatsappJoin').value;
+            
+            const regionSelect = document.getElementById('edit_region').value;
+            let region = regionSelect;
+            if (regionSelect !== 'Kerala') {
+                const detail = document.getElementById('edit_regionDetail').value.trim();
+                if (!detail) {
+                    alert('Please specify the State or Country for the selected residing region.');
+                    return;
+                }
+                region = regionSelect + ': ' + detail;
+            }
+
+            const coordinator = document.getElementById('edit_coordinator').value;
+            const remarks = document.getElementById('edit_remarks').value.trim();
+
+            // Validation
+            if (!fullName || !countryCode || !mobile || !email || !residencePlace || !country || !dob || 
+                !admissionYear || !leavingYear || !alumniStatus || !qualification || !subjectArea ||
+                !profession || !organization || !fieldOfWork || !workLocation || !annualIncome || 
+                !whatsappJoin || !region || !coordinator) {
+                alert('Please fill out all required fields marked with *.');
+                return;
+            }
+
+            const saveBtn = document.getElementById('saveProfileBtn');
+            const originalText = saveBtn.textContent;
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            try {
+                // Photo upload to Cloudinary if new file selected
+                const photoFile = document.getElementById('edit_photoFile').files[0];
+                if (photoFile) {
+                    saveBtn.textContent = 'Uploading photo...';
+                    const formData = new FormData();
+                    formData.append('file', photoFile);
+                    formData.append('upload_preset', 'ifadaData');
+
+                    const cloudRes = await fetch(
+                        `https://api.cloudinary.com/v1_1/da6fjyirm/image/upload`,
+                        { method: 'POST', body: formData }
+                    );
+                    if (cloudRes.ok) {
+                        const cloudData = await cloudRes.json();
+                        photoUrl = cloudData.secure_url;
+                    } else {
+                        console.error("Cloudinary upload failed.");
+                    }
+                }
+
+                const payload = {
+                    full_name: fullName,
+                    country_code: countryCode,
+                    mobile: mobile,
+                    email: email || null,
+                    residence_place: residencePlace || null,
+                    country: country || null,
+                    dob: dob || null,
+                    photo_url: photoUrl || null,
+                    admission_year: parseInt(admissionYear) || null,
+                    leaving_year: parseInt(leavingYear) || null,
+                    alumni_status: alumniStatus || null,
+                    qualification: qualification || null,
+                    subject_area: subjectArea || null,
+                    additional_degrees: additionalDegrees || null,
+                    highest_achievement: highestAchievement || null,
+                    profession: profession || null,
+                    organization: organization || null,
+                    field_of_work: fieldOfWork || null,
+                    work_location: workLocation || null,
+                    annual_income: annualIncome || null,
+                    skills: skills.length ? skills : null,
+                    whatsapp_join: whatsappJoin || null,
+                    region: region || null,
+                    coordinator: coordinator || null,
+                    remarks: remarks || null
+                };
+
+                saveBtn.textContent = 'Updating DB...';
+                const { data: updatedData, error } = await supabaseClient
+                    .from('alumni_responses')
+                    .update(payload)
+                    .eq('registration_id', r.registration_id)
+                    .select()
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                if (!updatedData) {
+                    throw new Error("Could not update. Verify RLS updates are allowed.");
+                }
+
+                if (r.registration_id === sessionStorage.getItem('regId') || r.registration_id === localStorage.getItem('regId')) {
+                    sessionStorage.setItem('regId', r.registration_id);
+                }
+
+                // --- Card Regeneration & linking ---
+                saveBtn.textContent = 'Updating Card...';
+                const originalMobile = r.mobile;
+                
+                // Fetch if they already have generated a card
+                const { data: cardData } = await supabaseClient
+                    .from('membership')
+                    .select('*')
+                    .eq('mobile', originalMobile)
+                    .maybeSingle();
+
+                if (cardData) {
+                    const cardPayload = {
+                        name: fullName,
+                        mobile: mobile
+                    };
+                    
+                    // If Name or Admission/Leaving years changed, regenerate the card automatically
+                    if (fullName !== r.full_name || admissionYear !== r.admission_year || leavingYear !== r.leaving_year) {
+                        saveBtn.textContent = 'Regenerating card...';
+                        
+                        activeProfileData = updatedData;
+                        await generateMembershipCardCanvas(updatedData);
+                        
+                        const canvas = document.getElementById('card-canvas');
+                        const cardBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                        const cardFormData = new FormData();
+                        cardFormData.append('file', cardBlob);
+                        cardFormData.append('upload_preset', 'ifada-sanad');
+
+                        const cardRes = await fetch(
+                            `https://api.cloudinary.com/v1_1/da6fjyirm/image/upload`,
+                            { method: 'POST', body: cardFormData }
+                        );
+                        if (cardRes.ok) {
+                            const cloudData = await cardRes.json();
+                            cardPayload.image_url = cloudData.secure_url;
+                        }
+                    }
+
+                    await supabaseClient
+                        .from('membership')
+                        .update(cardPayload)
+                        .eq('mobile', originalMobile);
+                }
+
+                alert('✓ Profile updated successfully.');
+                closeEditModal();
+                loadProfile(r.registration_id);
+
+            } catch (err) {
+                console.error("Save changes error:", err);
+                alert("Error saving changes: " + err.message);
+                saveBtn.disabled = false;
+                saveBtn.textContent = originalText;
             }
         }
     </script>

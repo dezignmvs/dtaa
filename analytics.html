@@ -8,6 +8,8 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <!-- html2pdf Library CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         *,
         *::before,
@@ -1118,10 +1120,12 @@
 
         let activeIndex = null;
         let isEditing = false;
+        let activeMembershipData = null;
 
         async function showDetails(index) {
             activeIndex = index;
             isEditing = false;
+            activeMembershipData = null;
             
             // Initial render
             renderDetailedProfile(null);
@@ -1142,7 +1146,8 @@
                     if (res.ok) {
                         const cardData = await res.json();
                         if (cardData && cardData.length > 0) {
-                            renderDetailedProfile(cardData[0]);
+                            activeMembershipData = cardData[0];
+                            renderDetailedProfile(activeMembershipData);
                         }
                     }
                 } catch(e) {
@@ -1176,7 +1181,16 @@
 
             title.textContent = "Alumni Response Details";
             backBtn.style.display = "inline-flex";
-            actions.innerHTML = ""; // Edit option is removed
+            actions.innerHTML = `
+                <button onclick="editProfile()" class="refresh-btn" style="background: var(--brand); color: #fff; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; cursor: pointer; border-radius: 0.5rem; transition: all 0.2s;" onmouseover="this.style.background='var(--brand-hover)'" onmouseout="this.style.background='var(--brand)'">
+                    <svg style="width:14px;height:14px" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    Edit Profile
+                </button>
+                <button onclick="printProfilePDF()" class="refresh-btn" style="background: var(--surface-solid); border: 1px solid var(--border); font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; cursor: pointer; border-radius: 0.5rem; transition: all 0.2s; margin-left: 0.5rem;" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='var(--surface-solid)'">
+                    <svg style="width:14px;height:14px" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    Print PDF
+                </button>
+            `;
 
             const formatArray = arr => Array.isArray(arr) && arr.length ? arr.map(x => `<span class="badge badge-teal" style="margin:0.2rem 0.2rem 0.2rem 0; display:inline-block; font-size:0.75rem;">${esc(x)}</span>`).join('') : '—';
 
@@ -1308,8 +1322,9 @@
                                 ${renderField("Q10", groupIcon, "Selected Batch", getBatchName(r.registration_id))}
                                 ${renderField("Q11", graduationIcon, "Alumni Status", r.alumni_status)}
                                 ${renderField("Q12", bookIcon, "Highest Qualification", r.qualification)}
-                                ${renderField("Q13", awardIcon, "Additional Qualifications", r.additional_degrees)}
-                                ${renderField("Q14", trophyIcon, "Highest Achievement", r.highest_achievement)}
+                                ${renderField("Q13", bookIcon, "Specify Subject / Area", r.subject_area)}
+                                ${renderField("Q14", awardIcon, "Additional Qualifications", r.additional_degrees)}
+                                ${renderField("Q15", trophyIcon, "Highest Achievement", r.highest_achievement)}
                             </div>
                         </div>
 
@@ -1319,7 +1334,7 @@
                             <div style="padding: 1.5rem; display: flex; flex-direction: column;">
                                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                                     <div style="display: flex; align-items: center; gap: 0.65rem;">
-                                        <span style="font-size: 0.72rem; font-weight: 800; color: var(--brand); background: rgba(13, 148, 136, 0.08); padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-family: monospace; min-width: 32px; text-align: center; display: inline-block;">Q20</span>
+                                        <span style="font-size: 0.72rem; font-weight: 800; color: var(--brand); background: rgba(13, 148, 136, 0.08); padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-family: monospace; min-width: 32px; text-align: center; display: inline-block;">Q21</span>
                                         <div style="color: var(--brand); display: flex; align-items: center; width: 16px; height: 16px; opacity: 0.8; flex-shrink: 0;">
                                             ${awardIcon}
                                         </div>
@@ -1338,11 +1353,11 @@
                         <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 1.25rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-sm)';">
                             ${renderStepHeader("3", "Professional Information", "💼")}
                             <div style="padding: 1.5rem; display: flex; flex-direction: column;">
-                                ${renderField("Q15", briefcaseIcon, "Profession / Designation", r.profession)}
-                                ${renderField("Q16", officeIcon, "Organization / Employer", r.organization)}
-                                ${renderField("Q17", wrenchIcon, "Field of Work", r.field_of_work)}
-                                ${renderField("Q18", mapPinIcon, "Work Location", r.work_location)}
-                                ${renderField("Q19", globeIcon, "Annual Income Range", r.annual_income)}
+                                ${renderField("Q16", briefcaseIcon, "Profession / Designation", r.profession)}
+                                ${renderField("Q17", officeIcon, "Organization / Employer", r.organization)}
+                                ${renderField("Q18", wrenchIcon, "Field of Work", r.field_of_work)}
+                                ${renderField("Q19", mapPinIcon, "Work Location", r.work_location)}
+                                ${renderField("Q20", globeIcon, "Annual Income Range", r.annual_income)}
                             </div>
                         </div>
 
@@ -1350,13 +1365,13 @@
                         <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 1.25rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='var(--shadow-md)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-sm)';">
                             ${renderStepHeader("5", "Communication & Consent", "✉️")}
                             <div style="padding: 1.5rem; display: flex; flex-direction: column;">
-                                ${renderField("Q21", chatIcon, "Join WhatsApp Group", r.whatsapp_join)}
-                                ${renderField("Q22", globeIcon, "Current Residence Region", r.region)}
+                                ${renderField("Q22", chatIcon, "Join WhatsApp Group", r.whatsapp_join)}
+                                ${renderField("Q23", globeIcon, "Current Residence Region", r.region)}
                                 
-                                <!-- Q23 suggestions/remarks -->
+                                <!-- Q24 suggestions/remarks -->
                                 <div class="profile-row" style="flex-direction: column; align-items: flex-start; gap: 0.4rem; padding: 0.75rem 0.5rem; border-radius: 0.5rem; border-bottom: 1px solid rgba(15, 23, 42, 0.03); display: flex;" onmouseover="this.style.backgroundColor='rgba(13, 148, 136, 0.03)'" onmouseout="this.style.backgroundColor='transparent'">
                                     <div style="display: flex; align-items: center; gap: 0.65rem;">
-                                        <span style="font-size: 0.72rem; font-weight: 800; color: var(--brand); background: rgba(13, 148, 136, 0.08); padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-family: monospace; min-width: 32px; text-align: center; display: inline-block;">Q23</span>
+                                        <span style="font-size: 0.72rem; font-weight: 800; color: var(--brand); background: rgba(13, 148, 136, 0.08); padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-family: monospace; min-width: 32px; text-align: center; display: inline-block;">Q24</span>
                                         <div style="color: var(--brand); display: flex; align-items: center; width: 16px; height: 16px; opacity: 0.8; flex-shrink: 0;">
                                             ${chatIcon}
                                         </div>
@@ -1367,11 +1382,11 @@
                                     </div>
                                 </div>
 
-                                <!-- Q24 annual membership -->
+                                <!-- Q25 annual membership -->
                                 <div class="profile-row" style="flex-direction: column; align-items: flex-start; gap: 0.5rem; transition: background-color 0.15s; padding: 0.75rem 0.5rem; border-radius: 0.5rem; display: flex;" onmouseover="this.style.backgroundColor='rgba(13, 148, 136, 0.03)'" onmouseout="this.style.backgroundColor='transparent'">
                                     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
                                         <div style="display: flex; align-items: center; gap: 0.65rem;">
-                                            <span style="font-size: 0.72rem; font-weight: 800; color: var(--brand); background: rgba(13, 148, 136, 0.08); padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-family: monospace; min-width: 32px; text-align: center; display: inline-block;">Q24</span>
+                                            <span style="font-size: 0.72rem; font-weight: 800; color: var(--brand); background: rgba(13, 148, 136, 0.08); padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-family: monospace; min-width: 32px; text-align: center; display: inline-block;">Q25</span>
                                             <div style="color: var(--brand); display: flex; align-items: center; width: 16px; height: 16px; opacity: 0.8; flex-shrink: 0;">
                                                 <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                                             </div>
@@ -1412,6 +1427,554 @@
                 </div>
                 ` : ''}
             `;
+        }
+
+        function closeDetails() {
+            const tableCard = document.getElementById('tableCard');
+            const waSettingsCard = document.getElementById('waSettingsCard');
+            const detailsPage = document.getElementById('detailsPage');
+            if (detailsPage) detailsPage.style.display = 'none';
+            if (tableCard) tableCard.style.display = 'block';
+            if (waSettingsCard) waSettingsCard.style.display = 'block';
+            isEditing = false;
+        }
+
+        function editProfile() {
+            isEditing = true;
+            renderDetailedProfileEdit();
+        }
+
+        function cancelEdit() {
+            isEditing = false;
+            renderDetailedProfile(activeMembershipData);
+        }
+
+        function printProfilePDF() {
+            const r = allData[activeIndex];
+            if (!r) return;
+
+            const tempDiv = document.createElement('div');
+            tempDiv.style.fontFamily = "'Inter', sans-serif";
+            tempDiv.style.color = "#0f172a";
+            tempDiv.style.padding = "30px";
+            tempDiv.style.background = "#ffffff";
+            tempDiv.style.fontSize = "12px";
+            tempDiv.style.lineHeight = "1.5";
+
+            // Header
+            let headerHtml = `
+                <div style="border-bottom: 2px solid #0d9488; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #0f172a;">${esc(r.full_name || 'Alumni Profile')}</h1>
+                        <div style="margin-top: 5px; font-size: 13px; color: #64748b; font-weight: 600;">
+                            Registration ID: <span style="font-family: monospace; color: #0d9488; font-weight: 700;">${esc(r.registration_id || '—')}</span>
+                            &nbsp;|&nbsp;
+                            Batch: ${esc(getBatchName(r.registration_id))} (${esc(r.admission_year || '—')} – ${esc(r.leaving_year || '—')})
+                        </div>
+                    </div>
+                    ${r.photo_url ? `<img src="${r.photo_url}" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #0d9488;">` : ''}
+                </div>
+            `;
+
+            const sectionHeader = (title) => `
+                <h3 style="margin: 15px 0 8px 0; font-size: 13px; font-weight: 700; color: #0d9488; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px;">${title}</h3>
+            `;
+
+            const printField = (label, val) => `
+                <div style="display: flex; margin-bottom: 6px; font-size: 11px;">
+                    <div style="width: 200px; color: #64748b; font-weight: 600;">${label}:</div>
+                    <div style="flex: 1; color: #0f172a; font-weight: 500;">${esc(val || '—')}</div>
+                </div>
+            `;
+
+            const dobFormatted = r.dob ? new Date(r.dob).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) : '—';
+            const skillsFormatted = Array.isArray(r.skills) ? r.skills.join(', ') : (r.skills || '—');
+
+            let bodyHtml = `
+                ${sectionHeader("1. Personal Information")}
+                ${printField("Full Name", r.full_name)}
+                ${printField("Mobile Number", `${r.country_code || ''} ${r.mobile || ''}`)}
+                ${printField("Email Address", r.email)}
+                ${printField("Place of Residence", r.residence_place)}
+                ${printField("District / State", r.country)}
+                ${printField("Date of Birth", dobFormatted)}
+
+                ${sectionHeader("2. Academic Background")}
+                ${printField("Year of Admission", r.admission_year)}
+                ${printField("Year of Leaving", r.leaving_year)}
+                ${printField("Alumni Status", r.alumni_status)}
+                ${printField("Highest Qualification", r.qualification)}
+                ${printField("Specify Subject / Area", r.subject_area)}
+                ${printField("Additional Qualifications", r.additional_degrees)}
+                ${printField("Highest Achievement", r.highest_achievement)}
+
+                ${sectionHeader("3. Professional Profile")}
+                ${printField("Current Profession", r.profession)}
+                ${printField("Organization Name", r.organization)}
+                ${printField("Field of Work", r.field_of_work)}
+                ${printField("Work Location", r.work_location)}
+                ${printField("Annual Income Range", r.annual_income)}
+
+                ${sectionHeader("4. Contribution & Preferences")}
+                ${printField("Areas of Contribution", skillsFormatted)}
+                ${printField("Join WhatsApp updates", r.whatsapp_join)}
+                ${printField("Residing Region", r.region)}
+                
+                ${r.remarks ? `
+                    ${sectionHeader("5. Suggestions or Remarks")}
+                    <div style="font-size: 11px; color: #334155; font-style: italic; margin-top: 5px; padding: 10px; background: #f8fafc; border-radius: 5px; border-left: 3px solid #0d9488;">
+                        "${esc(r.remarks)}"
+                    </div>
+                ` : ''}
+            `;
+
+            tempDiv.innerHTML = headerHtml + bodyHtml;
+            document.body.appendChild(tempDiv);
+
+            const opt = {
+                margin: 0.4,
+                filename: `${r.full_name.replace(/\s+/g, '_')}_Profile.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, logging: false },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(tempDiv).save().then(() => {
+                document.body.removeChild(tempDiv);
+            }).catch((err) => {
+                console.error("PDF generation error:", err);
+                document.body.removeChild(tempDiv);
+            });
+        }
+
+        function renderDetailedProfileEdit() {
+            const r = allData[activeIndex];
+            if (!r) return;
+
+            const title = document.getElementById('detailsTitle');
+            const actions = document.getElementById('detailsActions');
+            const body = document.getElementById('detailsPageBody');
+            const backBtn = document.getElementById('detailsBackBtn');
+
+            title.textContent = "Edit Alumni Response";
+            backBtn.style.display = "none";
+            actions.innerHTML = `
+                <button onclick="saveProfileEdit()" class="refresh-btn" style="background: #16a34a; color: #fff; border: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1.25rem; cursor: pointer; border-radius: 0.5rem; transition: all 0.2s;">
+                    Save Changes
+                </button>
+                <button onclick="cancelEdit()" class="refresh-btn" style="background: var(--surface2); color: var(--text); border: 1px solid var(--border); font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1.25rem; cursor: pointer; border-radius: 0.5rem; transition: all 0.2s; margin-left: 0.5rem;">
+                    Cancel
+                </button>
+            `;
+
+            const districts = ["Alappuzha", "Ernakulam", "Idukki", "Kannur", "Kasaragod", "Kollam", "Kottayam", "Kozhikode", "Malappuram", "Palakkad", "Pathanamthitta", "Thiruvananthapuram", "Thrissur", "Wayanad"];
+            const districtOptions = districts.map(d => `<option value="${d}" ${r.country === d ? 'selected' : ''}>${d}</option>`).join('');
+
+            const quals = ['Certificate Course', 'Diploma', 'Advanced Diploma', "Bachelor's Degree (BA/BSc/BCom/BBA/BCA/BTech etc.)", "Bachelor's Degree (Religious/Islamic Studies)", 'Postgraduate Diploma', "Master's Degree (MA/MSc/MCom/MBA/MTech etc.)", 'MPhil', 'PhD/Doctorate', 'Postdoctoral Qualification'];
+            let isQualOthers = r.qualification && !quals.includes(r.qualification);
+            const qualOptions = quals.map(q => `<option value="${q}" ${r.qualification === q ? 'selected' : ''}>${q}</option>`).join('');
+
+            const fieldsOfWork = ['Education', 'Business', 'IT', 'Healthcare', 'Government', "Religious Service / Da'wah", 'Media'];
+            let isFieldOthers = r.field_of_work && !fieldsOfWork.includes(r.field_of_work) && r.field_of_work.startsWith('Others:');
+            let fieldOthersValue = isFieldOthers ? r.field_of_work.replace('Others: ', '') : '';
+            let cleanFieldOfWork = isFieldOthers ? 'Others' : r.field_of_work;
+            const fieldOptions = fieldsOfWork.map(f => `<option value="${f}" ${cleanFieldOfWork === f ? 'selected' : ''}>${f}</option>`).join('');
+
+            const incomes = ['No Income', 'Less than ₹1 LPA', '₹1–2 LPA', '₹2–3 LPA', '₹3–5 LPA', '₹5–7 LPA', '₹7–10 LPA', '₹10–15 LPA', '₹15–25 LPA', '₹25–50 LPA', 'Above ₹50 LPA'];
+            const incomeOptions = incomes.map(i => `<option value="${i}" ${r.annual_income === i ? 'selected' : ''}>${i}</option>`).join('');
+
+            const skillsList = ['Career Guidance', 'Teaching & Training', 'Public Speaking', 'Writing & Editing', 'Business & Entrepreneurship', 'IT / Web Development', 'Graphic Design & Media', 'Social Media Management', 'Event Management', 'Research', 'Fundraising', 'Mentorship & Counseling'];
+            
+            let currentSkills = Array.isArray(r.skills) ? r.skills : [];
+            let otherSkill = '';
+            currentSkills.forEach(s => {
+                if (!skillsList.includes(s)) otherSkill = s;
+            });
+            const skillsCheckboxes = skillsList.map(s => {
+                const checked = currentSkills.includes(s) ? 'checked' : '';
+                return `
+                    <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.88rem; cursor:pointer;">
+                        <input type="checkbox" name="edit_skills" value="${s}" ${checked}>
+                        <span>${s}</span>
+                    </label>
+                `;
+            }).join('');
+
+            let cleanRegion = '';
+            let regionDetail = '';
+            if (r.region) {
+                if (r.region.startsWith('Other Indian States:')) {
+                    cleanRegion = 'Other Indian States';
+                    regionDetail = r.region.replace('Other Indian States: ', '');
+                } else if (r.region.startsWith('GCC Countries:')) {
+                    cleanRegion = 'GCC Countries';
+                    regionDetail = r.region.replace('GCC Countries: ', '');
+                } else if (r.region.startsWith('Other Countries:')) {
+                    cleanRegion = 'Other Countries';
+                    regionDetail = r.region.replace('Other Countries: ', '');
+                } else {
+                    cleanRegion = r.region;
+                }
+            }
+
+            body.innerHTML = `
+                <div style="display: flex; flex-direction: column; gap: 2rem; max-width: 800px; margin: 0 auto; text-align: left;">
+                    
+                    <!-- Section 1: Personal Details -->
+                    <div>
+                        <h3 style="font-size:1.1rem; font-weight:700; color:var(--brand); margin-bottom:1rem; border-bottom: 2px solid var(--border); padding-bottom:0.5rem;">1. Personal Information</h3>
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:1rem;">
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Full Name *</label>
+                                <input type="text" id="edit_fullName" value="${esc(r.full_name || '')}" class="gate-input" style="margin-bottom:0;">
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Country Code *</label>
+                                <input type="text" id="edit_countryCode" value="${esc(r.country_code || '+91')}" class="gate-input" style="margin-bottom:0;">
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Mobile Number *</label>
+                                <input type="text" id="edit_mobile" value="${esc(r.mobile || '')}" class="gate-input" style="margin-bottom:0;">
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Email Address *</label>
+                                <input type="email" id="edit_email" value="${esc(r.email || '')}" class="gate-input" style="margin-bottom:0;">
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Place of Residence *</label>
+                                <input type="text" id="edit_residencePlace" value="${esc(r.residence_place || '')}" class="gate-input" style="margin-bottom:0;">
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">District *</label>
+                                <select id="edit_country" class="gate-input" style="margin-bottom:0;">
+                                    <option value="" disabled>Select District</option>
+                                    ${districtOptions}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Date of Birth *</label>
+                                <input type="date" id="edit_dob" value="${r.dob || ''}" class="gate-input" style="margin-bottom:0;">
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Profile Photo URL</label>
+                                <input type="text" id="edit_photoUrl" value="${esc(r.photo_url || '')}" class="gate-input" style="margin-bottom:0;" placeholder="Image URL">
+                                <div style="margin-top:0.25rem; font-size:0.75rem; color:var(--text-muted);">Or upload new file:</div>
+                                <input type="file" id="edit_photoFile" accept="image/*" style="font-size:0.8rem; margin-top:0.2rem;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 2: Academic Details -->
+                    <div>
+                        <h3 style="font-size:1.1rem; font-weight:700; color:var(--brand); margin-bottom:1rem; border-bottom: 2px solid var(--border); padding-bottom:0.5rem;">2. Academic Information</h3>
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; margin-bottom:1rem;">
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Admission Year *</label>
+                                <input type="number" id="edit_admissionYear" value="${r.admission_year || ''}" class="gate-input" style="margin-bottom:0;">
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Leaving Year *</label>
+                                <input type="number" id="edit_leavingYear" value="${r.leaving_year || ''}" class="gate-input" style="margin-bottom:0;">
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Alumni Status *</label>
+                                <select id="edit_alumniStatus" class="gate-input" style="margin-bottom:0;">
+                                    <option value="Graduate" ${r.alumni_status==='Graduate'?'selected':''}>Graduate</option>
+                                    <option value="Discontinued / Dropout" ${r.alumni_status==='Discontinued / Dropout'?'selected':''}>Discontinued / Dropout</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Highest Qualification *</label>
+                                <select id="edit_qualification" class="gate-input" style="margin-bottom:0;" onchange="
+                                    const isOthers = this.value === 'Others';
+                                    document.getElementById('edit_qualOthersDiv').style.display = isOthers ? 'block' : 'none';
+                                ">
+                                    <option value="" disabled>Select Qualification</option>
+                                    ${qualOptions}
+                                    <option value="Others" ${isQualOthers ? 'selected' : ''}>Other (Specify)</option>
+                                </select>
+                                <div id="edit_qualOthersDiv" style="margin-top:0.4rem; display:${isQualOthers ? 'block' : 'none'};">
+                                    <input type="text" id="edit_qualOthersText" value="${isQualOthers ? esc(r.qualification) : ''}" class="gate-input" style="margin-bottom:0;" placeholder="Please specify qualification...">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Specify Subject / Area *</label>
+                                <input type="text" id="edit_subjectArea" value="${esc(r.subject_area || '')}" class="gate-input" style="margin-bottom:0;" placeholder="e.g. Commerce, Science, Theology">
+                            </div>
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr; gap:1rem;">
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Additional Degrees/Diplomas</label>
+                                <textarea id="edit_additionalDegrees" class="gate-input" rows="2" style="margin-bottom:0;">${esc(r.additional_degrees || '')}</textarea>
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Highest Achievement so Far</label>
+                                <textarea id="edit_highestAchievement" class="gate-input" rows="2" style="margin-bottom:0;">${esc(r.highest_achievement || '')}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3: Professional Details -->
+                    <div>
+                        <h3 style="font-size:1.1rem; font-weight:700; color:var(--brand); margin-bottom:1rem; border-bottom: 2px solid var(--border); padding-bottom:0.5rem;">3. Professional Information</h3>
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:1rem;">
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Current Profession *</label>
+                                <input type="text" id="edit_profession" value="${esc(r.profession || '')}" class="gate-input" style="margin-bottom:0;">
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Organization Name *</label>
+                                <input type="text" id="edit_organization" value="${esc(r.organization || '')}" class="gate-input" style="margin-bottom:0;">
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Field of Work *</label>
+                                <select id="edit_fieldOfWork" class="gate-input" style="margin-bottom:0;" onchange="
+                                    const isOthers = this.value === 'Others';
+                                    document.getElementById('edit_fieldOthersDiv').style.display = isOthers ? 'block' : 'none';
+                                ">
+                                    <option value="" disabled>Select Field of Work</option>
+                                    ${fieldOptions}
+                                    <option value="Others" ${isFieldOthers ? 'selected' : ''}>Others (Specify)</option>
+                                </select>
+                                <div id="edit_fieldOthersDiv" style="margin-top:0.4rem; display:${isFieldOthers ? 'block' : 'none'};">
+                                    <input type="text" id="edit_fieldOthersText" value="${esc(fieldOthersValue)}" class="gate-input" style="margin-bottom:0;" placeholder="Please specify field...">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Work Location *</label>
+                                <input type="text" id="edit_workLocation" value="${esc(r.work_location || '')}" class="gate-input" style="margin-bottom:0;">
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Annual Income *</label>
+                                <select id="edit_annualIncome" class="gate-input" style="margin-bottom:0;">
+                                    <option value="" disabled>Select Annual Income</option>
+                                    ${incomeOptions}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 4: Skills & Preferences -->
+                    <div>
+                        <h3 style="font-size:1.1rem; font-weight:700; color:var(--brand); margin-bottom:1rem; border-bottom: 2px solid var(--border); padding-bottom:0.5rem;">4. Contribution & Consent</h3>
+                        
+                        <div style="margin-bottom:1rem;">
+                            <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.5rem;">In which areas can you contribute? (Select multiple) *</label>
+                            <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:0.5rem; margin-bottom:0.5rem;">
+                                ${skillsCheckboxes}
+                            </div>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <label style="font-size:0.88rem; font-weight:600;">Other (Specify):</label>
+                                <input type="text" id="edit_skillsOtherText" value="${esc(otherSkill)}" class="gate-input" style="margin-bottom:0; flex:1; max-width:300px; padding:0.5rem 0.75rem;">
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; margin-bottom:1rem;">
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Join WhatsApp updates? *</label>
+                                <select id="edit_whatsappJoin" class="gate-input" style="margin-bottom:0;">
+                                    <option value="Yes" ${r.whatsapp_join==='Yes'?'selected':''}>Yes</option>
+                                    <option value="Already a Member" ${r.whatsapp_join==='Already a Member'?'selected':''}>Already a Member</option>
+                                    <option value="No" ${r.whatsapp_join==='No'?'selected':''}>No</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Residing Region *</label>
+                                <select id="edit_region" class="gate-input" style="margin-bottom:0;" onchange="
+                                    const val = this.value;
+                                    document.getElementById('edit_regionDetailLabel').textContent = val === 'Other Indian States' ? 'Specify State *' : 'Specify Country *';
+                                    document.getElementById('edit_regionDetailDiv').style.display = (val === 'Kerala' || !val) ? 'none' : 'block';
+                                ">
+                                    <option value="Kerala" ${cleanRegion==='Kerala'?'selected':''}>Kerala</option>
+                                    <option value="Other Indian States" ${cleanRegion==='Other Indian States'?'selected':''}>Other Indian States</option>
+                                    <option value="GCC Countries" ${cleanRegion==='GCC Countries'?'selected':''}>GCC Countries</option>
+                                    <option value="Other Countries" ${cleanRegion==='Other Countries'?'selected':''}>Other Countries</option>
+                                </select>
+                                <div id="edit_regionDetailDiv" style="margin-top:0.4rem; display:${(cleanRegion==='Kerala' || !cleanRegion) ? 'none' : 'block'};">
+                                    <label id="edit_regionDetailLabel" class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Specify State / Country *</label>
+                                    <input type="text" id="edit_regionDetail" value="${esc(regionDetail)}" class="gate-input" style="margin-bottom:0;">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Act as Batch Coordinator *</label>
+                                <select id="edit_coordinator" class="gate-input" style="margin-bottom:0;">
+                                    <option value="Yes" ${r.coordinator==='Yes'?'selected':''}>Yes</option>
+                                    <option value="No" ${r.coordinator==='No'?'selected':''}>No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="last-updated" style="font-weight:600; display:block; margin-bottom:0.25rem;">Suggestions or Remarks</label>
+                            <textarea id="edit_remarks" class="gate-input" rows="3" style="margin-bottom:0;">${esc(r.remarks || '')}</textarea>
+                        </div>
+                    </div>
+
+                </div>
+            `;
+        }
+
+        async function saveProfileEdit() {
+            const r = allData[activeIndex];
+            if (!r) return;
+
+            const fullName = document.getElementById('edit_fullName').value.trim();
+            const countryCode = document.getElementById('edit_countryCode').value.trim();
+            const mobile = document.getElementById('edit_mobile').value.trim();
+            const email = document.getElementById('edit_email').value.trim();
+            const residencePlace = document.getElementById('edit_residencePlace').value.trim();
+            const country = document.getElementById('edit_country').value;
+            const dob = document.getElementById('edit_dob').value;
+            let photoUrl = document.getElementById('edit_photoUrl').value.trim();
+
+            const admissionYear = document.getElementById('edit_admissionYear').value.trim();
+            const leavingYear = document.getElementById('edit_leavingYear').value.trim();
+            const alumniStatus = document.getElementById('edit_alumniStatus').value;
+            
+            let qualification = document.getElementById('edit_qualification').value;
+            if (qualification === 'Others') {
+                qualification = document.getElementById('edit_qualOthersText').value.trim();
+                if (!qualification) {
+                    alert('Please specify your other highest qualification.');
+                    return;
+                }
+            }
+
+            const subjectArea = document.getElementById('edit_subjectArea').value.trim();
+            const additionalDegrees = document.getElementById('edit_additionalDegrees').value.trim();
+            const highestAchievement = document.getElementById('edit_highestAchievement').value.trim();
+
+            const profession = document.getElementById('edit_profession').value.trim();
+            const organization = document.getElementById('edit_organization').value.trim();
+            
+            let fieldOfWork = document.getElementById('edit_fieldOfWork').value;
+            if (fieldOfWork === 'Others') {
+                const spec = document.getElementById('edit_fieldOthersText').value.trim();
+                if (!spec) {
+                    alert('Please specify your other field of work.');
+                    return;
+                }
+                fieldOfWork = 'Others: ' + spec;
+            }
+
+            const workLocation = document.getElementById('edit_workLocation').value.trim();
+            const annualIncome = document.getElementById('edit_annualIncome').value;
+
+            const skills = [...document.querySelectorAll('input[name="edit_skills"]:checked')].map(el => el.value);
+            const otherSkill = document.getElementById('edit_skillsOtherText').value.trim();
+            if (otherSkill) skills.push(otherSkill);
+
+            const whatsappJoin = document.getElementById('edit_whatsappJoin').value;
+            
+            const regionSelect = document.getElementById('edit_region').value;
+            let region = regionSelect;
+            if (regionSelect !== 'Kerala') {
+                const detail = document.getElementById('edit_regionDetail').value.trim();
+                if (!detail) {
+                    alert('Please specify the State or Country for the selected residing region.');
+                    return;
+                }
+                region = regionSelect + ': ' + detail;
+            }
+
+            const coordinator = document.getElementById('edit_coordinator').value;
+            const remarks = document.getElementById('edit_remarks').value.trim();
+
+            if (!fullName || !countryCode || !mobile || !email || !residencePlace || !country || !dob || 
+                !admissionYear || !leavingYear || !alumniStatus || !qualification || !subjectArea ||
+                !profession || !organization || !fieldOfWork || !workLocation || !annualIncome || 
+                !whatsappJoin || !region || !coordinator) {
+                alert('Please fill out all required fields marked with *.');
+                return;
+            }
+
+            const saveBtn = document.querySelector('#detailsActions button');
+            const originalHtml = saveBtn.innerHTML;
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            try {
+                const photoFile = document.getElementById('edit_photoFile').files[0];
+                if (photoFile) {
+                    saveBtn.textContent = 'Uploading photo...';
+                    const formData = new FormData();
+                    formData.append('file', photoFile);
+                    formData.append('upload_preset', 'ifadaData');
+
+                    const cloudRes = await fetch(
+                        `https://api.cloudinary.com/v1_1/da6fjyirm/image/upload`,
+                        { method: 'POST', body: formData }
+                    );
+                    if (cloudRes.ok) {
+                        const cloudData = await cloudRes.json();
+                        photoUrl = cloudData.secure_url;
+                    } else {
+                        console.error("Cloudinary upload failed.");
+                    }
+                }
+
+                const payload = {
+                    full_name: fullName,
+                    country_code: countryCode,
+                    mobile: mobile,
+                    email: email || null,
+                    residence_place: residencePlace || null,
+                    country: country || null,
+                    dob: dob || null,
+                    photo_url: photoUrl || null,
+                    admission_year: parseInt(admissionYear) || null,
+                    leaving_year: parseInt(leavingYear) || null,
+                    alumni_status: alumniStatus || null,
+                    qualification: qualification || null,
+                    subject_area: subjectArea || null,
+                    additional_degrees: additionalDegrees || null,
+                    highest_achievement: highestAchievement || null,
+                    profession: profession || null,
+                    organization: organization || null,
+                    field_of_work: fieldOfWork || null,
+                    work_location: workLocation || null,
+                    annual_income: annualIncome || null,
+                    skills: skills.length ? skills : null,
+                    whatsapp_join: whatsappJoin || null,
+                    region: region || null,
+                    coordinator: coordinator || null,
+                    remarks: remarks || null
+                };
+
+                saveBtn.textContent = 'Saving response...';
+                const sbRes = await fetch(`${SB_ENDPOINT}/alumni_responses?id=eq.${r.id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        ...SB_HEADERS,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=representation'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!sbRes.ok) {
+                    throw new Error(`Failed to update: ${await sbRes.text()}`);
+                }
+
+                const updatedData = await sbRes.json();
+                if (updatedData && updatedData.length > 0) {
+                    allData[activeIndex] = updatedData[0];
+                    alert('✓ Response updated successfully.');
+                    isEditing = false;
+                    
+                    filterTable();
+                    renderDetailedProfile(activeMembershipData);
+                } else {
+                    alert('⚠️ Row was NOT updated. Check Supabase RLS update policy.');
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = originalHtml;
+                }
+            } catch (err) {
+                console.error("Save error:", err);
+                alert("Error saving: " + err.message);
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalHtml;
+            }
         }
 
         function closeDetails() {

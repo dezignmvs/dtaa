@@ -588,11 +588,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const batch = document.getElementById('membershipBatch').value;
             const alumniStatus = document.querySelector('input[name="alumniStatus"]:checked')?.value;
             const qualification = document.querySelector('input[name="qualification"]:checked')?.value;
-            const additionalDegrees = document.getElementById('additionalDegrees').value.trim();
-            const highestAchievement = document.getElementById('highestAchievement').value.trim();
+            const subjectArea = document.getElementById('subjectArea').value.trim();
 
-            if (!admissionYear || !leavingYear || !batch || !alumniStatus || !qualification) {
-                alert('Please fill out all required fields (Admission Year, Leaving Year, Batch, Alumni Status, and Highest Qualification).');
+            if (!admissionYear || !leavingYear || !batch || !alumniStatus || !qualification || !subjectArea) {
+                alert('Please fill out all required fields (Admission Year, Leaving Year, Batch, Alumni Status, Highest Qualification, and Subject / Area).');
                 return false;
             }
 
@@ -1080,6 +1079,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 leaving_year: parseInt(document.getElementById('leavingYear').value) || null,
                 alumni_status: document.querySelector('input[name="alumniStatus"]:checked')?.value || null,
                 qualification: finalQual,
+                subject_area: document.getElementById('subjectArea').value.trim() || null,
                 additional_degrees: document.getElementById('additionalDegrees').value.trim() || null,
                 highest_achievement: document.getElementById('highestAchievement').value.trim() || null,
                 profession: document.getElementById('profession').value.trim() || null,
