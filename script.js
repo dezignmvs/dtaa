@@ -477,6 +477,35 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Alumni Status Listeners to Show/Hide PG Student Checkbox ---
+    const alumniStatusRadios = document.querySelectorAll('input[name="alumniStatus"]');
+    const pgStudentCheckContainer = document.getElementById('pgStudentCheckContainer');
+
+    function updatePgStudentVisibility() {
+        const selectedStatus = document.querySelector('input[name="alumniStatus"]:checked')?.value;
+        if (selectedStatus === 'Discontinued / Dropout') {
+            if (pgStudentCheckContainer) {
+                pgStudentCheckContainer.style.setProperty('display', 'none', 'important');
+            }
+            if (pgStudentCheck && pgStudentCheck.checked) {
+                pgStudentCheck.checked = false;
+                pgStudentCheck.dispatchEvent(new Event('change'));
+            }
+        } else {
+            if (pgStudentCheckContainer) {
+                pgStudentCheckContainer.style.setProperty('display', 'flex', 'important');
+            }
+        }
+    }
+
+    if (alumniStatusRadios.length) {
+        alumniStatusRadios.forEach(radio => {
+            radio.addEventListener('change', updatePgStudentVisibility);
+        });
+        // Run initially to set the correct state on load
+        updatePgStudentVisibility();
+    }
+
     if (membershipUploadContainer && screenshotInput) {
         membershipUploadContainer.addEventListener('click', () => screenshotInput.click());
     }

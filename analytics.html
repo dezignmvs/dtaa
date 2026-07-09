@@ -8,8 +8,9 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-    <!-- html2pdf Library CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- jsPDF and html2canvas Libraries CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         *,
         *::before,
@@ -788,6 +789,9 @@
                         <div style="display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap;">
                             <input type="text" id="tableSearch" class="table-search" placeholder="🔍  Search name, mobile…"
                                 oninput="filterTable()">
+                            <select id="tableBatchFilter" class="table-search" style="width: auto; min-width: 140px; background-color: var(--surface-solid);" onchange="filterTable()">
+                                <option value="">All Batches</option>
+                            </select>
                             <select id="tableSort" class="table-search" style="width: auto; min-width: 155px; background-color: var(--surface-solid);" onchange="filterTable()">
                                 <option value="date-desc">Newest First</option>
                                 <option value="date-asc">Oldest First</option>
@@ -888,6 +892,7 @@
                                     <th>Name</th>
                                     <th>Batch</th>
                                     <th>Mobile</th>
+                                    <th>Paid Amount</th>
                                     <th>Screenshot / Proof</th>
                                     <th>Actions</th>
                                 </tr>
@@ -951,7 +956,7 @@
                 );
                 if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
                 allData = await res.json();
-
+                populateBatchFilter();
                 filterTable();
 
                 // Fetch WhatsApp link from settings
@@ -1212,7 +1217,6 @@
             const trophyIcon = `<svg style="width:16px;height:16px" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>`;
             const chatIcon = `<svg style="width:16px;height:16px" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>`;
             const groupIcon = `<svg style="width:16px;height:16px" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>`;
-            const clockIcon = `<svg style="width:16px;height:16px" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`;
             const imageIcon = `<svg style="width:16px;height:16px" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`;
 
             const renderField = (qNum, iconSvg, label, value, isLink = false, linkHref = '') => {
@@ -1234,7 +1238,6 @@
             };
 
             const dobFormatted = r.dob ? new Date(r.dob).toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}) : '—';
-            const submittedFormatted = r.created_at ? new Date(r.created_at).toLocaleString('en-IN') : '—';
             const pgText = (r.pg_student === true || r.pg_student === 'true' || r.pg_student === 'Yes' || r.pg_student === 1 || r.pg_student === '1') ? 'Yes (Fee: ₹50)' : 'No (Fee: ₹500)';
             const membershipChoice = membershipData ? "Pay Now (Paid)" : "Pay Later (Unpaid)";
 
@@ -1383,29 +1386,30 @@
                                 </div>
 
                                 <!-- Q25 annual membership -->
-                                <div class="profile-row" style="flex-direction: column; align-items: flex-start; gap: 0.5rem; transition: background-color 0.15s; padding: 0.75rem 0.5rem; border-radius: 0.5rem; display: flex;" onmouseover="this.style.backgroundColor='rgba(13, 148, 136, 0.03)'" onmouseout="this.style.backgroundColor='transparent'">
-                                    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                                        <div style="display: flex; align-items: center; gap: 0.65rem;">
-                                            <span style="font-size: 0.72rem; font-weight: 800; color: var(--brand); background: rgba(13, 148, 136, 0.08); padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-family: monospace; min-width: 32px; text-align: center; display: inline-block;">Q25</span>
-                                            <div style="color: var(--brand); display: flex; align-items: center; width: 16px; height: 16px; opacity: 0.8; flex-shrink: 0;">
-                                                <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
-                                            </div>
-                                            <span class="profile-label" style="color: var(--text-muted); font-weight: 500;">Annual Membership</span>
-                                        </div>
-                                        <span class="badge ${membershipData ? 'badge-teal' : 'badge-yellow'}">${membershipChoice}</span>
-                                    </div>
-                                    <div style="font-size: 0.82rem; color: var(--text-muted); margin-left: 2.85rem; display: flex; flex-direction: column; gap: 0.35rem; width: calc(100% - 2.85rem);">
-                                        <div><strong>PG Student:</strong> ${pgText}</div>
-                                        ${paymentProofUrl ? `
-                                            <div style="margin-top: 0.25rem;">
-                                                <strong>Payment Proof:</strong> 
-                                                <a href="${esc(paymentProofUrl)}" target="_blank" style="color: var(--brand); font-weight: 700; text-decoration: none; border-bottom: 1px dashed var(--brand); margin-left: 0.25rem;">
-                                                    View Receipt Screenshot ↗
-                                                </a>
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                </div>
+                                 <div class="profile-row" style="flex-direction: column; align-items: flex-start; gap: 0.5rem; transition: background-color 0.15s; padding: 0.75rem 0.5rem; border-radius: 0.5rem; display: flex;" onmouseover="this.style.backgroundColor='rgba(13, 148, 136, 0.03)'" onmouseout="this.style.backgroundColor='transparent'">
+                                     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                                         <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                             <span style="font-size: 0.72rem; font-weight: 800; color: var(--brand); background: rgba(13, 148, 136, 0.08); padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-family: monospace; min-width: 32px; text-align: center; display: inline-block;">Q25</span>
+                                             <div style="color: var(--brand); display: flex; align-items: center; width: 16px; height: 16px; opacity: 0.8; flex-shrink: 0;">
+                                                 <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                                             </div>
+                                             <span class="profile-label" style="color: var(--text-muted); font-weight: 500;">Annual Membership</span>
+                                         </div>
+                                         <span class="badge ${membershipData ? 'badge-teal' : 'badge-yellow'}">${membershipChoice}</span>
+                                     </div>
+                                     <div style="font-size: 0.82rem; color: var(--text-muted); margin-left: 2.85rem; display: flex; flex-direction: column; gap: 0.35rem; width: calc(100% - 2.85rem);">
+                                         <div><strong>PG Student:</strong> ${pgText}</div>
+                                         <div><strong>Paid Amount:</strong> ${membershipData ? (membershipData.paid_amount !== undefined && membershipData.paid_amount !== null ? `₹${membershipData.paid_amount}` : `₹${(r.pg_student === true || r.pg_student === 'true' || r.pg_student === 'Yes' || r.pg_student === 1 || r.pg_student === '1') ? '50' : '500'} (est.)`) : '—'}</div>
+                                         ${paymentProofUrl ? `
+                                             <div style="margin-top: 0.25rem;">
+                                                 <strong>Payment Proof:</strong> 
+                                                 <a href="${esc(paymentProofUrl)}" target="_blank" style="color: var(--brand); font-weight: 700; text-decoration: none; border-bottom: 1px dashed var(--brand); margin-left: 0.25rem;">
+                                                     View Receipt Screenshot ↗
+                                                 </a>
+                                             </div>
+                                         ` : ''}
+                                     </div>
+                                 </div>
                             </div>
                         </div>
                     </div>
@@ -1417,9 +1421,6 @@
                     <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--brand-dark); margin: 0; display: flex; align-items: center; justify-content: center; gap: 0.6rem;">
                         <span>💳</span> Generated Membership Card
                     </h3>
-                    <div style="position: relative; transition: transform 0.25s ease; border-radius: 1rem; overflow: hidden; max-width: 320px; width: 100%; border: 1px solid var(--border); box-shadow: var(--shadow-md);" onmouseover="this.style.transform='scale(1.02) translateY(-2px)'" onmouseout="this.style.transform='scale(1)'">
-                        <img src="${esc(cardImageUrl)}" style="width: 100%; height: auto; display: block;" alt="Membership Card">
-                    </div>
                     <a href="${esc(cardImageUrl)}" target="_blank" style="background: linear-gradient(135deg, var(--brand), var(--brand-dark)); color: #ffffff; font-weight: 700; border: none; padding: 0.75rem 2rem; border-radius: 50px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.25s; box-shadow: 0 4px 12px rgba(13,148,136,0.3); font-size: 0.9rem;" onmouseover="this.style.opacity='0.95'; this.style.boxShadow='0 6px 16px rgba(13,148,136,0.4)';" onmouseout="this.style.opacity='1'; this.style.boxShadow='0 4px 12px rgba(13,148,136,0.3)';" onclick="event.stopPropagation()">
                         <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                         Download Membership Card
@@ -1476,6 +1477,11 @@
             const membershipOption = activeMembershipData 
                 ? `<span style="display: inline-block; background: #dcfce7; color: #15803d; font-weight: 700; font-size: 9.5px; padding: 2px 6px; border-radius: 4px;">Pay Now (Paid)</span>` 
                 : `<span style="display: inline-block; background: #fef3c7; color: #b45309; font-weight: 700; font-size: 9.5px; padding: 2px 6px; border-radius: 4px;">Pay Later (Unpaid)</span>`;
+
+            const isPg = r.pg_student === true || r.pg_student === 'true' || r.pg_student === 'Yes' || r.pg_student === 1 || r.pg_student === '1';
+            const pdfPaidAmount = activeMembershipData 
+                ? `₹${activeMembershipData.paid_amount !== undefined && activeMembershipData.paid_amount !== null ? activeMembershipData.paid_amount : (isPg ? 50 : 500)}` 
+                : '—';
 
             const cardUrlText = activeMembershipData 
                 ? `<span style="color: #0d9488; font-weight: 700;">Generated ✓</span>` 
@@ -1583,6 +1589,7 @@
                 ${printCard("5. Annual Membership Dues", "💳", `
                     ${printRow("Is PG Student?", pgText)}
                     ${printRow("Membership Status", membershipOption)}
+                    ${printRow("Paid Amount", pdfPaidAmount)}
                     ${printRow("Digital ID Card", cardUrlText)}
                     ${printRow("Payment Screenshot", proofUrlText)}
                 `)}
@@ -1611,19 +1618,36 @@
             tempDiv.innerHTML = headerHtml + bodyHtml;
             document.body.appendChild(tempDiv);
 
-            const opt = {
-                margin: 0.35,
-                filename: `${r.full_name.replace(/\s+/g, '_')}_Profile.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, logging: false },
-                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
+            // Use jsPDF (Native HTML) with html2canvas fallback
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'in',
+                format: 'letter'
+            });
 
-            html2pdf().set(opt).from(tempDiv).save().then(() => {
-                document.body.removeChild(tempDiv);
-            }).catch((err) => {
-                console.error("PDF generation error:", err);
-                document.body.removeChild(tempDiv);
+            // Prepare tempDiv layout for jsPDF doc.html
+            tempDiv.style.width = "750px";
+            tempDiv.style.position = "absolute";
+            tempDiv.style.left = "-9999px";
+            tempDiv.style.top = "0";
+
+            doc.html(tempDiv, {
+                callback: function (doc) {
+                    doc.save(`${r.full_name.replace(/\s+/g, '_')}_Profile.pdf`);
+                    document.body.removeChild(tempDiv);
+                },
+                margin: [0.35, 0.35, 0.35, 0.35],
+                autoPaging: 'text',
+                x: 0,
+                y: 0,
+                width: 7.8, // 8.5 - 2 * 0.35
+                windowWidth: 750,
+                html2canvas: {
+                    useCORS: true,
+                    scale: 2,
+                    logging: false
+                }
             });
         }
 
@@ -2072,14 +2096,49 @@
             return match ? parseInt(match[1]) : 0;
         }
 
+        function populateBatchFilter() {
+            const uniqueBatches = new Set();
+            allData.forEach(r => {
+                const bName = getBatchName(r.registration_id);
+                if (bName && bName !== '—') {
+                    uniqueBatches.add(bName);
+                }
+            });
+
+            const batchesArray = Array.from(uniqueBatches).sort((a, b) => {
+                const numA = parseInt(a) || 0;
+                const numB = parseInt(b) || 0;
+                return numA - numB;
+            });
+
+            const filterDropdown = document.getElementById('tableBatchFilter');
+            if (filterDropdown) {
+                const currentVal = filterDropdown.value;
+                let html = '<option value="">All Batches</option>';
+                batchesArray.forEach(b => {
+                    html += `<option value="${esc(b)}">${esc(b)}</option>`;
+                });
+                filterDropdown.innerHTML = html;
+                if (batchesArray.includes(currentVal)) {
+                    filterDropdown.value = currentVal;
+                }
+            }
+        }
+
         function filterTable() {
             const q = document.getElementById('tableSearch').value.toLowerCase();
-            const filtered = allData.filter(r =>
+            const selectedBatch = document.getElementById('tableBatchFilter').value;
+            
+            let filtered = allData.filter(r =>
                 (r.full_name || '').toLowerCase().includes(q) ||
                 (r.mobile || '').includes(q) ||
                 (r.email || '').toLowerCase().includes(q) ||
                 (r.country || '').toLowerCase().includes(q)
             );
+
+            if (selectedBatch) {
+                filtered = filtered.filter(r => getBatchName(r.registration_id) === selectedBatch);
+            }
 
             // Sorting logic
             const sortBy = document.getElementById('tableSort').value;
@@ -2118,14 +2177,22 @@
             }
 
             const q = document.getElementById('tableSearch').value.toLowerCase().trim();
-            const dataToExport = q 
-                ? allData.filter(r =>
+            const selectedBatch = document.getElementById('tableBatchFilter').value;
+
+            let dataToExport = allData;
+
+            if (q) {
+                dataToExport = dataToExport.filter(r =>
                     (r.full_name || '').toLowerCase().includes(q) ||
                     (r.mobile || '').includes(q) ||
                     (r.email || '').toLowerCase().includes(q) ||
                     (r.country || '').toLowerCase().includes(q)
-                  )
-                : allData;
+                );
+            }
+
+            if (selectedBatch) {
+                dataToExport = dataToExport.filter(r => getBatchName(r.registration_id) === selectedBatch);
+            }
 
             if (!dataToExport.length) {
                 alert("No filtered data to export.");
@@ -2209,6 +2276,19 @@
 
         function esc(s) {
             return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+
+        function getPaidAmountForCard(card) {
+            if (card.paid_amount !== undefined && card.paid_amount !== null) {
+                return `₹${card.paid_amount}`;
+            }
+            // Fallback: look up in allData by matching mobile
+            const match = allData.find(r => r.mobile && card.mobile && String(r.mobile).trim() === String(card.mobile).trim());
+            if (match) {
+                const isPg = match.pg_student === true || match.pg_student === 'true' || match.pg_student === 'Yes' || match.pg_student === 1 || match.pg_student === '1';
+                return `₹${isPg ? 50 : 500} (est.)`;
+            }
+            return '—';
         }
 
         /* ── Tabs Logic ── */
@@ -2317,19 +2397,21 @@
             document.getElementById('cardCount').textContent = `— ${data.length} cards`;
             const tbody = document.getElementById('cardsTableBody');
             if (!data.length) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:3rem;color:var(--text-muted)">No cards found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--text-muted)">No cards found.</td></tr>';
                 return;
             }
             tbody.innerHTML = data.map((r, i) => {
                 const proofLink = r.payment_proof_url 
                     ? `<a href="${esc(r.payment_proof_url)}" target="_blank" style="color:var(--brand); text-decoration:underline;" onclick="event.stopPropagation()">View Screenshot ↗</a>` 
                     : '<span style="color:var(--text-muted)">N/A</span>';
+                const paidAmountStr = getPaidAmountForCard(r);
                 return `
                 <tr style="cursor:default;">
                     <td style="color:var(--text-muted)">${i + 1}</td>
                     <td><strong>${esc(r.name || '—')}</strong></td>
                     <td>${esc(r.batch || '—')}</td>
                     <td style="color:var(--text-muted)">${esc(r.mobile || '—')}</td>
+                    <td><strong style="color: var(--brand);">${esc(paidAmountStr)}</strong></td>
                     <td>${proofLink}</td>
                     <td>
                         <div style="display:flex; gap:0.5rem; align-items:center;">

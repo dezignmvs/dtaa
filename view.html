@@ -529,7 +529,7 @@
             <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">To generate and download your official digital membership card, please complete the membership payment registration below.</p>
             
             <!-- PG Student Checkbox Option -->
-            <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+            <div id="modalPgStudentCheckContainer" style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
                 <div class="checkbox-wrapper-12" style="position: relative;">
                     <div class="cbx">
                         <input type="checkbox" id="modalPgStudentCheck" class="peer">
@@ -1067,7 +1067,8 @@
                     batch: data.batch,
                     mobile: data.mobile || null,
                     payment_proof_url: data.paymentProofUrl || null,
-                    image_url: data.imageUrl
+                    image_url: data.imageUrl,
+                    paid_amount: data.paidAmount || null
                 };
                 const { error } = await supabaseClient.from('membership').insert([payload]);
                 if (error) throw error;
@@ -1080,7 +1081,13 @@
 
         function openPaymentModal() {
             isMembershipVerified = false;
-            const isPg = activeProfileData && (
+            const isDropout = activeProfileData && activeProfileData.alumni_status === 'Discontinued / Dropout';
+            const modalPgCheckContainer = document.getElementById('modalPgStudentCheckContainer');
+            if (modalPgCheckContainer) {
+                modalPgCheckContainer.style.display = isDropout ? 'none' : 'flex';
+            }
+
+            const isPg = !isDropout && activeProfileData && (
                 activeProfileData.pg_student === true ||
                 activeProfileData.pg_student === 'true' ||
                 activeProfileData.pg_student === 'Yes' ||
@@ -1279,13 +1286,22 @@
             const cardData = await cardRes.json();
             const cardImageUrl = cardData.secure_url;
 
+            // Calculate paid amount based on PG Student status
+            const isPg = profileData.pg_student === true || 
+                         profileData.pg_student === 'true' || 
+                         profileData.pg_student === 'Yes' || 
+                         profileData.pg_student === 1 || 
+                         profileData.pg_student === '1';
+            const paidAmount = isPg ? 50 : 500;
+
             // 3. Save to database
             const saveRes = await window.saveCardToDB({
                 name: fullName,
                 batch: batch,
                 mobile: mobile,
                 paymentProofUrl: paymentProofUrl,
-                imageUrl: cardImageUrl
+                imageUrl: cardImageUrl,
+                paidAmount: paidAmount
             });
 
             if (!saveRes.success) {

@@ -109,3 +109,9 @@ DROP POLICY IF EXISTS "Allow public delete batches" ON batches;
 CREATE POLICY "Allow public select batches" ON batches FOR SELECT TO anon USING (true);
 CREATE POLICY "Allow public insert batches" ON batches FOR INSERT TO anon WITH CHECK (true);
 CREATE POLICY "Allow public delete batches" ON batches FOR DELETE TO anon USING (true);
+
+-- ---------------------------------------------------------------------
+-- 5. ALTER existing 'membership' table to add 'paid_amount' column
+-- ---------------------------------------------------------------------
+ALTER TABLE IF EXISTS membership ADD COLUMN IF NOT EXISTS paid_amount NUMERIC;
+
