@@ -925,6 +925,7 @@
         }
 
         let allData = [];
+        let paidMobilesSet = new Set();
 
         /* ── Gate ── */
         function checkPwd() {
@@ -956,6 +957,21 @@
                 );
                 if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
                 allData = await res.json();
+
+                // Fetch all paid membership mobiles for green-highlight in table
+                try {
+                    const memRes = await fetch(
+                        `${SB_ENDPOINT}/membership?select=mobile`,
+                        { headers: SB_HEADERS }
+                    );
+                    if (memRes.ok) {
+                        const memData = await memRes.json();
+                        paidMobilesSet = new Set((memData || []).map(m => (m.mobile || '').trim()));
+                    }
+                } catch(e) {
+                    console.warn('Could not load membership data for paid highlight:', e);
+                }
+
                 populateBatchFilter();
                 filterTable();
 
@@ -1074,7 +1090,7 @@
             <td>${r.photo_url
                     ? `<img src="${r.photo_url}" class="photo-thumb" alt="photo">`
                     : '<div class="no-photo">👤</div>'}</td>
-            <td><strong>${esc(r.full_name || '—')}</strong></td>
+            <td style="${(r.mobile && paidMobilesSet.has((r.mobile || '').trim())) ? 'background:#dcfce7;' : ''}"><strong>${esc(r.full_name || '—')}</strong></td>
             <td style="color:var(--text-muted)">${esc(r.country_code || '')} ${esc(r.mobile || '')}</td>
             <td style="color:var(--text-muted)">${esc(r.email || '—')}</td>
             <td>${esc(r.country || r.residence_place || '—')}</td>
@@ -2394,6 +2410,14 @@
         }
         
         function renderCards(data) {
+            // Deduplicate by mobile — keep only the latest record per mobile
+            const seen = new Set();
+            data = data.filter(r => {
+                const key = (r.mobile || '').trim();
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+            });
             document.getElementById('cardCount').textContent = `— ${data.length} cards`;
             const tbody = document.getElementById('cardsTableBody');
             if (!data.length) {
